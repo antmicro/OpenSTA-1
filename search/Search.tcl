@@ -1063,6 +1063,7 @@ proc worst_clock_skew { args } {
 ################################################################
 
 define_cmd_args "write_timing_model" {[-scalar] \
+                                        [-instance instance] \
                                         [-corner corner] \
                                         [-library_name lib_name]\
                                         [-cell_name cell_name]\
@@ -1070,15 +1071,20 @@ define_cmd_args "write_timing_model" {[-scalar] \
 
 proc write_timing_model { args } {
   parse_key_args "write_timing_model" args \
-    keys {-library_name -cell_name -corner} flags {-scalar}
+    keys {-instance -library_name -cell_name -corner} flags {-scalar}
   check_argc_eq1 "write_timing_model" $args
 
   set filename [file nativename [lindex $args 0]]
   set scalar [info exists flags(-scalar)]
+  if { [info exists keys(-instance)] } {
+    set instance $keys(-instance)
+  } else {
+    set instance [top_instance]
+  }
   if { [info exists keys(-cell_name)] } {
     set cell_name $keys(-cell_name)
   } else {
-    set cell_name [get_name [[top_instance] cell]]
+    set cell_name [get_name [$instance cell]]
   }
   if { [info exists keys(-library_name)] } {
     set lib_name $keys(-library_name)
@@ -1086,7 +1092,7 @@ proc write_timing_model { args } {
     set lib_name $cell_name
   }
   set corner [parse_corner keys]
-  write_timing_model_cmd $lib_name $cell_name $filename $corner $scalar
+  write_timing_model_cmd $instance $lib_name $cell_name $filename $corner $scalar
 }
 
 ################################################################

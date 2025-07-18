@@ -5695,7 +5695,8 @@ Sta::equivCells(LibertyCell *cell)
 ////////////////////////////////////////////////////////////////
 
 void
-Sta::writeTimingModel(const char *lib_name,
+Sta::writeTimingModel(Instance* instance,
+                      const char *lib_name,
                       const char *cell_name,
                       const char *filename,
                       const Corner *corner,
@@ -5703,7 +5704,7 @@ Sta::writeTimingModel(const char *lib_name,
 {
   ensureLibLinked();
   ensureGraph();
-  LibertyLibrary *library = makeTimingModel(lib_name, cell_name, filename,
+  LibertyLibrary *library = makeTimingModel(instance, lib_name, cell_name, filename,
                                             corner, scalar, this);
   writeLiberty(library, filename, this);
 }

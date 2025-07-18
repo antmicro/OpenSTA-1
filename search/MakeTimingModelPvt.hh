@@ -54,7 +54,8 @@ typedef std::map<const Pin *, OutputDelays> OutputPinDelays;
 class MakeTimingModel : public StaState
 {
 public:
-  MakeTimingModel(const char *lib_name,
+  MakeTimingModel(Instance* instance,
+                  const char *lib_name,
                   const char *cell_name,
                   const char *filename,
                   const Corner *corner,
@@ -103,6 +104,7 @@ private:
   void restoreSdc();
   void swapSdcWithBackup();
 
+  Instance* instance_;
   const char *lib_name_;
   const char *cell_name_;
   const char *filename_;

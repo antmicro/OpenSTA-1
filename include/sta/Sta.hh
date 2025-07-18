@@ -1246,7 +1246,8 @@ public:
                     const Corner *corner);
   PwrActivity activity(const Pin *pin);
 
-  void writeTimingModel(const char *lib_name,
+  void writeTimingModel(Instance* instance,
+                        const char *lib_name,
                         const char *cell_name,
                         const char *filename,
                         const Corner *corner,
