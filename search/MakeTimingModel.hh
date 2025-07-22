@@ -24,15 +24,18 @@
 
 #pragma once
 
+#include "Vector.hh"
+
 namespace sta {
 
 class LibertyLibrary;
 class Corner;
 class Instance;
 class Sta;
+typedef Vector<const Instance*> InstanceSeq;
 
 LibertyLibrary *
-makeTimingModel(Instance* instance,
+makeTimingModel(const InstanceSeq& instance,
                 const char *lib_name,
                 const char *cell_name,
                 const char *filename,

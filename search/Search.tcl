@@ -1095,6 +1095,29 @@ proc write_timing_model { args } {
   write_timing_model_cmd $instance $lib_name $cell_name $filename $corner $scalar
 }
 
+define_cmd_args "write_timing_models" {[-scalar] \
+                                        [-corner corner] \
+                                        [-library_name lib_name]\
+                                        -instances instances \
+                                        filename}
+
+proc write_timing_models { args } {
+  parse_key_args "write_timing_model" args \
+    keys {-library_name -corner -instances} flags {-scalar}
+  check_argc_eq1 "write_timing_model" $args
+
+  set filename [file nativename [lindex $args 0]]
+  set scalar [info exists flags(-scalar)]
+  set instances $keys(-instances)
+  if { [info exists keys(-library_name)] } {
+    set lib_name $keys(-library_name)
+  } else {
+    set lib_name [get_name [[top_instance] cell]]
+  }
+  set corner [parse_corner keys]
+  write_timing_models_cmd $instances $lib_name $filename $corner $scalar
+}
+
 ################################################################
 #
 # Helper functions

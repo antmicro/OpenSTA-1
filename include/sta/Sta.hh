@@ -1252,6 +1252,11 @@ public:
                         const char *filename,
                         const Corner *corner,
 			const bool scalar);
+  void writeTimingModels(InstanceSeq* instances,
+                         const char *lib_name,
+                         const char *filename,
+                         const Corner *corner,
+			const bool scalar);
 
   // Find equivalent cells in equiv_libs.
   // Optionally add mappings for cells in map_libs.

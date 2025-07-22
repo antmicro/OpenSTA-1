@@ -825,6 +825,16 @@ write_timing_model_cmd(Instance* instance,
   Sta::sta()->writeTimingModel(instance, lib_name, cell_name, filename, corner, scalar);
 }
 
+void
+write_timing_models_cmd(InstanceSeq* instances,
+                        const char *lib_name,
+                        const char *filename,
+                        const Corner *corner,
+                        const bool scalar)
+{
+  Sta::sta()->writeTimingModels(instances, lib_name, filename, corner, scalar);
+}
+
 ////////////////////////////////////////////////////////////////
 
 void

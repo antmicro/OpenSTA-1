@@ -5704,7 +5704,21 @@ Sta::writeTimingModel(Instance* instance,
 {
   ensureLibLinked();
   ensureGraph();
-  LibertyLibrary *library = makeTimingModel(instance, lib_name, cell_name, filename,
+  LibertyLibrary *library = makeTimingModel({1, instance}, lib_name, cell_name, filename,
+                                            corner, scalar, this);
+  writeLiberty(library, filename, this);
+}
+
+void
+Sta::writeTimingModels(InstanceSeq* instances,
+                       const char *lib_name,
+                       const char *filename,
+                       const Corner *corner,
+                       const bool scalar)
+{
+  ensureLibLinked();
+  ensureGraph();
+  LibertyLibrary *library = makeTimingModel(*instances, lib_name, nullptr, filename,
                                             corner, scalar, this);
   writeLiberty(library, filename, this);
 }

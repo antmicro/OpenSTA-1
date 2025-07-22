@@ -58,7 +58,7 @@ using std::max;
 using std::make_shared;
 
 LibertyLibrary *
-makeTimingModel(Instance* instance,
+makeTimingModel(const InstanceSeq& instances,
                 const char *lib_name,
                 const char *cell_name,
                 const char *filename,
@@ -66,11 +66,11 @@ makeTimingModel(Instance* instance,
                 const bool scalar,
                 Sta *sta)
 {
-  MakeTimingModel maker(instance, lib_name, cell_name, filename, corner, scalar, sta);
+  MakeTimingModel maker(instances, lib_name, cell_name, filename, corner, scalar, sta);
   return maker.makeTimingModel();
 }
 
-MakeTimingModel::MakeTimingModel(Instance* instance,
+MakeTimingModel::MakeTimingModel(const InstanceSeq& instances,
                                  const char *lib_name,
                                  const char *cell_name,
                                  const char *filename,
@@ -78,7 +78,7 @@ MakeTimingModel::MakeTimingModel(Instance* instance,
                                  const bool scalar,
                                  Sta *sta) :
   StaState(sta),
-  instance_(instance),
+  instances_(instances),
   lib_name_(lib_name),
   cell_name_(cell_name),
   filename_(filename),
@@ -106,14 +106,16 @@ MakeTimingModel::makeTimingModel()
 
   tbl_template_index_ = 1;
   makeLibrary();
-  makeCell();
-  makePorts();
+  for (auto instance : instances_) {
+    makeCell(instance);
+    makePorts(instance);
 
-  sta_->searchPreamble();
+    sta_->searchPreamble();
 
-  findTimingFromInputs();
-  findClkedOutputPaths();
-  findClkTreeDelays();
+    findTimingFromInputs(instance);
+    findClkedOutputPaths(instance);
+    findClkTreeDelays(instance);
+  }
 
   cell_->finish(false, report_, debug_);
 
@@ -170,18 +172,18 @@ MakeTimingModel::makeLibrary()
 }
 
 void
-MakeTimingModel::makeCell()
+MakeTimingModel::makeCell(const Instance* instance)
 {
-  cell_ = lib_builder_->makeCell(library_, cell_name_, filename_);
+  cell_ = lib_builder_->makeCell(library_, cell_name_ ? cell_name_ : network_->cellName(instance), filename_);
   cell_->setIsMacro(true);
-  cell_->setArea(findArea());
+  cell_->setArea(findArea(instance));
 }
 
 float
-MakeTimingModel::findArea()
+MakeTimingModel::findArea(const Instance* instance)
 {
   float area = 0.0;
-  LeafInstanceIterator *leaf_iter = network_->leafInstanceIterator(instance_);
+  LeafInstanceIterator *leaf_iter = network_->leafInstanceIterator(instance);
   while (leaf_iter->hasNext()) {
     const Instance *inst = leaf_iter->next();
     const LibertyCell *cell = network_->libertyCell(inst);
@@ -193,10 +195,10 @@ MakeTimingModel::findArea()
 }
 
 void
-MakeTimingModel::makePorts()
+MakeTimingModel::makePorts(const Instance* instance)
 {
   const DcalcAnalysisPt *dcalc_ap = corner_->findDcalcAnalysisPt(min_max_);
-  Cell *cell = network_->cell(instance_);
+  Cell *cell = network_->cell(instance);
   CellPortIterator *port_iter = network_->portIterator(cell);
   while (port_iter->hasNext()) {
     Port *port = port_iter->next();
@@ -213,7 +215,7 @@ MakeTimingModel::makePorts()
       PortMemberIterator *member_iter = network_->memberIterator(port);
       while (member_iter->hasNext()) {
         Port *bit_port = member_iter->next();
-        Pin *pin = network_->findPin(instance_, bit_port);
+        Pin *pin = network_->findPin(instance, bit_port);
         LibertyPort *lib_bit_port = modelPort(pin);
         float load_cap = graph_delay_calc_->loadCap(pin, dcalc_ap);
         lib_bit_port->setCapacitance(load_cap);
@@ -223,7 +225,7 @@ MakeTimingModel::makePorts()
     else {
       LibertyPort *lib_port = lib_builder_->makePort(cell_, port_name);
       lib_port->setDirection(network_->direction(port));
-      Pin *pin = network_->findPin(instance_, port);
+      Pin *pin = network_->findPin(instance, port);
       float load_cap = graph_delay_calc_->loadCap(pin, dcalc_ap);
       lib_port->setCapacitance(load_cap);
     }
@@ -322,24 +324,24 @@ MakeEndTimingArcs::visit(PathEnd *path_end)
 // Use default input arrival (set_input_delay with no clock) from inputs
 // to find downstream register checks and output ports.
 void
-MakeTimingModel::findTimingFromInputs()
+MakeTimingModel::findTimingFromInputs(const Instance* instance)
 {
   search_->deleteFilteredArrivals();
 
-  Cell *top_cell = network_->cell(instance_);
+  Cell *top_cell = network_->cell(instance);
   CellPortBitIterator *port_iter = network_->portBitIterator(top_cell);
   while (port_iter->hasNext()) {
     Port *input_port = port_iter->next();
     if (network_->direction(input_port)->isInput())
-      findTimingFromInput(input_port);
+      findTimingFromInput(instance, input_port);
   }
   delete port_iter;
 }
 
 void
-MakeTimingModel::findTimingFromInput(Port *input_port)
+MakeTimingModel::findTimingFromInput(const Instance* instance, Port *input_port)
 {
-  Pin *input_pin = network_->findPin(instance_, input_port);
+  Pin *input_pin = network_->findPin(instance, input_port);
   if (!sta_->isClockSrc(input_pin)) {
     MakeEndTimingArcs end_visitor(sta_);
     OutputPinDelays output_delays;
@@ -361,7 +363,7 @@ MakeTimingModel::findTimingFromInput(Port *input_port)
       VisitPathEnds visit_ends(sta_);
       for (Vertex *end : endpoints)
         visit_ends.visitPathEnds(end, corner_, MinMaxAll::all(), true, &end_visitor);
-      findOutputDelays(input_rf, output_delays);
+      findOutputDelays(instance, input_rf, output_delays);
       search_->deleteFilteredArrivals();
 
       sta_->removeInputDelay(input_pin, input_rf1,
@@ -375,10 +377,11 @@ MakeTimingModel::findTimingFromInput(Port *input_port)
 }
 
 void
-MakeTimingModel::findOutputDelays(const RiseFall *input_rf,
+MakeTimingModel::findOutputDelays(const Instance* instance,
+                                  const RiseFall *input_rf,
                                   OutputPinDelays &output_pin_delays)
 {
-  InstancePinIterator *output_iter = network_->pinIterator(instance_);
+  InstancePinIterator *output_iter = network_->pinIterator(instance);
   while (output_iter->hasNext()) {
     Pin *output_pin = output_iter->next();
     if (network_->direction(output_pin)->isOutput()) {
@@ -493,9 +496,9 @@ MakeTimingModel::makeInputOutputTimingArcs(const Pin *input_pin,
 
 // clocked register -> output paths
 void
-MakeTimingModel::findClkedOutputPaths()
+MakeTimingModel::findClkedOutputPaths(const Instance* instance)
 {
-  InstancePinIterator *output_iter = network_->pinIterator(instance_);
+  InstancePinIterator *output_iter = network_->pinIterator(instance);
   while (output_iter->hasNext()) {
     Pin *output_pin = output_iter->next();
     if (network_->direction(output_pin)->isOutput()) {
@@ -554,16 +557,16 @@ MakeTimingModel::findClkedOutputPaths()
 ////////////////////////////////////////////////////////////////
 
 void
-MakeTimingModel::findClkTreeDelays()
+MakeTimingModel::findClkTreeDelays(const Instance* instance)
 {
-  Cell *cell = network_->cell(instance_);
+  Cell *cell = network_->cell(instance);
   CellPortIterator *port_iter = network_->portBitIterator(cell);
   while (port_iter->hasNext()) {
     Port *port = port_iter->next();
     if (network_->direction(port)->isInput()) {
       const char *port_name = network_->name(port);
       LibertyPort *lib_port = cell_->findLibertyPort(port_name);
-      Pin *pin = network_->findPin(instance_, port);
+      Pin *pin = network_->findPin(instance, port);
       if (pin && sdc_->isClock(pin)) {
         lib_port->setIsClock(true);
         ClockSet *clks = sdc_->findClocks(pin);

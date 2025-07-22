@@ -54,7 +54,7 @@ typedef std::map<const Pin *, OutputDelays> OutputPinDelays;
 class MakeTimingModel : public StaState
 {
 public:
-  MakeTimingModel(Instance* instance,
+  MakeTimingModel(const InstanceSeq& instances,
                   const char *lib_name,
                   const char *cell_name,
                   const char *filename,
@@ -66,19 +66,20 @@ public:
 
 private:
   void makeLibrary();
-  void makeCell();
-  float findArea();
-  void makePorts();
+  void makeCell(const Instance* instance);
+  float findArea(const Instance* instance);
+  void makePorts(const Instance* instance);
   void checkClock(Clock *clk);
-  void findTimingFromInputs();
-  void findTimingFromInput(Port *input_port);
-  void findClkedOutputPaths();
-  void findClkTreeDelays();
+  void findTimingFromInputs(const Instance* instance);
+  void findTimingFromInput(const Instance* instance, Port *input_port);
+  void findClkedOutputPaths(const Instance* instance);
+  void findClkTreeDelays(const Instance* instance);
   void makeClkTreePaths(LibertyPort *lib_port,
                         const MinMax *min_max,
                         TimingSense sense,
                         const ClkDelays &delays);
-  void findOutputDelays(const RiseFall *input_rf,
+  void findOutputDelays(const Instance* instance,
+                        const RiseFall *input_rf,
                         OutputPinDelays &output_pin_delays);
   void makeSetupHoldTimingArcs(const Pin *input_pin,
                                const ClockEdgeDelays &clk_margins);
@@ -104,7 +105,7 @@ private:
   void restoreSdc();
   void swapSdcWithBackup();
 
-  Instance* instance_;
+  InstanceSeq instances_;
   const char *lib_name_;
   const char *cell_name_;
   const char *filename_;
