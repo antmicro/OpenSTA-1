@@ -239,7 +239,8 @@ protected:
 			   float time_offset,
 			   Arrival clk_insertion,
 			   Arrival clk_latency,
-			   bool is_path_delay) const;
+			   bool is_path_delay,
+        const TimingArc *end_check_arc) const;
   bool reportGenClkSrcPath(const Path *clk_path,
                            const Clock *clk,
 			   const RiseFall *clk_rf,
@@ -300,38 +301,45 @@ protected:
   void reportPath1(const Path *path,
 		   const PathExpanded &expanded,
 		   bool clk_used_as_data,
-		   float time_offset) const;
+		   float time_offset,
+       const TimingArc *end_check_arc) const;
   void reportPath2(const Path *path,
 		   const PathExpanded &expanded,
 		   bool skip_first_path,
 		   bool clk_used_as_data,
-		   float time_offset) const;
+		   float time_offset,
+       const TimingArc *end_check_arc) const;
   void  reportPath3(const Path *path,
 		    const PathExpanded &expanded,
 		    bool report_clk_path,
-		    float time_offset) const;
+		    float time_offset,
+        const TimingArc *end_check_arc) const;
   void reportPath4(const Path *path,
 		   const PathExpanded &expanded,
 		   bool skip_first_path,
 		   bool propagated_clk,
 		   bool report_clk_path,
-		   float time_offset) const;
+		   float time_offset,
+       const TimingArc *end_check_arc) const;
   void reportPath5(const Path *path,
 		   const PathExpanded &expanded,
 		   bool skip_first_path,
 		   bool propagated_clk,
 		   bool report_clk_path,
-		   float time_offset) const;
+		   float time_offset,
+       const TimingArc *end_check_arc) const;
   void reportPath6(const Path *path,
 		   const PathExpanded &expanded,
 		   size_t path_first_index,
 		   bool propagated_clk,
 		   bool report_clk_path,
 		   Arrival prev_time,
-		   float time_offset) const;
+		   float time_offset,
+       const TimingArc *end_check_arc) const;
   void reportHierPinsThru(const Path *path) const;
   void reportInputExternalDelay(const Path *path,
-				float time_offset) const;
+				float time_offset,
+        const TimingArc *end_check_arc) const;
   void reportLine(const char *what,
 		  Delay total,
 		  const EarlyLate *early_late) const;
@@ -467,9 +475,6 @@ protected:
 		  Delay prev,
 		  const MinMax *min_max) const;
   void reportTimingPath(const char* instance_name, const TimingArc* timing_arc, float prev_arrival) const;
-
-  // temp
-  mutable TimingArc* end_timing_arc;
 
   // Path options.
   ReportPathFormat format_;
