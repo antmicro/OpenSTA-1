@@ -533,7 +533,6 @@ ReportPath::reportFull(const PathEndCheck *end) const
   reportSrcPathArrival(end, expanded);
   reportTgtClk(end);
   reportRequired(end, checkRoleString(end));
-  reportDashLine();
   reportSlack(end);
 }
 
