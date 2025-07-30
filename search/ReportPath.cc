@@ -23,7 +23,6 @@
 // This notice may not be removed or altered from any source distribution.
 
 #include <algorithm>            // reverse
-#include <cassert>
 
 #include "ReportPath.hh"
 
@@ -1268,26 +1267,25 @@ ReportPath::reportJson(const PathExpanded &expanded,
     const RiseFall *rf = path->transition(this);
     DcalcAnalysisPt *dcalc_ap = path->pathAnalysisPt(this)->dcalcAnalysisPt();
     bool is_driver = network_->isDriver(pin);
-    prev_time = path->arrival();
 
     if (instances_timing_arcs.find(inst) != instances_timing_arcs.end()) {
       const char* from_instance_name = network_->pathName(inst);
       reportTimingPathJson(from_instance_name, instances_timing_arcs.at(inst), indent, i == path_last_index - 1, result, is_clk_path, prev_time);
 
-      std::size_t current_index = i + 1;
       const Instance *unwrapped_instance = inst;
-      while (inst == unwrapped_instance && current_index < path_last_index) {
-        path = expanded.path(current_index);
-        const Vertex *vertex = path->vertex(this);
-        pin = vertex->pin();
-        inst = network_->instance(pin);
-        ++current_index;
-      }
+      while (inst == unwrapped_instance && i < path_last_index - 1) {
+        prev_time = path->arrival();
 
-      i = current_index - 1;
+        ++i;
+        path = expanded.path(i);
+        pin = path->vertex(this)->pin();
+        inst = network_->instance(pin);
+      }
 
       continue;
     }
+
+    prev_time = path->arrival();
 
     stringAppend(result, "%*s  {\n", indent, "");
 
@@ -2205,7 +2203,7 @@ ReportPath::reportSrcClkAndPath(const Path *path,
 				Arrival clk_insertion,
 				Arrival clk_latency,
 				bool is_path_delay,
-        const TimingArc *end_check_arc) const
+				const TimingArc *end_check_arc) const
 {
   const ClockEdge *clk_edge = path->clkEdge(this);
   const MinMax *min_max = path->minMax(this);
@@ -2789,7 +2787,7 @@ ReportPath::reportPath1(const Path *path,
 			const PathExpanded &expanded,
 			bool clk_used_as_data,
 			float time_offset,
-      const TimingArc *end_check_arc) const
+			const TimingArc *end_check_arc) const
 {
   reportPath2(path, expanded, false, clk_used_as_data, time_offset, end_check_arc);
 }
@@ -2896,7 +2894,7 @@ ReportPath::reportPath6(const Path *path,
 			bool report_clk_path,
 			Arrival prev_time,
 			float time_offset,
-      const TimingArc *end_check_arc) const
+			const TimingArc *end_check_arc) const
 {
   size_t path_last_index = expanded.size() - 1;
   const MinMax *min_max = path->minMax(this);
@@ -2916,20 +2914,18 @@ ReportPath::reportPath6(const Path *path,
 
     if (instances_timing_arcs.find(inst) != instances_timing_arcs.end()) {
       const char* from_instance_name = network_->pathName(inst);
-      reportTimingPath(from_instance_name, instances_timing_arcs.at(inst), min_max, time);
+      reportTimingPath(from_instance_name, instances_timing_arcs.at(inst), min_max, prev_time);
 
-      std::size_t current_index = i + 1;
       Instance *unwrapped_instance = inst;
-      while (inst == unwrapped_instance && current_index < path_last_index) {
-        path1 = expanded.path(current_index);
+      while (inst == unwrapped_instance && i < path_last_index) {
+        prev_time = path1->arrival() + time_offset;
+
+        ++i;
+        path1 = expanded.path(i);
         vertex = path1->vertex(this);
         pin = vertex->pin();
         inst = network_->instance(pin);
-        prev_time = path1->arrival() + time_offset;
-        ++current_index;
       }
-
-      i = current_index - 1;
 
       continue;
     }
@@ -3093,10 +3089,10 @@ bool ReportPath::hasTimingPaths(const TimingArc *timing_arc) const
   return timing_arc_set && !timing_arc_set->timingPaths().empty();
 }
 
-void ReportPath::reportTimingPath(const char* instance_name, const TimingArc* timing_arc, const MinMax *min_max, float base_arrival) const
+void ReportPath::reportTimingPath(const char *instance_name, const TimingArc *timing_arc, const MinMax *min_max, float base_arrival) const
 {
-  const auto& timing_paths = timing_arc->set()->timingPaths();
-  const auto& timing_path = timing_paths.at(TimingPath::ROLE_PATH_MAPPINGS.at(timing_arc->role()).at(timing_arc->toEdge()->asRiseFall()->index()));
+  const auto &timing_paths = timing_arc->set()->timingPaths();
+  const auto &timing_path = timing_paths.at(TimingPath::ROLE_PATH_MAPPINGS.at(timing_arc->role()).at(timing_arc->toEdge()->asRiseFall()->index()));
   float previous_arrival = 0.0f;
   for (std::size_t index = 0; index < timing_path.vertices.size(); ++index) {
     const auto& vertex = timing_path.vertices[index];
@@ -3250,7 +3246,7 @@ ReportPath::hasExtInputDriver(const Pin *pin,
 void
 ReportPath::reportInputExternalDelay(const Path *first_path,
 				     float time_offset,
-             const TimingArc *end_check_arc) const
+       			const TimingArc *end_check_arc) const
 {
   const Pin *first_pin = first_path->pin(graph_);
   if (!pathFromClkPin(first_path, first_pin)) {
