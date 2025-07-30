@@ -244,7 +244,7 @@ protected:
 			   Arrival clk_insertion,
 			   Arrival clk_latency,
 			   bool is_path_delay,
-				 const TimingArc *end_check_arc) const;
+			   const TimingArc *end_check_arc) const;
   bool reportGenClkSrcPath(const Path *clk_path,
                            const Clock *clk,
 			   const RiseFall *clk_rf,
