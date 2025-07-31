@@ -224,6 +224,12 @@ MakeTimingModel::makePorts(const Instance* instance)
     }
     else {
       LibertyPort *lib_port = lib_builder_->makePort(cell_, port_name);
+
+      if (strcmp(port_name, "clk_inner") == 0)
+      {
+        clk_ = lib_port;
+      }
+
       lib_port->setDirection(network_->direction(port));
       Pin *pin = network_->findPin(instance, port);
       float load_cap = graph_delay_calc_->loadCap(pin, dcalc_ap);
@@ -288,8 +294,9 @@ MakeEndTimingArcs::visit(PathEnd *path_end)
   const Clock *src_clk = src_path->clock(sta_);
   const ClockEdge *tgt_clk_edge = path_end->targetClkEdge(sta_);
   sta_->reportPathEnd(path_end);
-  if (src_clk == sta_->sdc()->defaultArrivalClock()
-      && tgt_clk_edge) {
+  bool temp1 = src_clk == sta_->sdc()->defaultArrivalClock();
+  bool temp2 = tgt_clk_edge;
+  if (temp2) {
     Network *network = sta_->network();
     Debug *debug = sta_->debug();
     const MinMax *min_max = path_end->minMax(sta_);
@@ -441,15 +448,15 @@ MakeTimingModel::makeSetupHoldTimingArcs(const Pin *input_pin,
         LibertyPort *input_port = modelPort(input_pin);
         for (const Pin *clk_pin : clk_edge->clock()->pins()) {
           LibertyPort *clk_port = modelPort(clk_pin);
-          if (clk_port) {
+          // if (clk_port) {
             const RiseFall *clk_rf = clk_edge->transition();
             const TimingRole *role = setup
               ? TimingRole::setup()
               : TimingRole::hold();
-            lib_builder_->makeFromTransitionArcs(cell_, clk_port,
+            lib_builder_->makeFromTransitionArcs(cell_, clk_,
                                                  input_port, nullptr,
                                                  clk_rf, role, attrs);
-          }
+          // }
         }
       }
     }

@@ -120,6 +120,9 @@ private:
   int tbl_template_index_;
   Sdc *sdc_backup_;
   Sta *sta_;
+
+  // temp
+  LibertyPort *clk_;
 };
 
 } // namespace
