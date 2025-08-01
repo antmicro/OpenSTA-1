@@ -157,7 +157,6 @@ BfsIterator::visit(Level to_level,
       Vertex *vertex = level_vertices.back();
       level_vertices.pop_back();
       if (vertex) {
-        const char *name = network_->name(vertex->pin());
         vertex->setBfsInQueue(bfs_index_, false);
         visitor->visit(vertex);
         visit_count++;

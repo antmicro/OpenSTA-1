@@ -98,9 +98,6 @@ Graph::makeVerticesAndEdges()
   }
   delete leaf_iter;
   makePinVertices(network_->topInstance());
-
-  const Instance *temp = network_->findInstance("i1");
-  makePinVertices(temp);
 }
 
 class FindNetDrvrLoadCounts : public PinVisitor
@@ -159,8 +156,6 @@ Graph::makePinVertices(const Instance *inst)
   InstancePinIterator *pin_iter = network_->pinIterator(inst);
   while (pin_iter->hasNext()) {
     Pin *pin = pin_iter->next();
-    const char *name = network_->name(pin);
-    printf("Creating vertices for %s\n", name);
     makePinVertices(pin);
   }
   delete pin_iter;
@@ -248,14 +243,6 @@ Graph::makeWireEdges()
   }
   delete inst_iter;
   makeInstDrvrWireEdges(network_->topInstance(), visited_drvrs);
-
-  const Instance *temp = network_->findInstance("i1");
-
-  Pin *i1_inner = network_->findPin("i1/in_inner");
-  Pin *r_q = network_->findPin("r/Q");
-  Pin *i1_r_d = network_->findPin("i1/r/D");
-	makeWireEdge(r_q, i1_inner);
-	makeWireEdge(i1_inner, i1_r_d);
 }
 
 void
@@ -668,10 +655,6 @@ Graph::makeEdge(Vertex *from,
 		Vertex *to,
 		TimingArcSet *arc_set)
 {
-  const char *from_name = network_->name(from->pin());
-  const char *to_name = network_->name(to->pin());
-  printf("Making edge from %s to %s\n", from_name, to_name);
-
   Edge *edge = edges_->make();
   edge->init(id(from), id(to), arc_set);
   // Add out edge to from vertex.

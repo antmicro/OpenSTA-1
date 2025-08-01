@@ -161,11 +161,8 @@ Levelize::findRoots()
 {
   roots_->clear();
   VertexIterator vertex_iter(graph_);
-  printf("Find roots:\n");
   while (vertex_iter.hasNext()) {
     Vertex *vertex = vertex_iter.next();
-    const char *name = network_->name(vertex->pin());
-    printf("- %s\n", name);
     if (isRoot(vertex)) {
       debugPrint(debug_, "levelize", 2, "root %s%s",
                  vertex->to_string(this).c_str(),
@@ -173,15 +170,6 @@ Levelize::findRoots()
       roots_->insert(vertex);
     }
   }
-
-  const Instance *inst = network_->findInstance("i1");
-  InstancePinIterator *pin_iter_ = network_->pinIterator(inst);
-  while (pin_iter_->hasNext()) {
-    Pin *pin = pin_iter_->next();
-    Vertex *vertex = graph_->vertex(network_->vertexId(pin));
-    roots_->insert(vertex);
-  }
-
   if (debug_->check("levelize", 1)) {
     size_t fanout_roots = 0;
     for (Vertex *root : *roots_) {
@@ -648,7 +636,6 @@ Levelize::relevelize()
   for (Vertex *vertex : *relevelize_from_) {
     debugPrint(debug_, "levelize", 1, "relevelize from %s",
                vertex->to_string(this).c_str());
-    const char *name = network_->name(vertex->pin());
     if (search_pred_.searchFrom(vertex)) {
       if (isRoot(vertex)) {
 	setLevelIncr(vertex, 0);

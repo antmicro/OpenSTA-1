@@ -680,7 +680,6 @@ Search::seedFilterStarts()
   if (first_pt) {
     PinSet first_pins = first_pt->allPins(network_);
     for (const Pin *pin : first_pins) {
-      const char *name = network_->name(pin);
       if (network_->isHierarchical(pin)) {
         SeedFaninsThruHierPin visitor(graph_, this);
         visitDrvrLoadsThruHierPin(pin, network_, &visitor);
@@ -1436,27 +1435,11 @@ Search::seedArrivals()
 {
   VertexSet vertices(graph_);
   findClockVertices(vertices);
-
-  printf("After find clock vertices\n");
-  for (Vertex *vertex : vertices) {
-    const char *name = network_->name(vertex->pin());
-    printf("- %s\n", name);
-  }
   findRootVertices(vertices);
-
-  printf("After find root vertices\n");
-  for (Vertex *vertex : vertices) {
-    const char *name = network_->name(vertex->pin());
-    printf("- %s\n", name);
-  }
   findInputDrvrVertices(vertices);
 
-  printf("After find input drvr vertices\n");
-  for (Vertex *vertex : vertices) {
-    const char *name = network_->name(vertex->pin());
-    printf("- %s\n", name);
+  for (Vertex *vertex : vertices)
     seedArrival(vertex);
-  }
 }
 
 void
@@ -1694,7 +1677,6 @@ Search::findRootVertices(VertexSet &vertices)
 {
   for (Vertex *vertex : *levelize_->roots()) {
     const Pin *pin = vertex->pin();
-    const char *name = network_->name(pin);
     if (!sdc_->isLeafPinClock(pin)
 	&& !sdc_->hasInputDelay(pin)
 	&& !vertex->isConstant()) {
