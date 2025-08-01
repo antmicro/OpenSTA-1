@@ -44,6 +44,7 @@
 #include "StaState.hh"
 #include "Graph.hh"
 #include "PathEnd.hh"
+#include "PathExpanded.hh"
 #include "Search.hh"
 #include "Sta.hh"
 #include "VisitPathEnds.hh"
@@ -263,6 +264,8 @@ public:
   void setInputRf(const RiseFall *input_rf);
   const ClockEdgeDelays &margins() const { return margins_; }
 
+  const char *pin_instance_name_;
+
 private:
   const RiseFall *input_rf_;
   ClockEdgeDelays margins_;
@@ -287,13 +290,38 @@ MakeEndTimingArcs::setInputRf(const RiseFall *input_rf)
   input_rf_ = input_rf;
 }
 
+void trimStartingPoint(Path *path, const char *instance_name)
+{
+  StaState* sta_state = Sta::sta();
+
+  PathExpanded expanded(path, sta_state);
+  std::size_t path_first_index = 0;
+  std::size_t path_last_index = expanded.size() - 1;
+
+  Path *starting_path = nullptr;
+  for (std::size_t i = path_first_index; i <= path_last_index; ++i) {
+    starting_path = const_cast<Path*>(expanded.path(i));
+    Vertex *vertex = starting_path->vertex(sta_state);
+    Pin *pin = vertex->pin();
+    Instance *inst = sta_state->network()->instance(pin);
+    std::string current_instance_name = sta_state->network()->pathName(inst);
+
+    if (current_instance_name.rfind(instance_name, 0) == 0) {
+      starting_path->clearPrevPath(sta_state);
+      break;
+    }
+  }
+}
+
 void
 MakeEndTimingArcs::visit(PathEnd *path_end)
 {
   Path *src_path = path_end->path();
+  trimStartingPoint(src_path, pin_instance_name_);
+  src_path->checkPrevPath(sta_);
+
   const Clock *src_clk = src_path->clock(sta_);
   const ClockEdge *tgt_clk_edge = path_end->targetClkEdge(sta_);
-  sta_->reportPathEnd(path_end);
   bool temp1 = src_clk == sta_->sdc()->defaultArrivalClock();
   bool temp2 = tgt_clk_edge;
   if (temp2) {
@@ -352,6 +380,7 @@ MakeTimingModel::findTimingFromInput(const Instance* instance, Port *input_port)
   Pin *input_pin = network_->findPin(instance, input_port);
   if (!sta_->isClockSrc(input_pin)) {
     MakeEndTimingArcs end_visitor(sta_);
+    end_visitor.pin_instance_name_ = network_->name(instance);
     OutputPinDelays output_delays;
     for (const RiseFall *input_rf : RiseFall::range()) {
       const RiseFallBoth *input_rf1 = input_rf->asRiseFallBoth();
