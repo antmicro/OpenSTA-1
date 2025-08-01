@@ -293,7 +293,6 @@ MakeEndTimingArcs::visit(PathEnd *path_end)
   Path *src_path = path_end->path();
   const Clock *src_clk = src_path->clock(sta_);
   const ClockEdge *tgt_clk_edge = path_end->targetClkEdge(sta_);
-  sta_->reportPathEnd(path_end);
   bool temp1 = src_clk == sta_->sdc()->defaultArrivalClock();
   bool temp2 = tgt_clk_edge;
   if (temp2) {
@@ -362,11 +361,9 @@ MakeTimingModel::findTimingFromInput(const Instance* instance, Port *input_port)
 
       PinSet *from_pins = new PinSet(network_);
       from_pins->insert(input_pin);
-      ExceptionThru *thru = sta_->makeExceptionThru(from_pins, nullptr, nullptr,
+      ExceptionFrom *from = sta_->makeExceptionFrom(from_pins, nullptr, nullptr,
                                                     input_rf1);
-      ExceptionThruSeq *thru_seq = new ExceptionThruSeq{};
-      thru_seq->emplace_back(thru);
-      search_->findFilteredArrivals(nullptr, thru_seq, nullptr, false, false);
+      search_->findFilteredArrivals(from, nullptr, nullptr, false, false);
 
       end_visitor.setInputRf(input_rf);
       VertexSeq endpoints = search_->filteredEndpoints();
@@ -396,8 +393,6 @@ MakeTimingModel::findOutputDelays(const Instance* instance,
     Pin *output_pin = output_iter->next();
     if (network_->direction(output_pin)->isOutput()) {
       Vertex *output_vertex = graph_->pinLoadVertex(output_pin);
-      if (!output_vertex)
-        continue;
       VertexPathIterator path_iter(output_vertex, this);
       while (path_iter.hasNext()) {
         Path *path = path_iter.next();
