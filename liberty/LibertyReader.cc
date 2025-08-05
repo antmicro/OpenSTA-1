@@ -423,6 +423,8 @@ LibertyReader::defineVisitors()
 		     &LibertyReader::endRiseFallConstraint);
   defineAttrVisitor("value", &LibertyReader::visitValue);
   defineAttrVisitor("values", &LibertyReader::visitValues);
+
+  // Custom Liberty attrs/groups for handling timing paths
   defineAttrVisitor("slack", &LibertyReader::visitSlack);
   defineGroupVisitor(
          TimingPath::Names::DATA_ARRIVAL.at(RiseFall::riseIndex()),
