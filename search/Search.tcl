@@ -238,6 +238,81 @@ proc find_timing_paths_cmd { cmd args_var } {
 
 ################################################################
 
+define_cmd_args "find_internal_timing_paths" \
+  {[-path_delay min|min_rise|min_fall|max|max_rise|max_fall|min_max]\
+     [-slack_max slack_max]\
+     [-slack_min slack_min]\
+     [-path_count path_count]\
+     [-sort_by_slack]}
+
+proc find_internal_timing_paths { args } {
+  set internal_paths [find_internal_timing_paths_cmd "find_internal_timing_paths" args]
+  return $internal_paths
+}
+
+proc find_internal_timing_paths_cmd { cmd args_var } {
+  upvar 1 $args_var args
+
+  parse_key_args $cmd args \
+    keys {-path_delay -path_count -slack_max -slack_min} \
+    flags {-sort_by_slack} 0
+
+  set min_max "max"
+  set end_rf "rise_fall"
+  if [info exists keys(-path_delay)] {
+    set mm_key $keys(-path_delay)
+    if { $mm_key == "max_rise" } {
+      set min_max "max"
+      set end_rf "rise"
+    } elseif { $mm_key == "max_fall" } {
+      set min_max "max"
+      set end_rf "fall"
+    } elseif { $mm_key == "min_rise" } {
+      set min_max "min"
+      set end_rf "rise"
+    } elseif { $mm_key == "min_fall" } {
+      set min_max "min"
+      set end_rf "fall"
+    } elseif { $mm_key == "min" || $mm_key == "max" || $mm_key == "min_max" } {
+      set min_max $mm_key
+    } else {
+      sta_error 510 "$cmd -path_delay must be min, min_rise, min_fall, max, max_rise, max_fall or min_max."
+    }
+  }
+
+  set path_count 1
+  if [info exists keys(-path_count)] {
+    set path_count $keys(-path_count)
+  }
+  check_positive_integer "-path_count" $path_count
+  if { $path_count < 1 } {
+    sta_error 513 "-path_count must be >= 1."
+  }
+
+  set slack_min "-1e+30"
+  if [info exist keys(-slack_min)] {
+    set slack_min $keys(-slack_min)
+    check_float "-slack_min" $slack_min
+    set slack_min [time_ui_sta $slack_min]
+  }
+
+  set slack_max "1e+30"
+  if [info exist keys(-slack_max)] {
+    set slack_max $keys(-slack_max)
+    check_float "-slack_max" $slack_max
+    set slack_max [time_ui_sta $slack_max]
+  }
+
+  set sort_by_slack [info exists flags(-sort_by_slack)]
+
+  set internal_timing_paths [find_worst_internal_timing_paths $min_max \
+		   $end_rf $slack_min $slack_max $path_count $sort_by_slack]
+  report_internal_paths $internal_timing_paths
+  return $internal_timing_paths
+}
+
+################################################################
+
 define_cmd_args "report_arrival" {pin}
 
 proc report_arrival { pin } {

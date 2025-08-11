@@ -375,6 +375,26 @@ find_path_ends(ExceptionFrom *from,
 
 ////////////////////////////////////////////////////////////////
 
+InternalPathSeq
+find_worst_internal_timing_paths(
+	       const MinMaxAll *delay_min_max,
+	       const RiseFallBoth *transition_rise_fall,
+	       float slack_min,
+	       float slack_max,
+	       int path_count,
+	       bool sort_by_slack)
+{
+  Sta *sta = Sta::sta();
+  return sta->findWorstInternalTimingPaths(delay_min_max,
+	       transition_rise_fall,
+	       slack_min,
+	       slack_max,
+	       path_count,
+	       sort_by_slack);
+}
+
+////////////////////////////////////////////////////////////////
+
 void
 report_path_end_header()
 {
@@ -492,6 +512,12 @@ report_path_ends(PathEndSeq *ends)
 {
   Sta::sta()->reportPathEnds(ends);
   delete ends;
+}
+
+void
+report_internal_paths(InternalPathSeq *internal_paths)
+{
+  Sta::sta()->reportPath(internal_paths);
 }
 
 ////////////////////////////////////////////////////////////////

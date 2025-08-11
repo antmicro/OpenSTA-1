@@ -2521,6 +2521,25 @@ Sta::findPathEnds(ExceptionFrom *from,
 
 ////////////////////////////////////////////////////////////////
 
+InternalPathSeq
+Sta::findWorstInternalTimingPaths(
+      const MinMaxAll *delay_min_max,
+      const RiseFallBoth *transition_rise_fall,
+      float slack_min,
+      float slack_max,
+      int path_count,
+      bool sort_by_slack)
+{
+  return search_->findWorstInternalTimingPaths(delay_min_max,
+	       transition_rise_fall,
+	       slack_min,
+	       slack_max,
+	       path_count,
+	       sort_by_slack);
+}
+
+////////////////////////////////////////////////////////////////
+
 // Overall flow:
 //  make graph
 //  propagate constants
@@ -2631,6 +2650,18 @@ void
 Sta::reportPath(const Path *path)
 {
   report_path_->reportPath(path);
+}
+
+void
+Sta::reportPath(const InputRegisterTimingPath *internal_path)
+{
+  report_path_->reportPath(internal_path);
+}
+
+void
+Sta::reportPath(const InternalPathSeq *internal_paths)
+{
+  report_path_->reportPath(internal_paths);
 }
 
 void

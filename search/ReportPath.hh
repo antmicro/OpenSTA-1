@@ -75,6 +75,8 @@ public:
 		     const PathEnd *prev_end) const;
   void reportPathEnds(const PathEndSeq *ends) const;
   void reportPath(const Path *path) const;
+  void reportPath(const InternalPathSeq *timing_paths) const;
+  void reportPath(const InputRegisterTimingPath *timing_path) const;
 
   void reportShort(const PathEndUnconstrained *end) const;
   void reportShort(const PathEndCheck *end) const;
@@ -484,6 +486,7 @@ protected:
   std::unordered_map<const Instance*, const TimingArc*> extractInstancesTimingArcs(const PathExpanded &path_expanded, const TimingArc *end_check_arc) const;
   bool hasTimingPaths(const TimingArc *timing_arc) const;
   void reportTimingPath(const char *instance_name, const TimingArc *timing_arc, const MinMax *min_max, float prev_arrival) const;
+  void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival) const;
   void reportTimingPathJson(const char *instance_name, const TimingArc *timing_arc, int indent, bool last_path, std::string &result, bool is_clk_path, float prev_time) const;
 
   // Path options.

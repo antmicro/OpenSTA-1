@@ -1,7 +1,5 @@
-module timing_cell_dff (in, clk, out);
+module timing_cell (input in, input clk, output out);
 
-  input in, clk;
-  output out;
   wire w1, w2, w3, w4;
 
   BUF_X1 u1 (.A(in), .Z(w1));

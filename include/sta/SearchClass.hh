@@ -35,6 +35,7 @@
 #include "Delay.hh"
 #include "NetworkClass.hh"
 #include "GraphClass.hh"
+#include "TimingArc.hh"
 
 namespace sta {
 
@@ -113,6 +114,7 @@ typedef Vector<MinPeriodCheck*> MinPeriodCheckSeq;
 typedef Vector<MaxSkewCheck*> MaxSkewCheckSeq;
 typedef StringSet PathGroupNameSet;
 typedef Vector<PathEnd*> PathEndSeq;
+typedef Vector<const InputRegisterTimingPath*> InternalPathSeq;
 typedef Vector<Arrival> ArrivalSeq;
 typedef Map<Vertex*, size_t> VertexPathCountMap;
 typedef Map<Tag*, size_t, TagMatchLess> PathIndexMap;

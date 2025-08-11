@@ -697,6 +697,40 @@ Search::seedFilterStarts()
 
 ////////////////////////////////////////////////////////////////
 
+InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_max,
+                          const RiseFallBoth *transition_rise_fall,
+                          float slack_min,
+                          float slack_max,
+                          int path_count,
+                          bool sort_by_slack)
+{
+  const InputRegisterTimingPath* worst_internal_timing_path = nullptr;
+  LeafInstanceIterator *leaf_instance_iterator = network_->leafInstanceIterator(network_->topInstance());
+  while (leaf_instance_iterator->hasNext()) {
+    Instance *leaf_instance = leaf_instance_iterator->next();
+    LibertyCell *liberty_cell = network_->libertyCell(leaf_instance);
+    for (auto &min_max : delay_min_max->range()) {
+      for (auto &rise_fall : transition_rise_fall->range()) {
+        const InputRegisterTimingPath &timing_path = liberty_cell->getWorstSlackTimingPath(min_max, rise_fall);
+        if (timing_path.slack < slack_min || slack_max < timing_path.slack) {
+          continue;
+        }
+
+        if (!worst_internal_timing_path || timing_path.slack < worst_internal_timing_path->slack) {
+          worst_internal_timing_path = &timing_path;
+        }
+      }
+    }
+  }
+
+  InternalPathSeq internal_path_seq{};
+  internal_path_seq.emplace_back(worst_internal_timing_path);
+
+  return internal_path_seq;
+}
+
+////////////////////////////////////////////////////////////////
+
 void
 Search::deleteVertexBefore(Vertex *vertex)
 {

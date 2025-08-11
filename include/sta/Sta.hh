@@ -836,6 +836,12 @@ public:
                                   bool removal,
                                   bool clk_gating_setup,
                                   bool clk_gating_hold);
+  InternalPathSeq findWorstInternalTimingPaths(const MinMaxAll *delay_min_max,
+                                               const RiseFallBoth *transition_rise_fall,
+                                               float slack_min,
+                                               float slack_max,
+                                               int path_count,
+                                               bool sort_by_slack);
   void setReportPathFormat(ReportPathFormat format);
   void setReportPathFieldOrder(StringSeq *field_names);
   void setReportPathFields(bool report_input_pin,
@@ -864,6 +870,8 @@ public:
   void reportPathEnds(PathEndSeq *ends);
   ReportPath *reportPath() { return report_path_; }
   void reportPath(const Path *path);
+  void reportPath(const InputRegisterTimingPath *internal_path);
+  void reportPath(const InternalPathSeq *internal_paths);
 
   // Report clk skews for clks.
   void reportClkSkew(ConstClockSeq &clks,

@@ -2762,6 +2762,20 @@ ReportPath::reportPathFull(const Path *path) const
   reportSrcClkAndPath(path, expanded, 0.0, delay_zero, delay_zero, false, nullptr);
 }
 
+void
+ReportPath::reportPath(const InternalPathSeq *timing_paths) const
+{
+  for (auto& timing_path : *timing_paths) {
+    reportPath(timing_path);
+  }
+}
+
+void
+ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
+{
+  reportTimingPath("timing_cell", timing_path->data_arrival_path, MinMax::max(), 0.0f);
+}
+
 ////////////////////////////////////////////////////////////////
 
 // Main entry point for reporting a path.
@@ -3072,6 +3086,12 @@ void ReportPath::reportTimingPath(const char *instance_name, const TimingArc *ti
 {
   const auto &timing_paths = timing_arc->set()->timingPaths();
   const auto &timing_path = timing_paths.at(TimingPath::ROLE_PATH_MAPPINGS.at(timing_arc->role()).at(timing_arc->toEdge()->asRiseFall()->index()));
+  reportTimingPath(instance_name, timing_path, min_max, base_arrival);
+}
+
+void
+ReportPath::reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float base_arrival) const
+{
   float previous_arrival = 0.0f;
   for (std::size_t index = 0; index < timing_path.vertices.size(); ++index) {
     const auto& vertex = timing_path.vertices[index];
