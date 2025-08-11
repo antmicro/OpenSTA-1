@@ -868,6 +868,7 @@ public:
 		     PathEnd *prev_end);
   void reportPathEnd(PathEnd *end);
   void reportPathEnds(PathEndSeq *ends);
+  void reportPaths(PathEndSeq *ends, InternalPathSeq *internal_paths);
   ReportPath *reportPath() { return report_path_; }
   void reportPath(const Path *path);
   void reportPath(const InputRegisterTimingPath *internal_path);

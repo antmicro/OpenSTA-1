@@ -307,7 +307,6 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
 
   set internal_timing_paths [find_worst_internal_timing_paths $min_max \
 		   $end_rf $slack_min $slack_max $path_count $sort_by_slack]
-  report_internal_paths $internal_timing_paths
   return $internal_timing_paths
 }
 
@@ -506,7 +505,8 @@ proc_redirect report_checks {
   global sta_report_unconstrained_paths
   parse_report_path_options "report_checks" args "full" 0
   set path_ends [find_timing_paths_cmd "report_checks" args]
-  report_path_ends $path_ends
+  set internal_paths [find_internal_timing_paths_cmd "report_checks" args]
+  report_paths $path_ends $internal_paths
 }
 
 ################################################################

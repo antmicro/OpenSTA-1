@@ -2877,6 +2877,43 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
   reportLine("data required time", data_required_time, min_max);
 }
 
+void
+ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const
+{
+  int first_index = 0;
+  int second_index = 0;
+
+  // Should be path count given by an argument
+  int total_reported_count = ends->size() + timing_paths->size();
+  
+  int current_index = 0;
+  while (current_index < total_reported_count) {
+    current_index += 1;
+
+    if (first_index >= ends->size()) {
+      reportPath(timing_paths->at(second_index));
+      second_index += 1;
+      continue;
+    }
+
+    if (second_index >= timing_paths->size()) {
+      reportPathEnd(ends->at(first_index));
+      first_index += 1;
+      continue;
+    }
+
+    float path_end_slack = ends->at(first_index)->slack(this);
+    float internal_path_slack = timing_paths->at(first_index)->slack;
+    if (path_end_slack < internal_path_slack) {
+      reportPathEnd(ends->at(first_index));
+      first_index += 1;
+    } else {
+      reportPath(timing_paths->at(second_index));
+      second_index += 1;
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////
 
 // Main entry point for reporting a path.

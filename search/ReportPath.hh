@@ -77,6 +77,7 @@ public:
   void reportPath(const Path *path) const;
   void reportPath(const InternalPathSeq *timing_paths) const;
   void reportPath(const InputRegisterTimingPath *timing_path) const;
+  void reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const;
 
   void reportShort(const PathEndUnconstrained *end) const;
   void reportShort(const PathEndCheck *end) const;

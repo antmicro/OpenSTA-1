@@ -515,9 +515,18 @@ report_path_ends(PathEndSeq *ends)
 }
 
 void
+report_paths(PathEndSeq *ends, InternalPathSeq *internal_paths)
+{
+  Sta::sta()->reportPaths(ends, internal_paths);
+  delete ends;
+  delete internal_paths;
+}
+
+void
 report_internal_paths(InternalPathSeq *internal_paths)
 {
   Sta::sta()->reportPath(internal_paths);
+  delete internal_paths;
 }
 
 ////////////////////////////////////////////////////////////////

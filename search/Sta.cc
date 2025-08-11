@@ -2647,6 +2647,12 @@ Sta::reportPathEnds(PathEndSeq *ends)
 }
 
 void
+Sta::reportPaths(PathEndSeq *ends, InternalPathSeq *internal_paths)
+{
+  report_path_->reportPaths(ends, internal_paths);
+}
+
+void
 Sta::reportPath(const Path *path)
 {
   report_path_->reportPath(path);
