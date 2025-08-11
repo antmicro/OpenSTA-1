@@ -562,7 +562,7 @@ public:
   const char *userFunctionClass() const;
   void setUserFunctionClass(const char *user_function_class);
 
-  void setWorstSlackTimingPath(const InputRegisterTimingPath& timing_path,
+  void setWorstSlackTimingPath(InputRegisterTimingPath timing_path,
                                const MinMax *min_max,
                                const RiseFall *rise_fall);
   const InputRegisterTimingPath &getWorstSlackTimingPath(const MinMax *min_max,

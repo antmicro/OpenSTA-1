@@ -2773,7 +2773,108 @@ ReportPath::reportPath(const InternalPathSeq *timing_paths) const
 void
 ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
 {
-  reportTimingPath("timing_cell", timing_path->data_arrival_path, MinMax::max(), 0.0f);
+  switch (format_) {
+  case ReportPathFormat::full:
+  case ReportPathFormat::full_clock:
+  case ReportPathFormat::full_clock_expanded:
+    reportFullTimingPath("timing_cell", timing_path, MinMax::max());
+    reportBlankLine();
+    reportBlankLine();
+    break;
+  case ReportPathFormat::shorter:
+    // end->reportShort(this);
+    reportBlankLine();
+    reportBlankLine();
+    break;
+  case ReportPathFormat::endpoint:
+    // reportEndpointHeader(end, prev_end);
+    // reportEndLine(end);
+    break;
+  case ReportPathFormat::summary:
+    // reportSummaryLine(end);
+    break;
+  case ReportPathFormat::slack_only:
+    // reportSlackOnly(end);
+    break;
+  case ReportPathFormat::json:
+    // reportJson(end, last);
+    break;
+  }
+}
+
+void
+ReportPath::reportFullTimingPath(const char *instance_name, const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
+{
+  reportTimingPathStartpoint(timing_path);
+  reportTimingPathEndpoint(timing_path);
+  reportBlankLine();
+  reportPathHeader();
+  reportTimingPathArrivalPath(timing_path, min_max);
+  reportBlankLine();
+  reportTimingPathRequiredPath(timing_path, min_max);
+
+  reportDashLine();
+  float data_required_time = timing_path->data_required_path.time;
+  reportLine("data required time", data_required_time, min_max);
+  float data_arrival_time = timing_path->data_arrival_path.time;
+  reportLineNegative("data arrival time", data_arrival_time, min_max);
+  reportDashLine();
+
+  reportSlack(timing_path->slack);
+}
+
+void
+ReportPath::reportTimingPathStartpoint(const InputRegisterTimingPath *timing_path) const
+{
+  reportStartpoint(timing_path->data_arrival_path.vertices.front().pin.c_str(), timing_path->cell_name.c_str());
+}
+
+void
+ReportPath::reportTimingPathEndpoint(const InputRegisterTimingPath *timing_path) const
+{
+  reportEndpoint(timing_path->data_arrival_path.vertices.back().pin.c_str(), timing_path->cell_name.c_str());
+}
+
+void
+ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
+{
+  static constexpr float DEFAULT_BASE_ARRIVAL = 0.0f;
+  reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, DEFAULT_BASE_ARRIVAL);
+  float data_arrival_time = timing_path->data_arrival_path.time;
+  reportLine("data arrival time", data_arrival_time, min_max);
+}
+
+void
+ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
+{
+  float previous_arrival = 0.0f;
+  for (int index = timing_path->data_required_path.vertices.size() - 1; index >= 0; --index) {
+    const auto& vertex = timing_path->data_required_path.vertices[index];
+    std::string description = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), vertex.pin.c_str(), vertex.cell.c_str());
+    
+    float decrease = previous_arrival - vertex.arrival;
+    previous_arrival = vertex.arrival;
+
+    float time = timing_path->clock_period - vertex.arrival;
+
+    const RiseFall *rise_fall = RiseFall::find(vertex.transition.c_str());
+
+    if (vertex.is_driver) {
+      reportLine(description.c_str(), vertex.capacitance, vertex.slew, field_blank_, decrease, time, false, min_max, rise_fall, "", "normal");
+    }
+    else {
+      reportLine(description.c_str(), field_blank_, vertex.slew, field_blank_, decrease, time, false, min_max, rise_fall, "", "normal");
+    }
+
+    if (report_net_) {
+      const std::string net_description = stdstrPrint("%s (net)", vertex.net.c_str());
+      reportLine(net_description.c_str(), field_blank_, field_blank_, field_blank_, field_blank_, field_blank_, false, min_max, nullptr, "", "");
+    }
+  }
+
+  reportLine("library setup time", -timing_path->library_setup_time, timing_path->clock_period - previous_arrival - timing_path->library_setup_time, min_max);
+  float data_required_time = timing_path->data_required_path.time;
+  reportLine("data required time", data_required_time, min_max);
 }
 
 ////////////////////////////////////////////////////////////////

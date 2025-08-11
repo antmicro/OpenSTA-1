@@ -136,6 +136,9 @@ struct TimingPath
 struct InputRegisterTimingPath
 {
   float slack{std::numeric_limits<float>::max()};
+  float clock_period{std::numeric_limits<float>::max()};
+  float library_setup_time{std::numeric_limits<float>::max()};
+  std::string cell_name{};
   TimingPath data_arrival_path{};
   TimingPath data_required_path{};
 };

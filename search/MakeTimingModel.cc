@@ -406,6 +406,8 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
 
   const EarlyLate *early_late = nullptr;
   input_register_timing_path.slack = delayAsFloat(path_end->slack(sta_state), early_late, sta_state);
+  input_register_timing_path.library_setup_time = path_end->margin(sta_state);
+  input_register_timing_path.clock_period = path_end->targetClk(sta_state)->period();
 
   return input_register_timing_path;
 }
@@ -753,8 +755,8 @@ public:
                   const MinMax *min_max,
                   const RiseFall *rise_fall);
   float slack() const { return slack_; }
-  const InputRegisterTimingPath &timingPath(const MinMax *min_max,
-                                            const RiseFall *rise_fall) const;
+  InputRegisterTimingPath &&timingPath(const MinMax *min_max,
+                                      const RiseFall *rise_fall);
 
 private:
   const RiseFall *input_rf_;
@@ -800,10 +802,10 @@ FindRegTimingArcs::mergeSlack(const InputRegisterTimingPath &timing_path,
   }
 }
 
-const InputRegisterTimingPath &
-FindRegTimingArcs::timingPath(const MinMax *min_max, const RiseFall *rise_fall) const
+InputRegisterTimingPath &&
+FindRegTimingArcs::timingPath(const MinMax *min_max, const RiseFall *rise_fall)
 {
-  return timing_paths_.at(min_max->index()).at(rise_fall->index());
+  return std::move(timing_paths_.at(min_max->index()).at(rise_fall->index()));
 }
 
 bool isRegisterInput(const TimingArcSet *timing_arc_set)
