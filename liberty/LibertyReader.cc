@@ -463,6 +463,7 @@ LibertyReader::defineVisitors()
   defineAttrVisitor("time", &LibertyReader::visitTimingPathTime);
   defineAttrVisitor("vertex", &LibertyReader::visitTimingPathVertex);
   defineAttrVisitor("path_group", &LibertyReader::visitTimingPathGroup);
+  defineAttrVisitor("path_type", &LibertyReader::visitTimingPathType);
   defineGroupVisitor(
          "worst_slack_paths",
          &LibertyReader::beginRegisterToRegisterTimingPaths,
@@ -4659,6 +4660,14 @@ LibertyReader::visitTimingPathGroup(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
     register_to_register_timing_path_.path_group_name = attr->firstValue()->stringValue();
+  }
+}
+
+void
+LibertyReader::visitTimingPathType(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.path_type = attr->firstValue()->stringValue();
   }
 }
 
