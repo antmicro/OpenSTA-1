@@ -856,6 +856,8 @@ public:
   void setReportPathNoSplit(bool no_split);
   void setReportPathSigmas(bool report_sigmas);
   void setReportDedupByWord(bool dedup_by_word);
+  void setReportGroupPathCount(int group_path_count);
+  void setReportSortedBySlack(bool sorted_by_slack);
   // Header above reportPathEnd results.
   void reportPathEndHeader();
   // Footer below reportPathEnd results.

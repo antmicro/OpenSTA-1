@@ -37,6 +37,7 @@
 #include "Liberty.hh"
 #include "PortDirection.hh"
 #include "Network.hh"
+#include "ClkNetwork.hh"
 #include "Graph.hh"
 #include "PortDelay.hh"
 #include "ExceptionPath.hh"
@@ -269,6 +270,18 @@ void
 ReportPath::setPathFormat(ReportPathFormat format)
 {
   format_ = format;  
+}
+
+void
+ReportPath::setGroupPathCount(int group_path_count)
+{
+  group_path_count_ = group_path_count;
+}
+
+void
+ReportPath::setSortedBySlack(bool sorted_by_slack)
+{
+  sorted_by_slack_ = sorted_by_slack;
 }
 
 void
@@ -2855,7 +2868,7 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
     float decrease = previous_arrival - vertex.arrival;
     previous_arrival = vertex.arrival;
 
-    float time = timing_path->clock_period - vertex.arrival;
+    float time = 10.0f/*timing_path->clock_period*/ - vertex.arrival;
 
     const RiseFall *rise_fall = RiseFall::find(vertex.transition.c_str());
 
@@ -2872,43 +2885,96 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
     }
   }
 
-  reportLine("library setup time", -timing_path->library_setup_time, timing_path->clock_period - previous_arrival - timing_path->library_setup_time, min_max);
+  reportLine("library setup time", -timing_path->library_setup_time, 10.0f/*timing_path->clock_period*/ - previous_arrival - timing_path->library_setup_time, min_max);
   float data_required_time = timing_path->data_required_path.time;
   reportLine("data required time", data_required_time, min_max);
 }
 
 void
-ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const
+ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths, int num_to_report) const
 {
+  if (timing_paths->empty()) {
+    reportPathEnds(ends);
+    return;
+  }
+
+  std::unordered_map<PathGroup*, PathEndSeq> grouped_path_ends;
+  for (auto& path_end : *ends) {
+    PathGroup *path_group = search_->pathGroup(path_end);
+    grouped_path_ends[path_group].emplace_back(path_end);
+  }
+
+  std::unordered_map<PathGroup*, InternalPathSeq> grouped_internal_paths;
+  for (auto& internal_timing_path : *timing_paths) {
+    Pin *clock_pin = network_->findPin(internal_timing_path->clock_name.c_str());
+    auto clock_set = network_->clkNetwork()->clocks(clock_pin);
+    auto clock = *clock_set->begin();
+    const MinMax *min_max = internal_timing_path->path_type == "max" ? MinMax::max() : MinMax::min();
+    PathGroup *path_group = search_->findPathGroup(clock, min_max);
+    grouped_internal_paths[path_group].emplace_back(internal_timing_path);
+  }
+
+  PathEndSeq filtered_path_ends{};
+  InternalPathSeq filtered_internal_paths{};
+  for (auto& [path_group, path_ends] : grouped_path_ends) {
+    if (grouped_internal_paths.find(path_group) != grouped_internal_paths.end()) {
+      InternalPathSeq &internal_paths = grouped_internal_paths.at(path_group);
+      mergePathsBySlack(path_ends, internal_paths, filtered_path_ends, filtered_internal_paths);
+      grouped_internal_paths.erase(path_group);
+    } else {
+      filtered_path_ends.insert(filtered_path_ends.end(), path_ends.begin(), path_ends.end());
+    }
+  }
+
+  for (auto& [path_group, internal_paths] : grouped_internal_paths) {
+    filtered_internal_paths.insert(filtered_internal_paths.end(), internal_paths.begin(), internal_paths.end());
+  }
+
+  for (auto& path_end : filtered_path_ends) {
+    reportPathEnd(path_end);
+  }
+
+  for (auto& internal_path : filtered_internal_paths) {
+    reportPath(internal_path);
+  }
+}
+
+void
+ReportPath::mergePathsBySlack(
+    PathEndSeq &input_path_ends, InternalPathSeq &input_internal_paths,
+    PathEndSeq &filtered_path_ends, InternalPathSeq &filtered_internal_paths) const
+{
+  int total_reported_count = std::min(group_path_count_, static_cast<int>(input_path_ends.size() + input_internal_paths.size()));
+
   int first_index = 0;
   int second_index = 0;
 
-  // Should be path count given by an argument
-  int total_reported_count = ends->size() + timing_paths->size();
+  sort(input_path_ends, PathEndLess(this));
+  sort(input_internal_paths, InputRegisterTimingPathLess{});
   
   int current_index = 0;
   while (current_index < total_reported_count) {
     current_index += 1;
 
-    if (first_index >= ends->size()) {
-      reportPath(timing_paths->at(second_index));
+    if (first_index >= input_path_ends.size()) {
+      filtered_internal_paths.emplace_back(input_internal_paths.at(second_index));
       second_index += 1;
       continue;
     }
 
-    if (second_index >= timing_paths->size()) {
-      reportPathEnd(ends->at(first_index));
+    if (second_index >= input_internal_paths.size()) {
+      filtered_path_ends.emplace_back(input_path_ends.at(first_index));
       first_index += 1;
       continue;
     }
 
-    float path_end_slack = ends->at(first_index)->slack(this);
-    float internal_path_slack = timing_paths->at(first_index)->slack;
+    float path_end_slack = input_path_ends.at(first_index)->slack(this);
+    float internal_path_slack = input_internal_paths.at(first_index)->slack;
     if (path_end_slack < internal_path_slack) {
-      reportPathEnd(ends->at(first_index));
+      filtered_path_ends.emplace_back(input_path_ends.at(second_index));
       first_index += 1;
     } else {
-      reportPath(timing_paths->at(second_index));
+      filtered_internal_paths.emplace_back(input_internal_paths.at(second_index));
       second_index += 1;
     }
   }

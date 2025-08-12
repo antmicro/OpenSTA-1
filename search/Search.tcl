@@ -957,8 +957,8 @@ proc parse_report_path_options { cmd args_var default_format
   if [info exists path_options] {
     unset path_options
   }
-  parse_key_args $cmd args path_options {-format -digits -fields} \
-    path_options {-no_line_splits -report_sigmas -dedup_by_word} $unknown_key_is_error
+  parse_key_args $cmd args path_options {-format -digits -fields -group_path_count} \
+    path_options {-no_line_splits -report_sigmas -dedup_by_word -sorted_by_slack} $unknown_key_is_error
 
   set format $default_format
   if [info exists path_options(-format)] {
@@ -1028,6 +1028,15 @@ proc parse_report_path_options { cmd args_var default_format
   }
   set_report_path_fields $report_input_pin $report_hier_pins $report_net \
     $report_cap $report_slew $report_fanout $report_src_attr
+
+  set group_path_count 1
+  if [info exists path_options(-group_path_count)] {
+    set group_path_count $path_options(-group_path_count)
+  }
+  set_report_group_path_count $group_path_count
+
+  set sorted_by_slack [info exists path_options(-sorted_by_slack)]
+  set_report_sorted_by_slack $sorted_by_slack
 
   set_report_path_no_split [info exists path_options(-no_line_splits)]
 

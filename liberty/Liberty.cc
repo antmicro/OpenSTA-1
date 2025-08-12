@@ -2069,6 +2069,7 @@ LibertyCell::setWorstSlackTimingPath(InputRegisterTimingPath timing_path,
 {
   worst_slack_ = std::min(timing_path.slack, worst_slack_);
   timing_path.cell_name = name();
+  timing_path.path_type = min_max->to_string();
   worst_slack_timing_paths_.at(min_max->index()).at(rise_fall->index()) = std::move(timing_path);
 }
 

@@ -175,7 +175,9 @@ library (timing_cell) {
       min_rise() {
         slack : 0.38903;
         library_setup_time : 0.01716;
-        clock_period : 10.00000;
+        timing_path_clock : "clk";
+        timing_path_group : "clk";
+        timing_path_type : "min";
         rise_data_arrival() {
           time: 0.40619;
           vertex("r1", "DFF_X1", "r1/CK", "clk", "^", 0.00000, 0.00000, 1.81915, 0);
@@ -194,7 +196,9 @@ library (timing_cell) {
       min_fall() {
         slack : 0.39214;
         library_setup_time : 0.00300;
-        clock_period : 10.00000;
+        timing_path_clock : "clk";
+        timing_path_group : "clk";
+        timing_path_type : "min";
         fall_data_arrival() {
           time: 0.39514;
           vertex("r1", "DFF_X1", "r1/CK", "clk", "^", 0.00000, 0.00000, 1.64207, 0);
@@ -213,7 +217,9 @@ library (timing_cell) {
       max_rise() {
         slack : 9.52179;
         library_setup_time : 0.07202;
-        clock_period : 10.00000;
+        timing_path_clock : "clk";
+        timing_path_group : "clk";
+        timing_path_type : "max";
         rise_data_arrival() {
           time: 0.40619;
           vertex("r1", "DFF_X1", "r1/CK", "clk", "^", 0.00000, 0.00000, 1.81915, 0);
@@ -232,7 +238,9 @@ library (timing_cell) {
       max_fall() {
         slack : 9.44814;
         library_setup_time : 0.15672;
-        clock_period : 10.00000;
+        timing_path_clock : "clk";
+        timing_path_group : "clk";
+        timing_path_type : "max";
         fall_data_arrival() {
           time: 0.39514;
           vertex("r1", "DFF_X1", "r1/CK", "clk", "^", 0.00000, 0.00000, 1.64207, 0);

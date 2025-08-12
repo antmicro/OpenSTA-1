@@ -443,9 +443,9 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   const EarlyLate *early_late = nullptr;
   input_register_timing_path.slack = delayAsFloat(path_end->slack(sta_state), early_late, sta_state);
   input_register_timing_path.library_setup_time = path_end->margin(sta_state);
-  input_register_timing_path.clock_period = path_end->targetClk(sta_state)->period();
   input_register_timing_path.path_group_name = sta_state->search()->pathGroup(path_end)->name();
   input_register_timing_path.path_type = path_end->minMax(sta_state)->to_string();
+  input_register_timing_path.clock_name = path_end->targetClk(sta_state)->name();
 
   return input_register_timing_path;
 }

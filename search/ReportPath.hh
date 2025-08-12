@@ -46,6 +46,8 @@ public:
   virtual ~ReportPath();
   ReportPathFormat pathFormat() const { return format_; }
   void setPathFormat(ReportPathFormat format);
+  void setGroupPathCount(int group_path_count);
+  void setSortedBySlack(bool sorted_by_slack);
   void setReportFieldOrder(StringSeq *field_names);
   void setReportFields(bool report_input_pin,
                        bool report_hier_pins,
@@ -77,7 +79,10 @@ public:
   void reportPath(const Path *path) const;
   void reportPath(const InternalPathSeq *timing_paths) const;
   void reportPath(const InputRegisterTimingPath *timing_path) const;
-  void reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const;
+  void reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths, int num_to_report = std::numeric_limits<int>::max()) const;
+  void mergePathsBySlack(
+    PathEndSeq &input_path_ends, InternalPathSeq &input_internal_paths,
+    PathEndSeq &filtered_path_ends, InternalPathSeq &filtered_internal_paths) const;
 
   void reportShort(const PathEndUnconstrained *end) const;
   void reportShort(const PathEndCheck *end) const;
@@ -521,6 +526,9 @@ protected:
 
   const char *plus_zero_;
   const char *minus_zero_;
+
+  int group_path_count_ = 1;
+  int sorted_by_slack_ = false;
 
   static const float field_blank_;
   static const float field_skip_;

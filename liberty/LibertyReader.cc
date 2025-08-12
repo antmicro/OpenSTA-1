@@ -427,7 +427,9 @@ LibertyReader::defineVisitors()
   // Custom Liberty attrs/groups for handling timing paths
   defineAttrVisitor("slack", &LibertyReader::visitSlack);
   defineAttrVisitor("library_setup_time", &LibertyReader::visitTimingPathLibrarySetupTime);
-  defineAttrVisitor("clock_period", &LibertyReader::visitTimingPathClockPeriod);
+  defineAttrVisitor("timing_path_clock", &LibertyReader::visitTimingPathClock);
+  defineAttrVisitor("timing_path_group", &LibertyReader::visitTimingPathGroup);
+  defineAttrVisitor("timing_path_type", &LibertyReader::visitTimingPathType);
   defineGroupVisitor(
          TimingPath::Names::DATA_ARRIVAL.at(RiseFall::riseIndex()),
          &LibertyReader::beginRiseTimingPath,
@@ -462,8 +464,6 @@ LibertyReader::defineVisitors()
          &LibertyReader::endTimingPath);
   defineAttrVisitor("time", &LibertyReader::visitTimingPathTime);
   defineAttrVisitor("vertex", &LibertyReader::visitTimingPathVertex);
-  defineAttrVisitor("path_group", &LibertyReader::visitTimingPathGroup);
-  defineAttrVisitor("path_type", &LibertyReader::visitTimingPathType);
   defineGroupVisitor(
          "worst_slack_paths",
          &LibertyReader::beginRegisterToRegisterTimingPaths,
@@ -4647,11 +4647,10 @@ LibertyReader::visitTimingPathLibrarySetupTime(LibertyAttr *attr)
 }
 
 void
-LibertyReader::visitTimingPathClockPeriod(LibertyAttr *attr)
+LibertyReader::visitTimingPathClock(LibertyAttr *attr)
 {
-  float clock_period = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
   if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.clock_period = clock_period;
+    register_to_register_timing_path_.clock_name = attr->firstValue()->stringValue();
   }
 }
 

@@ -136,11 +136,11 @@ struct TimingPath
 struct InputRegisterTimingPath
 {
   float slack{std::numeric_limits<float>::max()};
-  float clock_period{std::numeric_limits<float>::max()};
   float library_setup_time{std::numeric_limits<float>::max()};
   std::string cell_name{};
   std::string path_group_name{};
   std::string path_type{};
+  std::string clock_name{};
   TimingPath data_arrival_path{};
   TimingPath data_required_path{};
 };
@@ -149,6 +149,17 @@ struct CombinationalTimingPath
 {
   float slack{std::numeric_limits<float>::max()};
   TimingPath combinational_delay_path{};
+};
+
+class InputRegisterTimingPathLess
+{
+public:
+  InputRegisterTimingPathLess() = default;
+  bool operator()(const InputRegisterTimingPath *first_timing_path,
+		              const InputRegisterTimingPath *second_timing_path) const
+  {
+    return first_timing_path->slack < second_timing_path->slack;
+  }
 };
 
 ////////////////////////////////////////////////////////////////

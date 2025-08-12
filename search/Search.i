@@ -452,6 +452,18 @@ set_report_path_fields(bool report_input_pin,
 }
 
 void
+set_report_group_path_count(int group_path_count)
+{
+  Sta::sta()->setReportGroupPathCount(group_path_count);
+}
+
+void
+set_report_sorted_by_slack(bool sorted_by_slack)
+{
+  Sta::sta()->setReportSortedBySlack(sorted_by_slack);
+}
+
+void
 set_report_path_field_properties(const char *field_name,
 				 const char *title,
 				 int width,
