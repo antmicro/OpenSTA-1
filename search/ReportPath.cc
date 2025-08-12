@@ -2860,6 +2860,9 @@ ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_pa
 void
 ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
 {
+  Pin *clock_pin = network_->findPin(timing_path->clock_name.c_str());
+  auto clock_set = network_->clkNetwork()->clocks(clock_pin);
+  auto clock = *clock_set->begin();
   float previous_arrival = 0.0f;
   for (int index = timing_path->data_required_path.vertices.size() - 1; index >= 0; --index) {
     const auto& vertex = timing_path->data_required_path.vertices[index];
@@ -2868,7 +2871,7 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
     float decrease = previous_arrival - vertex.arrival;
     previous_arrival = vertex.arrival;
 
-    float time = 10.0f/*timing_path->clock_period*/ - vertex.arrival;
+    float time = clock->period() - vertex.arrival;
 
     const RiseFall *rise_fall = RiseFall::find(vertex.transition.c_str());
 
@@ -2885,13 +2888,13 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
     }
   }
 
-  reportLine("library setup time", -timing_path->library_setup_time, 10.0f/*timing_path->clock_period*/ - previous_arrival - timing_path->library_setup_time, min_max);
+  reportLine("library setup time", -timing_path->library_setup_time, clock->period() - previous_arrival - timing_path->library_setup_time, min_max);
   float data_required_time = timing_path->data_required_path.time;
   reportLine("data required time", data_required_time, min_max);
 }
 
 void
-ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths, int num_to_report) const
+ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const
 {
   if (timing_paths->empty()) {
     reportPathEnds(ends);
@@ -2906,12 +2909,10 @@ ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_pa
 
   std::unordered_map<PathGroup*, InternalPathSeq> grouped_internal_paths;
   for (auto& internal_timing_path : *timing_paths) {
-    Pin *clock_pin = network_->findPin(internal_timing_path->clock_name.c_str());
-    auto clock_set = network_->clkNetwork()->clocks(clock_pin);
-    auto clock = *clock_set->begin();
-    const MinMax *min_max = internal_timing_path->path_type == "max" ? MinMax::max() : MinMax::min();
-    PathGroup *path_group = search_->findPathGroup(clock, min_max);
-    grouped_internal_paths[path_group].emplace_back(internal_timing_path);
+    PathGroup *path_group = findPathGroupForInternalPath(internal_timing_path);
+    if (path_group) {
+      grouped_internal_paths[path_group].emplace_back(internal_timing_path);
+    }
   }
 
   PathEndSeq filtered_path_ends{};
@@ -2937,6 +2938,40 @@ ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_pa
   for (auto& internal_path : filtered_internal_paths) {
     reportPath(internal_path);
   }
+}
+
+PathGroup *
+ReportPath::findPathGroupForInternalPath(const InputRegisterTimingPath *timing_path) const
+{
+  const MinMax *min_max = timing_path->path_type == "max" ? MinMax::max() : MinMax::min();
+  if (timing_path->path_group_name == "clk") {
+    Pin *clock_pin = network_->findPin(timing_path->clock_name.c_str());
+    auto clock_set = network_->clkNetwork()->clocks(clock_pin);
+    auto clock = *clock_set->begin();
+    return search_->findPathGroup(clock, min_max);
+  }
+
+  if (!PathGroups::isGroupPathName(timing_path->path_group_name.c_str())) {
+    return search_->findPathGroup(timing_path->path_group_name.c_str(), min_max);
+  }
+
+  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::pathDelayPathGroupName())) {
+    return search_->pathGroups()->pathDelayGroup(min_max);
+  }
+
+  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::gatedClkPathGroupName())) {
+    return search_->pathGroups()->gatedClkGroup(min_max);
+  }
+
+  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::asyncPathGroupName())) {
+    return search_->pathGroups()->asyncGroup(min_max);
+  }
+
+  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::unconstrainedPathGroupName())) {
+    return search_->pathGroups()->unconstrainedGroup(min_max);
+  }
+
+  return nullptr;
 }
 
 void

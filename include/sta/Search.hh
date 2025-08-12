@@ -208,6 +208,7 @@ public:
   void visitStartpoints(VertexVisitor *visitor);
   void visitEndpoints(VertexVisitor *visitor);
   bool havePathGroups() const;
+  const PathGroups *pathGroups() const { return path_groups_; }
   PathGroup *findPathGroup(const char *name,
 			   const MinMax *min_max) const;
   PathGroup *findPathGroup(const Clock *clk,

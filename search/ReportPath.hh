@@ -79,7 +79,8 @@ public:
   void reportPath(const Path *path) const;
   void reportPath(const InternalPathSeq *timing_paths) const;
   void reportPath(const InputRegisterTimingPath *timing_path) const;
-  void reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths, int num_to_report = std::numeric_limits<int>::max()) const;
+  void reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const;
+  PathGroup *findPathGroupForInternalPath(const InputRegisterTimingPath *timing_path) const;
   void mergePathsBySlack(
     PathEndSeq &input_path_ends, InternalPathSeq &input_internal_paths,
     PathEndSeq &filtered_path_ends, InternalPathSeq &filtered_internal_paths) const;
