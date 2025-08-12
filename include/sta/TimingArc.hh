@@ -139,6 +139,7 @@ struct InputRegisterTimingPath
   float clock_period{std::numeric_limits<float>::max()};
   float library_setup_time{std::numeric_limits<float>::max()};
   std::string cell_name{};
+  std::string path_group_name{};
   TimingPath data_arrival_path{};
   TimingPath data_required_path{};
 };

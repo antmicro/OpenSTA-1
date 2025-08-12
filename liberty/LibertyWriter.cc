@@ -337,6 +337,7 @@ LibertyWriter::writeCell(const LibertyCell *cell)
         fprintf(stream_, "        slack : %s;\n", time_unit_->asString(timing_path.slack, 5));
         fprintf(stream_, "        library_setup_time : %s;\n", time_unit_->asString(timing_path.library_setup_time, 5));
         fprintf(stream_, "        clock_period : %s;\n", time_unit_->asString(timing_path.clock_period, 5));
+        fprintf(stream_, "        path_group : %s;\n", timing_path.path_group_name.c_str());
         writeTimingPath(8, timing_path.data_arrival_path);
         writeTimingPath(8, timing_path.data_required_path);
         fprintf(stream_, "      }\n");

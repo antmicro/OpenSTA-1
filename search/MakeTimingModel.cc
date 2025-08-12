@@ -53,6 +53,7 @@
 #include "PathAnalysisPt.hh"
 #include "Latches.hh"
 #include "ClkInfo.hh"
+#include "PathGroup.hh"
 
 namespace sta {
 
@@ -114,6 +115,7 @@ MakeTimingModel::makeTimingModel()
   makePorts();
 
   sta_->searchPreamble();
+  ensurePathGroups();
 
   findTimingFromInputs();
   findClkedOutputPaths();
@@ -246,6 +248,40 @@ MakeTimingModel::checkClock(Clock *clk)
                     clk->name(),
                     network_->pathName(pin));
   }
+}
+
+void
+MakeTimingModel::ensurePathGroups()
+{
+  if (sta_->search()->havePathGroups()) {
+    return;
+  }
+
+  static constexpr int GROUP_PATH_COUNT = std::numeric_limits<int>::max();
+  static constexpr int ENDPOINT_PATH_COUNT = std::numeric_limits<int>::max();
+  static constexpr bool UNIQUE_PINS = false;
+  static constexpr float MIN_SLACK = std::numeric_limits<float>::lowest();
+  static constexpr float MAX_SLACK = std::numeric_limits<float>::max();
+  static constexpr PathGroupNameSet *PATH_GROUP_NAME_SET = nullptr;
+  static constexpr bool SETUP = true;
+  static constexpr bool HOLD = true;
+  static constexpr bool RECOVERY = true;
+  static constexpr bool REMOVAL = true;
+  static constexpr bool CLK_GATING_SETUP = true;
+  static constexpr bool CLK_GATING_HOLD = true;
+  sta_->search()->makePathGroups(
+    GROUP_PATH_COUNT,
+    ENDPOINT_PATH_COUNT,
+    UNIQUE_PINS,
+    MIN_SLACK,
+    MAX_SLACK,
+    PATH_GROUP_NAME_SET,
+    SETUP,
+    HOLD,
+    RECOVERY,
+    REMOVAL,
+    CLK_GATING_SETUP,
+    CLK_GATING_HOLD);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -408,6 +444,7 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   input_register_timing_path.slack = delayAsFloat(path_end->slack(sta_state), early_late, sta_state);
   input_register_timing_path.library_setup_time = path_end->margin(sta_state);
   input_register_timing_path.clock_period = path_end->targetClk(sta_state)->period();
+  input_register_timing_path.path_group_name = sta_state->search()->pathGroup(path_end)->name();
 
   return input_register_timing_path;
 }

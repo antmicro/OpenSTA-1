@@ -75,6 +75,7 @@ private:
   float findArea();
   void makePorts();
   void checkClock(Clock *clk);
+  void ensurePathGroups();
   void findTimingFromInputs();
   void findTimingFromInput(Port *input_port);
   void findClkedOutputPaths();
