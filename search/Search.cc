@@ -709,6 +709,10 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
   while (leaf_instance_iterator->hasNext()) {
     Instance *leaf_instance = leaf_instance_iterator->next();
     LibertyCell *liberty_cell = network_->libertyCell(leaf_instance);
+    if (!liberty_cell) {
+      continue;
+    }
+
     for (auto &min_max : delay_min_max->range()) {
       for (auto &rise_fall : transition_rise_fall->range()) {
         const InputRegisterTimingPath &timing_path = liberty_cell->getWorstSlackTimingPath(min_max, rise_fall);
@@ -724,7 +728,9 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
   }
 
   InternalPathSeq internal_path_seq{};
-  internal_path_seq.emplace_back(worst_internal_timing_path);
+  if (worst_internal_timing_path) {
+    internal_path_seq.emplace_back(worst_internal_timing_path);
+  }
 
   return internal_path_seq;
 }
