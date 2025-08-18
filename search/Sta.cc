@@ -5775,12 +5775,13 @@ Sta::writeTimingModel(const char *lib_name,
                       const char *filename,
                       const Corner *corner,
                       const bool scalar,
-                      const bool write_timing_paths)
+                      const bool write_timing_paths,
+                      const int internal_path_count)
 {
   ensureLibLinked();
   ensureGraph();
   LibertyLibrary *library = makeTimingModel(lib_name, cell_name, filename,
-                                            corner, scalar, write_timing_paths, this);
+                                            corner, scalar, write_timing_paths, internal_path_count, this);
   writeLiberty(library, filename, this, write_timing_paths);
 }
 

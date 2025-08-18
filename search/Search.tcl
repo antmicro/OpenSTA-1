@@ -1172,11 +1172,12 @@ define_cmd_args "write_timing_model" {[-scalar] \
                                         [-library_name lib_name]\
                                         [-cell_name cell_name]\
                                         [-paths]\
+                                        [-internal_path_count]\
                                         filename}
 
 proc write_timing_model { args } {
   parse_key_args "write_timing_model" args \
-    keys {-library_name -cell_name -corner} flags {-scalar -paths}
+    keys {-library_name -cell_name -corner -internal_path_count} flags {-scalar -paths}
   check_argc_eq1 "write_timing_model" $args
 
   set filename [file nativename [lindex $args 0]]
@@ -1193,7 +1194,17 @@ proc write_timing_model { args } {
     set lib_name $cell_name
   }
   set corner [parse_corner keys]
-  write_timing_model_cmd $lib_name $cell_name $filename $corner $scalar $write_timing_paths
+
+  set internal_path_count 1
+  if [info exists keys(-internal_path_count)] {
+    set internal_path_count $keys(-internal_path_count)
+  }
+  check_positive_integer "-internal_path_count" $internal_path_count
+  if { $internal_path_count < 1 } {
+    sta_error 513 "-internal_path_count must be >= 1."
+  }
+
+  write_timing_model_cmd $lib_name $cell_name $filename $corner $scalar $write_timing_paths $internal_path_count
 }
 
 ################################################################

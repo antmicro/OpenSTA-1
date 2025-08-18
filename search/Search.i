@@ -875,9 +875,10 @@ write_timing_model_cmd(const char *lib_name,
                        const char *filename,
                        const Corner *corner,
                        const bool scalar,
-                       const bool paths)
+                       const bool paths,
+                       const int internal_path_count)
 {
-  Sta::sta()->writeTimingModel(lib_name, cell_name, filename, corner, scalar, paths);
+  Sta::sta()->writeTimingModel(lib_name, cell_name, filename, corner, scalar, paths, internal_path_count);
 }
 
 ////////////////////////////////////////////////////////////////

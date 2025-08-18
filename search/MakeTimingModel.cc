@@ -69,9 +69,10 @@ makeTimingModel(const char *lib_name,
                 const Corner *corner,
                 const bool scalar,
                 const bool write_timing_paths,
+                const int internal_path_count,
                 Sta *sta)
 {
-  MakeTimingModel maker(lib_name, cell_name, filename, corner, scalar, write_timing_paths, sta);
+  MakeTimingModel maker(lib_name, cell_name, filename, corner, scalar, write_timing_paths, internal_path_count, sta);
   return maker.makeTimingModel();
 }
 
@@ -81,6 +82,7 @@ MakeTimingModel::MakeTimingModel(const char *lib_name,
                                  const Corner *corner,
                                  const bool scalar,
                                  const bool write_timing_paths,
+                                 const int internal_path_count,
                                  Sta *sta) :
   StaState(sta),
   lib_name_(lib_name),
@@ -89,6 +91,7 @@ MakeTimingModel::MakeTimingModel(const char *lib_name,
   corner_(corner),
   scalar_(scalar),
   write_timing_paths_(write_timing_paths),
+  internal_path_count_(internal_path_count),
   cell_(nullptr),
   min_max_(MinMax::max()),
   lib_builder_(new LibertyBuilder),

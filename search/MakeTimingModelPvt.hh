@@ -65,6 +65,7 @@ public:
                   const Corner *corner,
                   const bool scalar,
                   const bool paths,
+                  const int internal_path_count,
                   Sta *sta);
   ~MakeTimingModel();
   LibertyLibrary *makeTimingModel();
@@ -120,6 +121,7 @@ private:
   const Corner *corner_;
   const bool scalar_;
   const bool write_timing_paths_;
+  const int internal_path_count_;
   LibertyLibrary *library_;
   LibertyCell *cell_;
   const MinMax *min_max_;
