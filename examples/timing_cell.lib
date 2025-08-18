@@ -239,7 +239,7 @@ library (timing_cell) {
         slack : 9.44814;
         library_setup_time : 0.15672;
         timing_path_clock : "clk";
-        timing_path_group : "clk";
+        timing_path_group : "custom";
         timing_path_type : "max";
         fall_data_arrival() {
           time: 0.39514;

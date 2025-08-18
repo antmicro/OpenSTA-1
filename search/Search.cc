@@ -705,6 +705,10 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
                                                      PathGroupNameSet *groups,
                                                      int path_count)
 {
+  for (auto& path_group : *groups) {
+    printf("Path group: %s\n", path_group);
+  }
+
   const InputRegisterTimingPath* worst_internal_timing_path = nullptr;
   LeafInstanceIterator *leaf_instance_iterator = network_->leafInstanceIterator(network_->topInstance());
   while (leaf_instance_iterator->hasNext()) {
@@ -717,7 +721,8 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
     for (auto &min_max : delay_min_max->range()) {
       for (auto &rise_fall : transition_rise_fall->range()) {
         const InputRegisterTimingPath &timing_path = liberty_cell->getWorstSlackTimingPath(min_max, rise_fall);
-        if (timing_path.slack < slack_min || slack_max < timing_path.slack) {
+        if (!isSlackInsideSearchingBounds(timing_path.slack, slack_min, slack_max) ||
+            !isMatchingSearchedPathGroups(timing_path.path_group_name.c_str(), groups)) {
           continue;
         }
 
@@ -734,6 +739,18 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
   }
 
   return internal_path_seq;
+}
+
+bool
+Search::isSlackInsideSearchingBounds(float slack, float min_slack, float max_slack) const
+{
+  return min_slack <= slack && slack <= max_slack;
+}
+
+bool
+Search::isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *groups) const
+{
+  return groups->count(path_group) != 0;
 }
 
 ////////////////////////////////////////////////////////////////

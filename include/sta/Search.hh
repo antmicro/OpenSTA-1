@@ -591,6 +591,8 @@ protected:
   void clockDomains(const Vertex *vertex,
                     // Return value.
                     ClockSet &clks) const;
+  bool isSlackInsideSearchingBounds(float slack, float min_slack, float max_slack) const;
+  bool isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *group_names) const;
 
   ////////////////////////////////////////////////////////////////
 

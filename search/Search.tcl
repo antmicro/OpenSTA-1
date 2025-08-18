@@ -239,12 +239,19 @@ proc find_timing_paths_cmd { cmd args_var } {
 ################################################################
 
 define_cmd_args "find_internal_timing_paths" \
-  {[-path_delay min|min_rise|min_fall|max|max_rise|max_fall|min_max]\
+  {[-from from_list|-rise_from from_list|-fall_from from_list]\
+     [-through through_list|-rise_through through_list|-fall_through through_list]\
+     [-to to_list|-rise_to to_list|-fall_to to_list]\
+     [-path_delay min|min_rise|min_fall|max|max_rise|max_fall|min_max]\
+     [-unconstrained]
+     [-corner corner]\
+     [-group_path_count path_count] \
+     [-endpoint_path_count path_count]\
+     [-unique_paths_to_endpoint]\
      [-slack_max slack_max]\
      [-slack_min slack_min]\
-     [-path_group group_name]\
-     [-path_count path_count]\
-     [-sort_by_slack]}
+     [-sort_by_slack]\
+     [-path_group group_name]}
 
 proc find_internal_timing_paths { args } {
   set internal_paths [find_internal_timing_paths_cmd "find_internal_timing_paths" args]
@@ -255,8 +262,11 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
   upvar 1 $args_var args
 
   parse_key_args $cmd args \
-    keys {-path_delay -path_group -path_count -slack_max -slack_min} \
-    flags {-sort_by_slack} 0
+    keys {-from -rise_from -fall_from -to -rise_to -fall_to \
+	    -path_delay -corner -group_count -endpoint_count \
+	    -group_path_count -endpoint_path_count \
+	    -slack_max -slack_min -path_group} \
+    flags {-unconstrained -sort_by_slack -unique_paths_to_endpoint} 0
 
   set min_max "max"
   set end_rf "rise_fall"
@@ -510,8 +520,8 @@ define_cmd_args "report_checks" \
 proc_redirect report_checks {
   global sta_report_unconstrained_paths
   parse_report_path_options "report_checks" args "full" 0
-  set path_ends [find_timing_paths_cmd "report_checks" args]
   set internal_paths [find_internal_timing_paths_cmd "report_checks" args]
+  set path_ends [find_timing_paths_cmd "report_checks" args]
   report_paths $path_ends $internal_paths
 }
 
