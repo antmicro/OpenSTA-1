@@ -705,10 +705,6 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
                                                      PathGroupNameSet *groups,
                                                      int path_count)
 {
-  for (auto& path_group : *groups) {
-    printf("Path group: %s\n", path_group);
-  }
-
   const InputRegisterTimingPath* worst_internal_timing_path = nullptr;
   LeafInstanceIterator *leaf_instance_iterator = network_->leafInstanceIterator(network_->topInstance());
   while (leaf_instance_iterator->hasNext()) {
@@ -750,7 +746,7 @@ Search::isSlackInsideSearchingBounds(float slack, float min_slack, float max_sla
 bool
 Search::isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *groups) const
 {
-  return groups->count(path_group) != 0;
+  return groups->empty() || groups->count(path_group) != 0;
 }
 
 ////////////////////////////////////////////////////////////////
