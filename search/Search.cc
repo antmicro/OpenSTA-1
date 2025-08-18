@@ -26,6 +26,8 @@
 
 #include <algorithm>
 #include <cmath> // abs
+#include <unordered_map>
+#include <list>
 
 #include "Mutex.hh"
 #include "Report.hh"
@@ -705,7 +707,7 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
                                                      PathGroupNameSet *groups,
                                                      int path_count)
 {
-  const InputRegisterTimingPath* worst_internal_timing_path = nullptr;
+  std::unordered_map<std::string, InternalPathSeq> found_timing_paths{};
   LeafInstanceIterator *leaf_instance_iterator = network_->leafInstanceIterator(network_->topInstance());
   while (leaf_instance_iterator->hasNext()) {
     Instance *leaf_instance = leaf_instance_iterator->next();
@@ -722,16 +724,22 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
           continue;
         }
 
-        if (!worst_internal_timing_path || timing_path.slack < worst_internal_timing_path->slack) {
-          worst_internal_timing_path = &timing_path;
+        InternalPathSeq *group_timing_paths = &found_timing_paths[timing_path.path_group_name];
+
+        if (group_timing_paths->size() < path_count ||
+            group_timing_paths->back()->slack > timing_path.slack) {
+          insertTimingPath(&timing_path, *group_timing_paths);
+          if (group_timing_paths->size() > path_count) {
+            group_timing_paths->pop_back();
+          }
         }
       }
     }
   }
 
   InternalPathSeq internal_path_seq{};
-  if (worst_internal_timing_path) {
-    internal_path_seq.emplace_back(worst_internal_timing_path);
+  for (const auto &[group, group_paths] : found_timing_paths) {
+    internal_path_seq.insert(internal_path_seq.end(), group_paths.begin(), group_paths.end());
   }
 
   return internal_path_seq;
@@ -747,6 +755,31 @@ bool
 Search::isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *groups) const
 {
   return groups->empty() || groups->count(path_group) != 0;
+}
+
+void
+Search::insertTimingPath(const InputRegisterTimingPath *timing_path,
+                         InternalPathSeq &timing_paths) const
+{
+  if (timing_paths.empty()) {
+    timing_paths.emplace_back(timing_path);
+    return;
+  }
+
+  std::size_t starting_index = 0;
+  std::size_t ending_index = timing_paths.size() - 1;
+  while (starting_index < ending_index) {
+    std::size_t mid = (ending_index - starting_index) / 2;
+    if (timing_paths[mid]->slack > timing_path->slack) {
+      ending_index = mid;
+    } else {
+      starting_index = mid;
+    }
+  }
+
+  auto position = timing_paths.begin();
+  std::advance(position, starting_index);
+  timing_paths.insert(position, timing_path);
 }
 
 ////////////////////////////////////////////////////////////////
