@@ -381,16 +381,18 @@ find_worst_internal_timing_paths(
 	       const RiseFallBoth *transition_rise_fall,
 	       float slack_min,
 	       float slack_max,
-	       int path_count,
-	       bool sort_by_slack)
+	       bool sort_by_slack,
+         PathGroupNameSet *groups,
+	       int path_count)
 {
   Sta *sta = Sta::sta();
   return sta->findWorstInternalTimingPaths(delay_min_max,
 	       transition_rise_fall,
 	       slack_min,
 	       slack_max,
-	       path_count,
-	       sort_by_slack);
+	       sort_by_slack,
+         groups,
+	       path_count);
 }
 
 ////////////////////////////////////////////////////////////////

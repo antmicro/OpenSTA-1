@@ -840,8 +840,9 @@ public:
                                                const RiseFallBoth *transition_rise_fall,
                                                float slack_min,
                                                float slack_max,
-                                               int path_count,
-                                               bool sort_by_slack);
+                                               bool sort_by_slack,
+                                               PathGroupNameSet *groups,
+                                               int path_count);
   void setReportPathFormat(ReportPathFormat format);
   void setReportPathFieldOrder(StringSeq *field_names);
   void setReportPathFields(bool report_input_pin,

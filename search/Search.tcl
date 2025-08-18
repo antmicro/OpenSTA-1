@@ -242,6 +242,7 @@ define_cmd_args "find_internal_timing_paths" \
   {[-path_delay min|min_rise|min_fall|max|max_rise|max_fall|min_max]\
      [-slack_max slack_max]\
      [-slack_min slack_min]\
+     [-path_group group_name]\
      [-path_count path_count]\
      [-sort_by_slack]}
 
@@ -254,7 +255,7 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
   upvar 1 $args_var args
 
   parse_key_args $cmd args \
-    keys {-path_delay -path_count -slack_max -slack_min} \
+    keys {-path_delay -path_group -path_count -slack_max -slack_min} \
     flags {-sort_by_slack} 0
 
   set min_max "max"
@@ -305,8 +306,13 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
 
   set sort_by_slack [info exists flags(-sort_by_slack)]
 
+  set groups {}
+  if [info exists keys(-path_group)] {
+    set groups [parse_path_group_arg $keys(-path_group)]
+  }
+
   set internal_timing_paths [find_worst_internal_timing_paths $min_max \
-		   $end_rf $slack_min $slack_max $path_count $sort_by_slack]
+		   $end_rf $slack_min $slack_max $sort_by_slack $groups $path_count]
   return $internal_timing_paths
 }
 
