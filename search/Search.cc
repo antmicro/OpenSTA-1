@@ -718,7 +718,7 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
 
     for (auto &min_max : delay_min_max->range()) {
       for (auto &rise_fall : transition_rise_fall->range()) {
-        const InputRegisterTimingPath &timing_path = liberty_cell->getWorstSlackTimingPath(min_max, rise_fall);
+        const InputRegisterTimingPath &timing_path = liberty_cell->getInternalTimingPaths(min_max, rise_fall).front();
         if (!isSlackInsideSearchingBounds(timing_path.slack, slack_min, slack_max) ||
             !isMatchingSearchedPathGroups(timing_path.path_group_name.c_str(), groups)) {
           continue;

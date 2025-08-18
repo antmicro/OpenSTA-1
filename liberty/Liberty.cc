@@ -2063,29 +2063,29 @@ LibertyCell::setUserFunctionClass(const char *user_function_class)
 }
 
 void
-LibertyCell::setWorstSlackTimingPath(InputRegisterTimingPath timing_path,
-                                     const MinMax *min_max,
-                                     const RiseFall *rise_fall)
+LibertyCell::addInternalTimingPath(InputRegisterTimingPath timing_path,
+                                   const MinMax *min_max,
+                                   const RiseFall *rise_fall)
 {
   worst_slack_ = std::min(timing_path.slack, worst_slack_);
   timing_path.cell_name = name();
   timing_path.path_type = min_max->to_string();
-  worst_slack_timing_paths_.at(min_max->index()).at(rise_fall->index()) = std::move(timing_path);
+  internal_timing_paths_.at(min_max->index()).at(rise_fall->index()).emplace_back(std::move(timing_path));
 }
 
-const InputRegisterTimingPath &
-LibertyCell::getWorstSlackTimingPath(const MinMax *min_max,
-                                     const RiseFall *rise_fall) const
+const std::vector<InputRegisterTimingPath>&
+LibertyCell::getInternalTimingPaths(const MinMax *min_max,
+                                    const RiseFall *rise_fall) const
 {
-  return worst_slack_timing_paths_.at(min_max->index()).at(rise_fall->index());
+  return internal_timing_paths_.at(min_max->index()).at(rise_fall->index());
 }
 
 bool
-LibertyCell::hasWorstSlackTimingPaths() const
+LibertyCell::hasInternalTimingPaths() const
 {
-  for (const auto& min_max_paths : worst_slack_timing_paths_) {
+  for (const auto& min_max_paths : internal_timing_paths_) {
     for (const auto& rise_fall_paths : min_max_paths) {
-      if (!rise_fall_paths.data_arrival_path.vertices.empty()) {
+      if (!rise_fall_paths.empty()) {
         return true;
       }
     }

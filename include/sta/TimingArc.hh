@@ -363,3 +363,16 @@ private:
 };
 
 } // namespace
+
+namespace std {
+  
+  template<>
+  struct less<sta::InputRegisterTimingPath>
+  {
+    bool operator()(const sta::InputRegisterTimingPath &first, const sta::InputRegisterTimingPath &second) const
+    {
+      return first.slack < second.slack;
+    }
+  };
+
+}

@@ -4765,7 +4765,7 @@ void LibertyReader::beginRegisterToRegisterMaxFallTimingPath(LibertyGroup *)
 
 void LibertyReader::endRegisterToRegisterTimingPath(LibertyGroup *)
 {
-  cell_->setWorstSlackTimingPath(register_to_register_timing_path_, timing_path_min_max_, timing_path_rise_fall_);
+  cell_->addInternalTimingPath(register_to_register_timing_path_, timing_path_min_max_, timing_path_rise_fall_);
 }
 
 void

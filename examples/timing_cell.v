@@ -11,4 +11,6 @@ module timing_cell (input in, input clk, output out);
   
   DFF_X1 r2 (.D(w4), .CK(clk), .Q(out));
 
+  DFF_X1 r3 (.D(w3), .CK(clk), .Q(out));
+
 endmodule
