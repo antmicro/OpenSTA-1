@@ -7,7 +7,7 @@
   "endpoint": "tt3/in",
   "source_clock": "clk",
   "source_clock_edge": "rise",
-  "source_path": [
+  "source_clock_path": [
     {
       "instance": "",
       "cell": "timing_cell_complex",
@@ -18,13 +18,16 @@
       "slew": 0.000e+00
     },
     {
-      "instance": "r1",
-      "cell": "DFFHQx4_ASAP7_75t_R",
-      "pin": "tt1/r1/CLK",
+      "instance": "tt1",
+      "cell": "timing_cell_dff",
+      "verilog_src": "",
+      "pin": "tt1/clk",
       "net": "clk",
       "arrival": 0.000e+00,
       "slew": 0.000e+00
-    },
+    }
+  ],
+  "source_path": [
     {
       "instance": "r1",
       "cell": "DFFHQx4_ASAP7_75t_R",
@@ -85,15 +88,6 @@
       "net": "",
       "arrival": 9.317e-11,
       "slew": 4.749e-12
-    },
-    {
-      "instance": "u1",
-      "cell": "BUFx2_ASAP7_75t_R",
-      "verilog_src": "",
-      "pin": "u1/A",
-      "net": "w2",
-      "arrival": 9.444e-11,
-      "slew": 6.964e-12
     },
     {
       "instance": "u1",
