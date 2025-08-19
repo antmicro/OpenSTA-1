@@ -426,8 +426,13 @@ LibertyReader::defineVisitors()
 
   // Custom Liberty attrs/groups for handling timing paths
   defineAttrVisitor("slack", &LibertyReader::visitSlack);
+  defineAttrVisitor("crpr", &LibertyReader::visitCrpr);
+  defineAttrVisitor("path_delay", &LibertyReader::visitPathDelay);
   defineAttrVisitor("library_setup_time", &LibertyReader::visitTimingPathLibrarySetupTime);
-  defineAttrVisitor("timing_path_clock", &LibertyReader::visitTimingPathClock);
+  defineAttrVisitor("source_clock", &LibertyReader::visitTimingPathSourceClock);
+  defineAttrVisitor("source_clock_transition", &LibertyReader::visitTimingPathSourceClockTransition);
+  defineAttrVisitor("target_clock", &LibertyReader::visitTimingPathTargetClock);
+  defineAttrVisitor("target_clock_transition", &LibertyReader::visitTimingPathTargetClockTransition);
   defineAttrVisitor("timing_path_group", &LibertyReader::visitTimingPathGroup);
   defineAttrVisitor("timing_path_type", &LibertyReader::visitTimingPathType);
   defineGroupVisitor(
@@ -4642,6 +4647,24 @@ LibertyReader::visitSlack(LibertyAttr *attr)
 }
 
 void
+LibertyReader::visitCrpr(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    float crpr = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+    register_to_register_timing_path_.crpr = crpr;
+  }
+}
+
+void
+LibertyReader::visitPathDelay(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    float path_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+    register_to_register_timing_path_.path_delay = path_delay;
+  }
+}
+
+void
 LibertyReader::visitTimingPathLibrarySetupTime(LibertyAttr *attr)
 {
   float library_setup_time = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
@@ -4651,10 +4674,38 @@ LibertyReader::visitTimingPathLibrarySetupTime(LibertyAttr *attr)
 }
 
 void
-LibertyReader::visitTimingPathClock(LibertyAttr *attr)
+LibertyReader::visitTimingPathSourceClock(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.clock_name = attr->firstValue()->stringValue();
+    register_to_register_timing_path_.source_clock_name = attr->firstValue()->stringValue();
+  }
+}
+
+void
+LibertyReader::visitTimingPathSourceClockTransition(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    std::string transition_as_string = attr->firstValue()->stringValue();
+    register_to_register_timing_path_.source_clock_transition =
+      RiseFall::fall()->shortName() == transition_as_string ? RiseFall::fall() : RiseFall::rise();
+  }
+}
+
+void
+LibertyReader::visitTimingPathTargetClock(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clock_name = attr->firstValue()->stringValue();
+  }
+}
+
+void
+LibertyReader::visitTimingPathTargetClockTransition(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    std::string transition_as_string = attr->firstValue()->stringValue();
+    register_to_register_timing_path_.target_clock_transition=
+      RiseFall::fall()->shortName() == transition_as_string ? RiseFall::fall() : RiseFall::rise();
   }
 }
 
@@ -4670,7 +4721,7 @@ void
 LibertyReader::visitTimingPathType(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.path_type = attr->firstValue()->stringValue();
+    register_to_register_timing_path_.type = attr->firstValue()->stringValue();
   }
 }
 

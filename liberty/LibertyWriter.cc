@@ -336,10 +336,21 @@ LibertyWriter::writeCell(const LibertyCell *cell)
         for (const auto &timing_path : cell->getInternalTimingPaths(min_max, rise_fall)) {
           fprintf(stream_, "        timing_path() {\n", min_max->to_string().c_str(), rise_fall->name());
           fprintf(stream_, "          slack : %s;\n", time_unit_->asString(timing_path.slack, 5));
+          fprintf(stream_, "          crpr : %s;\n", time_unit_->asString(timing_path.crpr, 5));
+
+          if (timing_path.has_path_delay) {
+            fprintf(stream_, "          path_delay : %s;\n", time_unit_->asString(timing_path.path_delay, 5));
+          }
+          
           fprintf(stream_, "          library_setup_time : %s;\n", time_unit_->asString(timing_path.library_setup_time, 5));
-          fprintf(stream_, "          timing_path_clock : \"%s\";\n", timing_path.clock_name.c_str());
+
+          fprintf(stream_, "          source_clock : \"%s\";\n", timing_path.source_clock_name.c_str());
+          fprintf(stream_, "          source_clock_transition : \"%s\";\n", timing_path.source_clock_transition->shortName());
+          fprintf(stream_, "          target_clock : \"%s\";\n", timing_path.target_clock_name.c_str());
+          fprintf(stream_, "          target_clock_transition : \"%s\";\n", timing_path.target_clock_transition->shortName());
+
           fprintf(stream_, "          timing_path_group : \"%s\";\n", timing_path.path_group_name.c_str());
-          fprintf(stream_, "          timing_path_type : \"%s\";\n", timing_path.path_type.c_str());
+          fprintf(stream_, "          timing_path_type : \"%s\";\n", timing_path.type.c_str());
           writeTimingPath(10, timing_path.data_arrival_path);
           writeTimingPath(10, timing_path.data_required_path);
           fprintf(stream_, "        }\n");

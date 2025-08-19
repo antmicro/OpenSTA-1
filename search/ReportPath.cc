@@ -2810,7 +2810,7 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
     reportTimingPathSlackOnly(timing_path);
     break;
   case ReportPathFormat::json:
-    // reportJson(end, last);
+    reportTimingPathJson(timing_path);
     break;
   }
 }
@@ -2878,7 +2878,7 @@ ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_pa
 void
 ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
 {
-  Pin *clock_pin = network_->findPin(timing_path->clock_name.c_str());
+  Pin *clock_pin = network_->findPin(timing_path->target_clock_name.c_str());
   auto clock_set = network_->clkNetwork()->clocks(clock_pin);
   auto clock = *clock_set->begin();
   float previous_arrival = 0.0f;
@@ -2980,6 +2980,78 @@ ReportPath::reportTimingPathSlackOnly(const InputRegisterTimingPath *timing_path
 }
 
 void
+ReportPath::reportTimingPathJson(const InputRegisterTimingPath *timing_path) const
+{
+  std::string result;
+  // if (prev_end) {
+  //   result += ", ";
+  // }
+
+  result += "{\n";
+  stringAppend(result, "  \"type\": \"%s\",\n", timing_path->type.c_str());
+  stringAppend(result, "  \"path_group\": \"%s\",\n", timing_path->path_group_name.c_str());
+  stringAppend(result, "  \"path_type\": \"%s\",\n", timing_path->path_type.c_str());
+
+  const TimingPathVertex &startpoint_vertex = timing_path->data_arrival_path.vertices.front();
+  std::string startpoint_description = stdstrPrint("%s/%s", timing_path->cell_name.c_str(), startpoint_vertex.pin.c_str());
+  stringAppend(result, "  \"startpoint\": \"%s\",\n", startpoint_description.c_str());
+
+  const TimingPathVertex &endpoint_vertex = timing_path->data_arrival_path.vertices.back();
+  std::string endpoint_description = stdstrPrint("%s/%s", timing_path->cell_name.c_str(), endpoint_vertex.pin.c_str());
+  stringAppend(result, "  \"endpoint\": \"%s\",\n", endpoint_description.c_str());
+
+  stringAppend(result, "  \"source_clock\": \"%s\",\n", timing_path->source_clock_name.c_str());
+  stringAppend(result, "  \"source_clock_edge\": \"%s\",\n", timing_path->source_clock_transition->name());
+
+  // TODO: separate source clock path from data arrival path while exporting timing paths
+  // if (src_clk_path)
+  //   reportJson(src_clk_path, "source_clock_path", 2, true, result, nullptr, true);
+  reportTimingPathJson(result, 2, "source_path", timing_path->cell_name, &timing_path->data_arrival_path);
+
+  stringAppend(result, "  \"target_clock\": \"%s\",\n", timing_path->target_clock_name.c_str());
+  stringAppend(result, "  \"target_clock_edge\": \"%s\",\n", timing_path->target_clock_transition->name());
+  reportTimingPathJson(result, 2, "target_clock_path", timing_path->cell_name, &timing_path->data_required_path);
+
+  stringAppend(result, "  \"data_arrival_time\": %.3e,\n", delayAsFloat(timing_path->data_arrival_path.time));
+
+  if (timing_path->has_path_delay) {
+    stringAppend(result, "  \"path_delay\": %.3e,\n", timing_path->path_delay);
+  }
+
+  stringAppend(result, "  \"crpr\": %.3e,\n", delayAsFloat(timing_path->crpr));
+  stringAppend(result, "  \"margin\": %.3e,\n", delayAsFloat(timing_path->library_setup_time));
+  stringAppend(result, "  \"required_time\": %.3e,\n", delayAsFloat(timing_path->data_required_path.time));
+  stringAppend(result, "  \"slack\": %.3e\n", delayAsFloat(timing_path->slack));
+  result += "}";
+  report_->reportLineString(result);
+}
+
+void
+ReportPath::reportTimingPathJson(std::string &result, int indent, const char *path_name, const std::string &cell_name, const TimingPath *timing_path) const
+{
+  for (std::size_t index = 0; index < timing_path->vertices.size(); ++index) {
+    const auto& vertex = timing_path->vertices[index];
+    std::string description = cell_name + '/' + vertex.pin;
+
+    stringAppend(result, "%*s  {\n", indent, "");
+
+    if (!vertex.instance.empty()) {
+      stringAppend(result, "%*s    \"instance\": \"%s\",\n", indent, "", vertex.instance.c_str());
+    }
+
+    if (!vertex.cell.empty()) {
+      stringAppend(result, "%*s    \"cell\": \"%s\",\n", indent, "", vertex.cell.c_str());
+    }
+
+    stringAppend(result, "%*s    \"pin\": \"%s\",\n", indent, "", description.c_str());
+    stringAppend(result, "%*s    \"net\": \"%s\",\n", indent, "", vertex.net.c_str());
+    stringAppend(result, "%*s    \"arrival\": %.3e,\n", indent, "", delayAsFloat(vertex.arrival));
+    stringAppend(result, "%*s    \"slew\": %.3e\n", indent, "", delayAsFloat(vertex.slew));
+    stringAppend(result, "%*s  }%s\n", indent, "", (index < timing_path->vertices.size() - 1) ? "," : "");
+  }
+}
+
+void
 ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const
 {
   if (timing_paths->empty()) {
@@ -3031,7 +3103,7 @@ ReportPath::findPathGroupForInternalPath(const InputRegisterTimingPath *timing_p
 {
   const MinMax *min_max = timing_path->path_type == "max" ? MinMax::max() : MinMax::min();
   if (timing_path->path_group_name == "clk") {
-    Pin *clock_pin = network_->findPin(timing_path->clock_name.c_str());
+    Pin *clock_pin = network_->findPin(timing_path->target_clock_name.c_str());
     auto clock_set = network_->clkNetwork()->clocks(clock_pin);
     auto clock = *clock_set->begin();
     return search_->findPathGroup(clock, min_max);

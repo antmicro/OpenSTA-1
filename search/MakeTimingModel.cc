@@ -445,10 +445,25 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
 
   const EarlyLate *early_late = nullptr;
   input_register_timing_path.slack = delayAsFloat(path_end->slack(sta_state), early_late, sta_state);
+  input_register_timing_path.crpr = delayAsFloat(path_end->checkCrpr(sta_state));
   input_register_timing_path.library_setup_time = path_end->margin(sta_state);
   input_register_timing_path.path_group_name = sta_state->search()->pathGroup(path_end)->name();
   input_register_timing_path.path_type = path_end->minMax(sta_state)->to_string();
-  input_register_timing_path.clock_name = path_end->targetClk(sta_state)->name();
+  input_register_timing_path.type = path_end->typeName();
+  
+  const ClockEdge *src_clk_edge = path_end->sourceClkEdge(sta_state);
+  input_register_timing_path.source_clock_name = src_clk_edge->clock()->name();
+  input_register_timing_path.source_clock_transition = src_clk_edge->transition();
+
+  const ClockEdge *tgt_clk_edge = path_end->targetClkEdge(sta_state);
+  input_register_timing_path.target_clock_name = tgt_clk_edge->clock()->name();
+  input_register_timing_path.target_clock_transition = tgt_clk_edge->transition();
+
+  const PathDelay *path_delay = path_end->pathDelay();
+  if (path_delay) {
+    input_register_timing_path.path_delay = path_delay->delay();
+    input_register_timing_path.has_path_delay = true;
+  }
 
   return input_register_timing_path;
 }

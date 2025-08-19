@@ -366,8 +366,13 @@ public:
   virtual void endRiseFallConstraint(LibertyGroup *group);
   virtual void beginFallConstraint(LibertyGroup *group);
   virtual void visitSlack(LibertyAttr *attr);
+  virtual void visitCrpr(LibertyAttr *attr);
+  virtual void visitPathDelay(LibertyAttr *attr);
   virtual void visitTimingPathLibrarySetupTime(LibertyAttr *attr);
-  virtual void visitTimingPathClock(LibertyAttr *attr);
+  virtual void visitTimingPathSourceClock(LibertyAttr *attr);
+  virtual void visitTimingPathSourceClockTransition(LibertyAttr *attr);
+  virtual void visitTimingPathTargetClock(LibertyAttr *attr);
+  virtual void visitTimingPathTargetClockTransition(LibertyAttr *attr);
   virtual void visitTimingPathGroup(LibertyAttr *attr);
   virtual void visitTimingPathType(LibertyAttr *attr);
   virtual void beginRiseTimingPath(LibertyGroup *group);

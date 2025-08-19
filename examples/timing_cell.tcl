@@ -4,4 +4,5 @@ read_verilog timing_cell.v
 link_design timing_cell
 create_clock -name clk -period 10 {clk}
 set_input_delay -clock clk 0 {in}
-write_timing_model -paths timing_cell.lib -internal_path_count 1
+group_path -name custom -to r3
+write_timing_model -paths timing_cell.lib -internal_path_count 2

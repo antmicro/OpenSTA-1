@@ -6,4 +6,4 @@ link_design top
 create_clock -name clk -period 10 {clk}
 set_input_delay -clock clk 0 {in}
 group_path -name custom -from {in}
-report_checks -path_group custom -path_delay max_fall
+report_checks -path_group custom -path_delay max_fall -group_path_count 1 -format json

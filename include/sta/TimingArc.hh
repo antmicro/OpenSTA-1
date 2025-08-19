@@ -136,11 +136,18 @@ struct TimingPath
 struct InputRegisterTimingPath
 {
   float slack{std::numeric_limits<float>::max()};
+  float crpr{std::numeric_limits<float>::max()};
   float library_setup_time{std::numeric_limits<float>::max()};
+  float path_delay{std::numeric_limits<float>::max()};
+  bool has_path_delay{false};
   std::string cell_name{};
   std::string path_group_name{};
   std::string path_type{};
-  std::string clock_name{};
+  std::string type{};
+  const RiseFall *source_clock_transition{nullptr};
+  std::string source_clock_name{};
+  const RiseFall *target_clock_transition{nullptr};
+  std::string target_clock_name{};
   TimingPath data_arrival_path{};
   TimingPath data_required_path{};
 };
