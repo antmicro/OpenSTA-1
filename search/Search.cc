@@ -707,7 +707,7 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
                                                      PathGroupNameSet *groups,
                                                      int path_count)
 {
-  std::unordered_map<std::string, InternalPathSeq> found_timing_paths{};
+  std::unordered_map<std::string, InternalPathSet> found_timing_paths{};
   LeafInstanceIterator *leaf_instance_iterator = network_->leafInstanceIterator(network_->topInstance());
   while (leaf_instance_iterator->hasNext()) {
     Instance *leaf_instance = leaf_instance_iterator->next();
@@ -718,19 +718,22 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
 
     for (auto &min_max : delay_min_max->range()) {
       for (auto &rise_fall : transition_rise_fall->range()) {
-        const InputRegisterTimingPath &timing_path = liberty_cell->getInternalTimingPaths(min_max, rise_fall).front();
-        if (!isSlackInsideSearchingBounds(timing_path.slack, slack_min, slack_max) ||
-            !isMatchingSearchedPathGroups(timing_path.path_group_name.c_str(), groups)) {
-          continue;
-        }
+        const std::vector<InputRegisterTimingPath> &timing_paths = liberty_cell->getInternalTimingPaths(min_max, rise_fall);
+        for (const auto &timing_path : timing_paths) {
+          if (!isSlackInsideSearchingBounds(timing_path.slack, slack_min, slack_max) ||
+              !isMatchingSearchedPathGroups(timing_path.path_group_name.c_str(), groups)) {
+            continue;
+          }
 
-        InternalPathSeq *group_timing_paths = &found_timing_paths[timing_path.path_group_name];
+          InternalPathSet& group_timing_paths = found_timing_paths[timing_path.path_group_name];
 
-        if (group_timing_paths->size() < path_count ||
-            group_timing_paths->back()->slack > timing_path.slack) {
-          insertTimingPath(&timing_path, *group_timing_paths);
-          if (group_timing_paths->size() > path_count) {
-            group_timing_paths->pop_back();
+          if (group_timing_paths.size() < path_count ||
+              (*std::prev(group_timing_paths.end()))->slack > timing_path.slack) {
+            group_timing_paths.insert(&timing_path);
+
+            if (group_timing_paths.size() > path_count) {
+              group_timing_paths.erase(std::prev(group_timing_paths.end()));
+            }
           }
         }
       }

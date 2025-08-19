@@ -470,19 +470,23 @@ LibertyReader::defineVisitors()
          &LibertyReader::endRegisterToRegisterTimingPaths);
   defineGroupVisitor(
          "min_rise",
-         &LibertyReader::beginRegisterToRegisterMinRiseTimingPath,
-         &LibertyReader::endRegisterToRegisterTimingPath);
+         &LibertyReader::beginRegisterToRegisterMinRiseTimingPaths,
+         &LibertyReader::endRegisterToRegisterTimingPaths);
   defineGroupVisitor(
          "min_fall",
-         &LibertyReader::beginRegisterToRegisterMinFallTimingPath,
-         &LibertyReader::endRegisterToRegisterTimingPath);
+         &LibertyReader::beginRegisterToRegisterMinFallTimingPaths,
+         &LibertyReader::endRegisterToRegisterTimingPaths);
   defineGroupVisitor(
          "max_rise",
-         &LibertyReader::beginRegisterToRegisterMaxRiseTimingPath,
-         &LibertyReader::endRegisterToRegisterTimingPath);
+         &LibertyReader::beginRegisterToRegisterMaxRiseTimingPaths,
+         &LibertyReader::endRegisterToRegisterTimingPaths);
   defineGroupVisitor(
          "max_fall",
-         &LibertyReader::beginRegisterToRegisterMaxFallTimingPath,
+         &LibertyReader::beginRegisterToRegisterMaxFallTimingPaths,
+         &LibertyReader::endRegisterToRegisterTimingPaths);
+  defineGroupVisitor(
+         "timing_path",
+         &LibertyReader::beginRegisterToRegisterTimingPath,
          &LibertyReader::endRegisterToRegisterTimingPath);
 
   defineGroupVisitor("lut", &LibertyReader::beginLut,&LibertyReader::endLut);
@@ -4735,32 +4739,37 @@ LibertyReader::endRegisterToRegisterTimingPaths(LibertyGroup *)
   traversing_cell_worst_timing_paths_ = false;
 }
 
-void LibertyReader::beginRegisterToRegisterMinRiseTimingPath(LibertyGroup *)
+void LibertyReader::beginRegisterToRegisterMinRiseTimingPaths(LibertyGroup *)
 {
-  register_to_register_timing_path_ = InputRegisterTimingPath{};
+  traversing_cell_worst_timing_paths_ = true;
   timing_path_min_max_ = MinMax::min();
   timing_path_rise_fall_ = RiseFall::rise();
 }
 
-void LibertyReader::beginRegisterToRegisterMinFallTimingPath(LibertyGroup *)
+void LibertyReader::beginRegisterToRegisterMinFallTimingPaths(LibertyGroup *)
 {
-  register_to_register_timing_path_ = InputRegisterTimingPath{};
+  traversing_cell_worst_timing_paths_ = true;
   timing_path_min_max_ = MinMax::min();
   timing_path_rise_fall_ = RiseFall::fall();
 }
 
-void LibertyReader::beginRegisterToRegisterMaxRiseTimingPath(LibertyGroup *)
+void LibertyReader::beginRegisterToRegisterMaxRiseTimingPaths(LibertyGroup *)
 {
-  register_to_register_timing_path_ = InputRegisterTimingPath{};
+  traversing_cell_worst_timing_paths_ = true;
   timing_path_min_max_ = MinMax::max();
   timing_path_rise_fall_ = RiseFall::rise();
 }
 
-void LibertyReader::beginRegisterToRegisterMaxFallTimingPath(LibertyGroup *)
+void LibertyReader::beginRegisterToRegisterMaxFallTimingPaths(LibertyGroup *)
 {
-  register_to_register_timing_path_ = InputRegisterTimingPath{};
+  traversing_cell_worst_timing_paths_ = true;
   timing_path_min_max_ = MinMax::max();
   timing_path_rise_fall_ = RiseFall::fall();
+}
+
+void LibertyReader::beginRegisterToRegisterTimingPath(LibertyGroup *)
+{
+  register_to_register_timing_path_ = InputRegisterTimingPath{};
 }
 
 void LibertyReader::endRegisterToRegisterTimingPath(LibertyGroup *)

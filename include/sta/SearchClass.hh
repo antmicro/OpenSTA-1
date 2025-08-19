@@ -115,6 +115,7 @@ typedef Vector<MaxSkewCheck*> MaxSkewCheckSeq;
 typedef StringSet PathGroupNameSet;
 typedef Vector<PathEnd*> PathEndSeq;
 typedef Vector<const InputRegisterTimingPath*> InternalPathSeq;
+typedef std::set<const InputRegisterTimingPath*> InternalPathSet;
 typedef Vector<Arrival> ArrivalSeq;
 typedef Map<Vertex*, size_t> VertexPathCountMap;
 typedef Map<Tag*, size_t, TagMatchLess> PathIndexMap;

@@ -375,4 +375,13 @@ namespace std {
     }
   };
 
+  template<>
+  struct less<const sta::InputRegisterTimingPath*>
+  {
+    bool operator()(const sta::InputRegisterTimingPath *first, const sta::InputRegisterTimingPath *second) const
+    {
+      return first->slack < second->slack;
+    }
+  };
+
 }

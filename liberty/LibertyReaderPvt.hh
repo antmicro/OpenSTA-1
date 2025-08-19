@@ -375,10 +375,11 @@ public:
   virtual void endTimingPath(LibertyGroup *group);
   virtual void beginRegisterToRegisterTimingPaths(LibertyGroup *group);
   virtual void endRegisterToRegisterTimingPaths(LibertyGroup *group);
-  virtual void beginRegisterToRegisterMinRiseTimingPath(LibertyGroup *group);
-  virtual void beginRegisterToRegisterMinFallTimingPath(LibertyGroup *group);
-  virtual void beginRegisterToRegisterMaxRiseTimingPath(LibertyGroup *group);
-  virtual void beginRegisterToRegisterMaxFallTimingPath(LibertyGroup *group);
+  virtual void beginRegisterToRegisterMinRiseTimingPaths(LibertyGroup *group);
+  virtual void beginRegisterToRegisterMinFallTimingPaths(LibertyGroup *group);
+  virtual void beginRegisterToRegisterMaxRiseTimingPaths(LibertyGroup *group);
+  virtual void beginRegisterToRegisterMaxFallTimingPaths(LibertyGroup *group);
+  virtual void beginRegisterToRegisterTimingPath(LibertyGroup *group);
   virtual void endRegisterToRegisterTimingPath(LibertyGroup *group);
   virtual void visitTimingPathTime(LibertyAttr *attr);
   virtual void visitTimingPathVertex(LibertyAttr *attr);
