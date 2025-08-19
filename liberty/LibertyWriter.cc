@@ -334,7 +334,7 @@ LibertyWriter::writeCell(const LibertyCell *cell)
       for (const RiseFall *rise_fall : RiseFall::range()) {
         fprintf(stream_, "      %s_%s() {\n", min_max->to_string().c_str(), rise_fall->name());
         for (const auto &timing_path : cell->getInternalTimingPaths(min_max, rise_fall)) {
-          fprintf(stream_, "        timing_path() {\n", min_max->to_string().c_str(), rise_fall->name());
+          fprintf(stream_, "        timing_path() {\n");
           fprintf(stream_, "          slack : %s;\n", time_unit_->asString(timing_path.slack, 5));
           fprintf(stream_, "          crpr : %s;\n", time_unit_->asString(timing_path.crpr, 5));
 

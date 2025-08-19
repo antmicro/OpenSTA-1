@@ -2791,7 +2791,7 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path, bool prev_pat
   case ReportPathFormat::full:
   case ReportPathFormat::full_clock:
   case ReportPathFormat::full_clock_expanded:
-    reportFullTimingPath("timing_cell", timing_path, MinMax::max());
+    reportFullTimingPath(timing_path);
     reportBlankLine();
     reportBlankLine();
     break;
@@ -2817,7 +2817,7 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path, bool prev_pat
 }
 
 void
-ReportPath::reportFullTimingPath(const char *instance_name, const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
+ReportPath::reportFullTimingPath(const InputRegisterTimingPath *timing_path) const
 {
   reportTimingPathStartpoint(timing_path);
   reportTimingPathEndpoint(timing_path);
@@ -2825,6 +2825,7 @@ ReportPath::reportFullTimingPath(const char *instance_name, const InputRegisterT
   reportTimingPathType(timing_path);
   reportBlankLine();
   reportPathHeader();
+  const MinMax *min_max = MinMax::min()->to_string() == timing_path->path_type ? MinMax::min() : MinMax::max();
   reportTimingPathArrivalPath(timing_path, min_max);
   reportBlankLine();
   reportTimingPathRequiredPath(timing_path, min_max);
@@ -2957,7 +2958,6 @@ void
 ReportPath::reportTimingPathSummaryLine(const InputRegisterTimingPath *timing_path) const
 {
   string line;
-  const EarlyLate *early_late = nullptr;
   const TimingPathVertex &startpoint_vertex = timing_path->data_arrival_path.vertices.front();
   string startpoint_description = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), startpoint_vertex.pin.c_str(), startpoint_vertex.cell.c_str());
   reportDescription(startpoint_description.c_str(), line);
@@ -2985,7 +2985,7 @@ ReportPath::reportTimingPathJson(const InputRegisterTimingPath *timing_path, boo
 {
   std::string result;
   if (prev_path) {
-    result += ", ";
+    result += ",\n";
   }
 
   result += "{\n";
@@ -3007,11 +3007,15 @@ ReportPath::reportTimingPathJson(const InputRegisterTimingPath *timing_path, boo
   // TODO: separate source clock path from data arrival path while exporting timing paths
   // if (src_clk_path)
   //   reportJson(src_clk_path, "source_clock_path", 2, true, result, nullptr, true);
-  reportTimingPathJson(result, 2, "source_path", timing_path->cell_name, &timing_path->data_arrival_path);
+  stringAppend(result, "%*s\"%s\": [\n", 2, "", "source_path");
+  reportTimingPathJson(result, 2, timing_path->cell_name, &timing_path->data_arrival_path);
+  stringAppend(result, "%*s],\n", 2, "");
 
   stringAppend(result, "  \"target_clock\": \"%s\",\n", timing_path->target_clock_name.c_str());
   stringAppend(result, "  \"target_clock_edge\": \"%s\",\n", timing_path->target_clock_transition->name());
-  reportTimingPathJson(result, 2, "target_clock_path", timing_path->cell_name, &timing_path->data_required_path);
+  stringAppend(result, "%*s\"%s\": [\n", 2, "", "target_clock_path");
+  reportTimingPathJson(result, 2, timing_path->cell_name, &timing_path->data_required_path);
+  stringAppend(result, "%*s],\n", 2, "");
 
   stringAppend(result, "  \"data_arrival_time\": %.3e,\n", delayAsFloat(timing_path->data_arrival_path.time));
 
@@ -3028,7 +3032,7 @@ ReportPath::reportTimingPathJson(const InputRegisterTimingPath *timing_path, boo
 }
 
 void
-ReportPath::reportTimingPathJson(std::string &result, int indent, const char *path_name, const std::string &cell_name, const TimingPath *timing_path) const
+ReportPath::reportTimingPathJson(std::string &result, int indent, const std::string &cell_name, const TimingPath *timing_path) const
 {
   for (std::size_t index = 0; index < timing_path->vertices.size(); ++index) {
     const auto& vertex = timing_path->vertices[index];
@@ -3140,15 +3144,15 @@ ReportPath::mergePathsBySlack(
     PathEndSeq &input_path_ends, InternalPathSeq &input_internal_paths,
     PathEndSeq &filtered_path_ends, InternalPathSeq &filtered_internal_paths) const
 {
-  int total_reported_count = std::min(group_path_count_, static_cast<int>(input_path_ends.size() + input_internal_paths.size()));
+  unsigned int total_reported_count = std::min(group_path_count_, static_cast<int>(input_path_ends.size() + input_internal_paths.size()));
 
-  int first_index = 0;
-  int second_index = 0;
+  unsigned int first_index = 0;
+  unsigned int second_index = 0;
 
   sort(input_path_ends, PathEndLess(this));
   sort(input_internal_paths, InputRegisterTimingPathLess{});
   
-  int current_index = 0;
+  unsigned int current_index = 0;
   while (current_index < total_reported_count) {
     current_index += 1;
 

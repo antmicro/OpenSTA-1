@@ -498,7 +498,7 @@ protected:
   void reportTimingPathEndpoint(const InputRegisterTimingPath *timing_path) const;
   void reportTimingPathGroup(const InputRegisterTimingPath *timing_path) const;
   void reportTimingPathType(const InputRegisterTimingPath *timing_path) const;
-  void reportFullTimingPath(const char *instance_name, const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
+  void reportFullTimingPath(const InputRegisterTimingPath *timing_path) const;
   void reportShortTimingPath(const InputRegisterTimingPath *timing_path) const;
   void reportTimingPathSlackOnly(const InputRegisterTimingPath *timing_path) const;
   void reportTimingPathEndpointHeader(const InputRegisterTimingPath *timing_path, PathGroup *prev_group) const;
@@ -509,7 +509,7 @@ protected:
   void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival) const;
   void reportTimingPathJson(const InputRegisterTimingPath *timing_path, bool prev_path) const;
   void reportTimingPathJson(const char *instance_name, const TimingArc *timing_arc, int indent, bool last_path, std::string &result, bool is_clk_path, float prev_time) const;
-  void reportTimingPathJson(std::string &result, int indent, const char *path_name, const std::string &cell_name, const TimingPath *timing_path) const;
+  void reportTimingPathJson(std::string &result, int indent, const std::string &cell_name, const TimingPath *timing_path) const;
 
   // Path options.
   ReportPathFormat format_;
