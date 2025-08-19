@@ -2795,7 +2795,7 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
     reportBlankLine();
     break;
   case ReportPathFormat::shorter:
-    // end->reportShort(this);
+    reportShortTimingPath(timing_path);
     reportBlankLine();
     reportBlankLine();
     break;
@@ -2909,6 +2909,15 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
   reportLine("library setup time", -timing_path->library_setup_time, clock->period() - previous_arrival - timing_path->library_setup_time, min_max);
   float data_required_time = timing_path->data_required_path.time;
   reportLine("data required time", data_required_time, min_max);
+}
+
+void
+ReportPath::reportShortTimingPath(const InputRegisterTimingPath *timing_path) const
+{
+  reportTimingPathStartpoint(timing_path);
+  reportTimingPathEndpoint(timing_path);
+  reportTimingPathGroup(timing_path);
+  reportTimingPathType(timing_path);
 }
 
 void
