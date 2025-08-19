@@ -65,7 +65,7 @@ public:
                   const Corner *corner,
                   const bool scalar,
                   const bool paths,
-                  const int internal_path_count,
+                  const unsigned int internal_path_count,
                   Sta *sta);
   ~MakeTimingModel();
   LibertyLibrary *makeTimingModel();

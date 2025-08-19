@@ -69,7 +69,7 @@ makeTimingModel(const char *lib_name,
                 const Corner *corner,
                 const bool scalar,
                 const bool write_timing_paths,
-                const int internal_path_count,
+                const unsigned int internal_path_count,
                 Sta *sta)
 {
   MakeTimingModel maker(lib_name, cell_name, filename, corner, scalar, write_timing_paths, internal_path_count, sta);
@@ -82,7 +82,7 @@ MakeTimingModel::MakeTimingModel(const char *lib_name,
                                  const Corner *corner,
                                  const bool scalar,
                                  const bool write_timing_paths,
-                                 const int internal_path_count,
+                                 const unsigned int internal_path_count,
                                  Sta *sta) :
   StaState(sta),
   lib_name_(lib_name),
@@ -817,7 +817,7 @@ public:
 private:
   const RiseFall *input_rf_;
   Sta *sta_;
-  int internal_path_count_;
+  unsigned int internal_path_count_;
   float slack_{std::numeric_limits<float>::max()};
   std::array<std::array<std::set<InputRegisterTimingPath>, 2>, 2> timing_paths_;
 };
@@ -893,7 +893,6 @@ MakeTimingModel::findWorstSlackInternalPath()
 
     while (instance_pin_iterator->hasNext()) {
       Pin *instance_pin = instance_pin_iterator->next();
-      const char *instance_pin_name = network_->name(instance_pin);
       if (network_->direction(instance_pin)->isInput()) {
         Vertex *vertex = graph_->vertex(network_->vertexId(instance_pin));
         VertexOutEdgeIterator out_edge_iter(vertex, graph_);
@@ -914,33 +913,28 @@ MakeTimingModel::findWorstSlackInternalPath()
     }
 
     for (auto& register_input_pin : input_pins) {
-      for (auto& register_output_pin : output_pins) {
-        const char *input_pin_name = network_->name(register_input_pin);
-        const char *output_pin_name = network_->name(register_output_pin);
+      for (const RiseFall *input_rf : RiseFall::range()) {
+        const RiseFallBoth *input_rf1 = input_rf->asRiseFallBoth();
+        sta_->setInputDelay(register_input_pin, input_rf1,
+                            sdc_->defaultArrivalClock(),
+                            sdc_->defaultArrivalClockEdge()->transition(),
+                            nullptr, false, false, MinMaxAll::all(), true, 0.0);
 
-        for (const RiseFall *input_rf : RiseFall::range()) {
-          const RiseFallBoth *input_rf1 = input_rf->asRiseFallBoth();
-          sta_->setInputDelay(register_input_pin, input_rf1,
-                              sdc_->defaultArrivalClock(),
-                              sdc_->defaultArrivalClockEdge()->transition(),
-                              nullptr, false, false, MinMaxAll::all(), true, 0.0);
+        PinSet *from_pins = new PinSet(network_);
+        from_pins->insert(register_input_pin);
+        ExceptionFrom *from = sta_->makeExceptionFrom(from_pins, nullptr, nullptr, RiseFallBoth::rise());
 
-          PinSet *from_pins = new PinSet(network_);
-          from_pins->insert(register_input_pin);
-          ExceptionFrom *from = sta_->makeExceptionFrom(from_pins, nullptr, nullptr, RiseFallBoth::rise());
+        ExceptionTo *to = sta_->makeExceptionTo(nullptr, nullptr, nullptr, input_rf1, input_rf1);
 
-          ExceptionTo *to = sta_->makeExceptionTo(nullptr, nullptr, nullptr, input_rf1, input_rf1);
+        search_->findFilteredArrivals(from, nullptr, to, false, false);
 
-          search_->findFilteredArrivals(from, nullptr, to, false, false);
-
-          end_visitor.setInputRf(input_rf);
-          VertexSeq endpoints = search_->filteredEndpoints();
-          VisitPathEnds visit_ends(sta_);
-          for (Vertex *end : endpoints) {
-            visit_ends.visitPathEnds(end, corner_, MinMaxAll::all(), true, &end_visitor);
-          }
-          search_->deleteFilteredArrivals();
+        end_visitor.setInputRf(input_rf);
+        VertexSeq endpoints = search_->filteredEndpoints();
+        VisitPathEnds visit_ends(sta_);
+        for (Vertex *end : endpoints) {
+          visit_ends.visitPathEnds(end, corner_, MinMaxAll::all(), true, &end_visitor);
         }
+        search_->deleteFilteredArrivals();
       }
     }
   }

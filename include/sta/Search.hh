@@ -418,7 +418,7 @@ public:
                                                float slack_max,
                                                bool sort_by_slack,
                                       	       PathGroupNameSet *groups,
-                                               int path_count);
+                                               unsigned int path_count);
 
 protected:
   void init(StaState *sta);

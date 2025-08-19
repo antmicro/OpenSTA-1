@@ -705,7 +705,7 @@ InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_
                                                      float slack_max,
                                                      bool sort_by_slack,
                                                      PathGroupNameSet *groups,
-                                                     int path_count)
+                                                     unsigned int path_count)
 {
   std::unordered_map<std::string, InternalPathSet> found_timing_paths{};
   LeafInstanceIterator *leaf_instance_iterator = network_->leafInstanceIterator(network_->topInstance());
