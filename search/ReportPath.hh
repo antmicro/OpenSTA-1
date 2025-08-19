@@ -500,6 +500,8 @@ protected:
   void reportTimingPathType(const InputRegisterTimingPath *timing_path) const;
   void reportFullTimingPath(const char *instance_name, const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportShortTimingPath(const InputRegisterTimingPath *timing_path) const;
+  void reportTimingPathEndpointHeader(const InputRegisterTimingPath *timing_path, PathGroup *prev_group) const;
+  void reportTimingPathEndLine(const InputRegisterTimingPath *timing_path) const;
   void reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival) const;

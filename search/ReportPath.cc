@@ -2800,8 +2800,8 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
     reportBlankLine();
     break;
   case ReportPathFormat::endpoint:
-    // reportEndpointHeader(end, prev_end);
-    // reportEndLine(end);
+    reportTimingPathEndpointHeader(timing_path, nullptr);
+    reportTimingPathEndLine(timing_path);
     break;
   case ReportPathFormat::summary:
     // reportSummaryLine(end);
@@ -2918,6 +2918,38 @@ ReportPath::reportShortTimingPath(const InputRegisterTimingPath *timing_path) co
   reportTimingPathEndpoint(timing_path);
   reportTimingPathGroup(timing_path);
   reportTimingPathType(timing_path);
+}
+
+void
+ReportPath::reportTimingPathEndpointHeader(const InputRegisterTimingPath *timing_path, PathGroup *prev_group) const
+{
+  bool is_group_same_as_previous = prev_group && stringEq(timing_path->path_group_name.c_str(), prev_group->name());
+  if (!is_group_same_as_previous) {
+    if (prev_group)
+      reportBlankLine();
+    const char *setup_hold = (timing_path->path_type == MinMax::min()->to_string())
+      ? "min_delay/hold"
+      : "max_delay/setup";
+    report_->reportLine("%s group %s",
+                        setup_hold,
+                        timing_path->path_group_name.c_str());
+    reportBlankLine();
+    reportEndHeader();
+  }
+}
+
+void
+ReportPath::reportTimingPathEndLine(const InputRegisterTimingPath *timing_path) const
+{
+  string line;
+  const TimingPathVertex &vertex = timing_path->data_arrival_path.vertices.front();
+  string endpoint = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), vertex.pin.c_str(), vertex.cell.c_str());
+  reportDescription(endpoint.c_str(), line);
+  reportSpaceFieldDelay(timing_path->data_required_path.time, nullptr, line);
+  reportSpaceFieldDelay(timing_path->data_arrival_path.time, nullptr, line);
+  reportSpaceFieldDelay(timing_path->slack, nullptr, line);
+  line += (delayAsFloat(timing_path->slack, nullptr, this) >= 0.0) ? " (MET)" : " (VIOLATED)";
+  report_->reportLineString(line);
 }
 
 void
