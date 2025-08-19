@@ -2804,7 +2804,7 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
     reportTimingPathEndLine(timing_path);
     break;
   case ReportPathFormat::summary:
-    // reportSummaryLine(end);
+    reportTimingPathSummaryLine(timing_path);
     break;
   case ReportPathFormat::slack_only:
     // reportSlackOnly(end);
@@ -2949,6 +2949,23 @@ ReportPath::reportTimingPathEndLine(const InputRegisterTimingPath *timing_path) 
   reportSpaceFieldDelay(timing_path->data_arrival_path.time, nullptr, line);
   reportSpaceFieldDelay(timing_path->slack, nullptr, line);
   line += (delayAsFloat(timing_path->slack, nullptr, this) >= 0.0) ? " (MET)" : " (VIOLATED)";
+  report_->reportLineString(line);
+}
+
+void
+ReportPath::reportTimingPathSummaryLine(const InputRegisterTimingPath *timing_path) const
+{
+  string line;
+  const EarlyLate *early_late = nullptr;
+  const TimingPathVertex &startpoint_vertex = timing_path->data_arrival_path.vertices.front();
+  string startpoint_description = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), startpoint_vertex.pin.c_str(), startpoint_vertex.cell.c_str());
+  reportDescription(startpoint_description.c_str(), line);
+  line += ' ';
+
+  const TimingPathVertex &endpoint_vertex = timing_path->data_arrival_path.vertices.back();
+  string endpoint_description = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), endpoint_vertex.pin.c_str(), endpoint_vertex.cell.c_str());
+  reportDescription(endpoint_description.c_str(), line);
+  reportSpaceFieldDelay(timing_path->slack, EarlyLate::early(), line);
   report_->reportLineString(line);
 }
 
