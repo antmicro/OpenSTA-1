@@ -2807,7 +2807,7 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
     reportTimingPathSummaryLine(timing_path);
     break;
   case ReportPathFormat::slack_only:
-    // reportSlackOnly(end);
+    reportTimingPathSlackOnly(timing_path);
     break;
   case ReportPathFormat::json:
     // reportJson(end, last);
@@ -2966,6 +2966,16 @@ ReportPath::reportTimingPathSummaryLine(const InputRegisterTimingPath *timing_pa
   string endpoint_description = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), endpoint_vertex.pin.c_str(), endpoint_vertex.cell.c_str());
   reportDescription(endpoint_description.c_str(), line);
   reportSpaceFieldDelay(timing_path->slack, EarlyLate::early(), line);
+  report_->reportLineString(line);
+}
+
+void
+ReportPath::reportTimingPathSlackOnly(const InputRegisterTimingPath *timing_path) const
+{
+  std::string line;
+  const EarlyLate *early_late = nullptr;
+  reportDescription(timing_path->path_group_name.c_str(), line);
+  reportSpaceFieldDelay(timing_path->slack, early_late, line);
   report_->reportLineString(line);
 }
 
