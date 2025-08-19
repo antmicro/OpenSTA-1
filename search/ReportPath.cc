@@ -2820,6 +2820,8 @@ ReportPath::reportFullTimingPath(const char *instance_name, const InputRegisterT
 {
   reportTimingPathStartpoint(timing_path);
   reportTimingPathEndpoint(timing_path);
+  reportTimingPathGroup(timing_path);
+  reportTimingPathType(timing_path);
   reportBlankLine();
   reportPathHeader();
   reportTimingPathArrivalPath(timing_path, min_max);
@@ -2846,6 +2848,22 @@ void
 ReportPath::reportTimingPathEndpoint(const InputRegisterTimingPath *timing_path) const
 {
   reportEndpoint(timing_path->data_arrival_path.vertices.back().pin.c_str(), timing_path->cell_name.c_str());
+}
+
+void
+ReportPath::reportTimingPathGroup(const InputRegisterTimingPath *timing_path) const
+{
+  std::string line = "Path Group: ";
+  line += timing_path->path_group_name;
+  report_->reportLineString(line);
+}
+
+void
+ReportPath::reportTimingPathType(const InputRegisterTimingPath *timing_path) const
+{
+  std::string line = "Path Type: ";
+  line += timing_path->path_type;
+  report_->reportLineString(line);
 }
 
 void
