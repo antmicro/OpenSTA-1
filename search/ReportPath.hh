@@ -77,8 +77,8 @@ public:
 		     const PathEnd *prev_end) const;
   void reportPathEnds(const PathEndSeq *ends) const;
   void reportPath(const Path *path) const;
-  void reportPath(const InternalPathSeq *timing_paths) const;
-  void reportPath(const InputRegisterTimingPath *timing_path) const;
+  void reportPath(const InternalPathSeq *timing_paths, bool prev_path) const;
+  void reportPath(const InputRegisterTimingPath *timing_path, bool prev_path) const;
   void reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const;
   PathGroup *findPathGroupForInternalPath(const InputRegisterTimingPath *timing_path) const;
   void mergePathsBySlack(
@@ -507,7 +507,7 @@ protected:
   void reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival) const;
-  void reportTimingPathJson(const InputRegisterTimingPath *timing_path) const;
+  void reportTimingPathJson(const InputRegisterTimingPath *timing_path, bool prev_path) const;
   void reportTimingPathJson(const char *instance_name, const TimingArc *timing_arc, int indent, bool last_path, std::string &result, bool is_clk_path, float prev_time) const;
   void reportTimingPathJson(std::string &result, int indent, const char *path_name, const std::string &cell_name, const TimingPath *timing_path) const;
 

@@ -2776,15 +2776,16 @@ ReportPath::reportPathFull(const Path *path) const
 }
 
 void
-ReportPath::reportPath(const InternalPathSeq *timing_paths) const
+ReportPath::reportPath(const InternalPathSeq *timing_paths, bool prev_path) const
 {
   for (auto& timing_path : *timing_paths) {
-    reportPath(timing_path);
+    reportPath(timing_path, prev_path);
+    prev_path = true;
   }
 }
 
 void
-ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
+ReportPath::reportPath(const InputRegisterTimingPath *timing_path, bool prev_path) const
 {
   switch (format_) {
   case ReportPathFormat::full:
@@ -2810,7 +2811,7 @@ ReportPath::reportPath(const InputRegisterTimingPath *timing_path) const
     reportTimingPathSlackOnly(timing_path);
     break;
   case ReportPathFormat::json:
-    reportTimingPathJson(timing_path);
+    reportTimingPathJson(timing_path, prev_path);
     break;
   }
 }
@@ -2980,12 +2981,12 @@ ReportPath::reportTimingPathSlackOnly(const InputRegisterTimingPath *timing_path
 }
 
 void
-ReportPath::reportTimingPathJson(const InputRegisterTimingPath *timing_path) const
+ReportPath::reportTimingPathJson(const InputRegisterTimingPath *timing_path, bool prev_path) const
 {
   std::string result;
-  // if (prev_end) {
-  //   result += ", ";
-  // }
+  if (prev_path) {
+    result += ", ";
+  }
 
   result += "{\n";
   stringAppend(result, "  \"type\": \"%s\",\n", timing_path->type.c_str());
@@ -3089,12 +3090,14 @@ ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_pa
     filtered_internal_paths.insert(filtered_internal_paths.end(), internal_paths.begin(), internal_paths.end());
   }
 
+  bool prev_path = false;
   for (auto& path_end : filtered_path_ends) {
     reportPathEnd(path_end);
+    prev_path = true;
   }
 
   for (auto& internal_path : filtered_internal_paths) {
-    reportPath(internal_path);
+    reportPath(internal_path, prev_path);
   }
 }
 

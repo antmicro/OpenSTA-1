@@ -2673,15 +2673,9 @@ Sta::reportPath(const Path *path)
 }
 
 void
-Sta::reportPath(const InputRegisterTimingPath *internal_path)
-{
-  report_path_->reportPath(internal_path);
-}
-
-void
 Sta::reportPath(const InternalPathSeq *internal_paths)
 {
-  report_path_->reportPath(internal_paths);
+  report_path_->reportPath(internal_paths, false);
 }
 
 void
