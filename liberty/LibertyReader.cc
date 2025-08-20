@@ -467,6 +467,14 @@ LibertyReader::defineVisitors()
          TimingPath::Names::COMBINATIONAL.at(RiseFall::fallIndex()),
          &LibertyReader::beginFallTimingPath,
          &LibertyReader::endTimingPath);
+  defineGroupVisitor(
+         TimingPath::Names::SOURCE_CLOCK.at(RiseFall::riseIndex()),
+         &LibertyReader::beginRiseTimingPath,
+         &LibertyReader::endTimingPath);
+  defineGroupVisitor(
+         TimingPath::Names::SOURCE_CLOCK.at(RiseFall::fallIndex()),
+         &LibertyReader::beginFallTimingPath,
+         &LibertyReader::endTimingPath);
   defineAttrVisitor("time", &LibertyReader::visitTimingPathTime);
   defineAttrVisitor("vertex", &LibertyReader::visitTimingPathVertex);
   defineGroupVisitor(
@@ -4772,6 +4780,8 @@ LibertyReader::endTimingPath(LibertyGroup *)
   } else if (traversing_cell_worst_timing_paths_) {
     if (timing_path_.name.rfind("data_arrival") != std::string::npos) {
       register_to_register_timing_path_.data_arrival_path = std::move(timing_path_);
+    } else if (timing_path_.name.rfind("source_clock") != std::string::npos) {
+      register_to_register_timing_path_.source_clock_path = std::move(timing_path_);
     } else {
       register_to_register_timing_path_.data_required_path = std::move(timing_path_);
     }

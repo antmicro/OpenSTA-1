@@ -1,6 +1,6 @@
 module internal_paths_top (input in, input clk, output out);
 
-  wire w1, w2, w3, w4, w5;
+  wire w1, w2, w3, w4, w5, w6;
 
   internal_paths_cell t1 (.in(in), .clk(clk), .out(w1));
 
@@ -17,5 +17,9 @@ module internal_paths_top (input in, input clk, output out);
   internal_paths_cell t4 (.in(w4), .clk(clk), .out(out));
 
   internal_paths_cell t5 (.in(w5), .clk(clk), .out(out));
+
+  BUF_X1 b4 (.A(w5), .Z(w6));
+
+  internal_paths_cell t6 (.in(w6), .clk(clk), .out(out));
   
 endmodule

@@ -158,7 +158,6 @@ library (timing_cell_dff) {
           slack : 76.37401;
           fall_clocked_output() {
             time: 76.37401;
-            vertex("r1", "DFFHQx4_ASAP7_75t_R", "r1/CLK", "clk", "^", 0.00000, 0.00000, 0.35251, 0);
             vertex("r1", "DFFHQx4_ASAP7_75t_R", "r1/Q", "w2", "v", 60.24781, 7.12158, 0.39404, 1);
             vertex("u2", "BUFx2_ASAP7_75t_R", "u2/A", "w2", "v", 60.24781, 7.12158, 0.39404, 0);
             vertex("u2", "BUFx2_ASAP7_75t_R", "u2/Y", "out", "v", 76.37401, 5.01939, 0.00000, 1);
@@ -166,11 +165,15 @@ library (timing_cell_dff) {
           }
           rise_clocked_output() {
             time: 79.72392;
-            vertex("r1", "DFFHQx4_ASAP7_75t_R", "r1/CLK", "clk", "^", 0.00000, 0.00000, 0.35582, 0);
             vertex("r1", "DFFHQx4_ASAP7_75t_R", "r1/Q", "w2", "^", 64.55580, 8.70299, 0.39934, 1);
             vertex("u2", "BUFx2_ASAP7_75t_R", "u2/A", "w2", "^", 64.55580, 8.70299, 0.39934, 0);
             vertex("u2", "BUFx2_ASAP7_75t_R", "u2/Y", "out", "^", 79.72392, 4.73746, 0.00000, 1);
             vertex("", "timing_cell_dff", "out", "", "^", 79.72392, 4.73746, 0.00000, 0);
+          }
+          rise_source_clock() {
+            time: 0.00000;
+            vertex("", "timing_cell_dff", "clk", "", "^", 0.00000, 0.00000, 0.35582, 1);
+            vertex("r1", "DFFHQx4_ASAP7_75t_R", "r1/CLK", "clk", "^", 0.00000, 0.00000, 0.35582, 0);
           }
         }
       }

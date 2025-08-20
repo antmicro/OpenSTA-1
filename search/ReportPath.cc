@@ -1180,8 +1180,10 @@ ReportPath::reportJson(const PathEnd *end,
                  src_clk_edge->transition()->name());
   }
 
-  if (src_clk_path)
-    reportJson(src_clk_path, "source_clock_path", 2, true, result, nullptr, true);
+  if (src_clk_path) {
+    const TimingArc *clk_path_arc = expanded.startPrevArc();
+    reportJson(src_clk_path, "source_clock_path", 2, true, result, clk_path_arc, true);
+  }
   reportJson(expanded, "source_path", 2, !end->isUnconstrained(), result, end->checkArc(), false);
 
   const ClockEdge *tgt_clk_edge = end->targetClkEdge(this);
@@ -1354,10 +1356,16 @@ void ReportPath::reportTimingPathJson(const char* instance_name, const TimingArc
   const auto& timing_paths = timing_arc->set()->timingPaths();
   const TimingPath* timing_path = nullptr;
   if (is_clk_path) {
-    timing_path = &timing_paths.at(TimingPath::Names::DATA_REQUIRED.at(timing_arc->toEdge()->asRiseFall()->index()));
+    int rf_index = timing_arc->fromEdge()->asRiseFall()->index();
+    if (timing_paths.find(TimingPath::Names::DATA_REQUIRED.at(rf_index)) != timing_paths.end()) {
+      timing_path = &timing_paths.at(TimingPath::Names::DATA_REQUIRED.at(rf_index));
+    } else {
+      timing_path = &timing_paths.at(TimingPath::Names::SOURCE_CLOCK.at(rf_index));
+    }
   }
   else {
-    timing_path = &timing_paths.at(TimingPath::ROLE_PATH_MAPPINGS.at(timing_arc->role()).at(timing_arc->toEdge()->asRiseFall()->index()));
+    int rf_index = timing_arc->toEdge()->asRiseFall()->index();
+    timing_path = &timing_paths.at(TimingPath::ROLE_PATH_MAPPINGS.at(timing_arc->role()).at(rf_index));
   }
 
   for (std::size_t index = 0; index < timing_path->vertices.size(); ++index) {
@@ -3004,9 +3012,12 @@ ReportPath::reportTimingPathJson(const InputRegisterTimingPath *timing_path, boo
   stringAppend(result, "  \"source_clock\": \"%s\",\n", timing_path->source_clock_name.c_str());
   stringAppend(result, "  \"source_clock_edge\": \"%s\",\n", timing_path->source_clock_transition->name());
 
-  // TODO: separate source clock path from data arrival path while exporting timing paths
-  // if (src_clk_path)
-  //   reportJson(src_clk_path, "source_clock_path", 2, true, result, nullptr, true);
+  if (!timing_path->source_clock_path.vertices.empty()) {
+    stringAppend(result, "%*s\"%s\": [\n", 2, "", "source_clock_path");
+    reportTimingPathJson(result, 2, timing_path->cell_name, &timing_path->source_clock_path);
+    stringAppend(result, "%*s],\n", 2, "");
+  }
+  
   stringAppend(result, "%*s\"%s\": [\n", 2, "", "source_path");
   reportTimingPathJson(result, 2, timing_path->cell_name, &timing_path->data_arrival_path);
   stringAppend(result, "%*s],\n", 2, "");
