@@ -177,6 +177,8 @@ record_sta_tests {
   timing_cell_complex_cdc
   timing_paths_propagated_clock
   timing_paths_non_propagated_clock
+  internal_paths_cell
+  internal_paths_top
 }
 
 define_test_group fast [group_tests all]
