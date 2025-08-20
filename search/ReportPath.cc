@@ -3102,6 +3102,7 @@ ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_pa
 
   for (auto& internal_path : filtered_internal_paths) {
     reportPath(internal_path, prev_path);
+    prev_path = true;
   }
 }
 
@@ -3169,9 +3170,9 @@ ReportPath::mergePathsBySlack(
     }
 
     float path_end_slack = input_path_ends.at(first_index)->slack(this);
-    float internal_path_slack = input_internal_paths.at(first_index)->slack;
+    float internal_path_slack = input_internal_paths.at(second_index)->slack;
     if (path_end_slack < internal_path_slack) {
-      filtered_path_ends.emplace_back(input_path_ends.at(second_index));
+      filtered_path_ends.emplace_back(input_path_ends.at(first_index));
       first_index += 1;
     } else {
       filtered_internal_paths.emplace_back(input_internal_paths.at(second_index));

@@ -291,13 +291,13 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
     }
   }
 
-  set path_count 1
-  if [info exists keys(-path_count)] {
-    set path_count $keys(-path_count)
+  set group_path_count 1
+  if [info exists keys(-group_path_count)] {
+    set group_path_count $keys(-group_path_count)
   }
-  check_positive_integer "-path_count" $path_count
-  if { $path_count < 1 } {
-    sta_error 513 "-path_count must be >= 1."
+  check_positive_integer "-group_path_count" $group_path_count
+  if { $group_path_count < 1 } {
+    sta_error 513 "-group_path_count must be >= 1."
   }
 
   set slack_min "-1e+30"
@@ -322,7 +322,7 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
   }
 
   set internal_timing_paths [find_worst_internal_timing_paths $min_max \
-		   $end_rf $slack_min $slack_max $sort_by_slack $groups $path_count]
+		   $end_rf $slack_min $slack_max $sort_by_slack $groups $group_path_count]
   return $internal_timing_paths
 }
 
@@ -519,8 +519,10 @@ define_cmd_args "report_checks" \
 
 proc_redirect report_checks {
   global sta_report_unconstrained_paths
-  parse_report_path_options "report_checks" args "full" 0
   # Temporary solution as parse_key_args clears out args var
+  set args_copy $args
+  parse_report_path_options "report_checks" args "full" 0
+  set args $args_copy
   set args_copy $args
   set path_ends [find_timing_paths_cmd "report_checks" args]
   set internal_paths [find_internal_timing_paths_cmd "report_checks" args_copy]
