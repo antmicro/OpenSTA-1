@@ -219,12 +219,6 @@ proc find_timing_paths_cmd { cmd args_var } {
 
   if { [llength $args] != 0 } {
     delete_from_thrus_to $from $thrus $to
-    set arg [lindex $args 0]
-    if { [is_keyword_arg $arg] } {
-      sta_error 514 "'$arg' is not a known keyword or flag."
-    } else {
-      sta_error 515 "positional arguments not supported."
-    }
   }
 
   set path_ends [find_path_ends $from $thrus $to $unconstrained \

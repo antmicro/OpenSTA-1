@@ -75,8 +75,6 @@ proc parse_key_args { cmd arg_var key_var keys {flag_var ""} {flags {}} \
 	    if { $flag_index >= 0 } {
 	      set flag [lindex $flags $flag_index]
 	      set flag_present($flag) 1
-	    } elseif { $unknown_key_is_error } {
-	      sta_error 562 "$cmd $arg is not a known keyword or flag."
 	    } else {
 	      lappend args_rtn $arg
 	    }
@@ -97,11 +95,7 @@ proc check_for_key_args { cmd arg_var } {
   set args_rtn {}
   while { $args != "" } {
     set arg [lindex $args 0]
-    if { [is_keyword_arg $arg] } {
-      sta_error 563 "$cmd $arg is not a known keyword or flag."
-    } else {
-      lappend args_rtn $arg
-    }
+    lappend args_rtn $arg
     set args [lrange $args 1 end]
   }
   set args $args_rtn
