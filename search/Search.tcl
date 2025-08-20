@@ -520,7 +520,7 @@ define_cmd_args "report_checks" \
 proc_redirect report_checks {
   global sta_report_unconstrained_paths
   parse_report_path_options "report_checks" args "full" 0
-  # Temporary solution as find_timing_paths_cmd clears out args var
+  # Temporary solution as parse_key_args clears out args var
   set args_copy $args
   set path_ends [find_timing_paths_cmd "report_checks" args]
   set internal_paths [find_internal_timing_paths_cmd "report_checks" args_copy]
