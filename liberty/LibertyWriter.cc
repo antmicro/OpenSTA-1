@@ -351,6 +351,10 @@ LibertyWriter::writeCell(const LibertyCell *cell)
 
           fprintf(stream_, "          timing_path_group : \"%s\";\n", timing_path.path_group_name.c_str());
           fprintf(stream_, "          timing_path_type : \"%s\";\n", timing_path.type.c_str());
+          
+          if (!timing_path.source_clock_path.vertices.empty()) {
+            writeTimingPath(10, timing_path.source_clock_path);
+          }
           writeTimingPath(10, timing_path.data_arrival_path);
           writeTimingPath(10, timing_path.data_required_path);
           fprintf(stream_, "        }\n");

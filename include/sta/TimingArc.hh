@@ -122,6 +122,7 @@ struct TimingPath
     static constexpr std::array<const char*, 2> DATA_REQUIRED{"rise_data_required", "fall_data_required"};
     static constexpr std::array<const char*, 2> CLOCKED_OUTPUT{"rise_clocked_output", "fall_clocked_output"};
     static constexpr std::array<const char*, 2> COMBINATIONAL{"rise_combinational", "fall_combinational"};
+    static constexpr std::array<const char*, 2> SOURCE_CLOCK{"rise_source_clock", "fall_source_clock"};
   };
 
   inline static const std::unordered_map<const TimingRole*, std::array<const char*, 2>> ROLE_PATH_MAPPINGS =
@@ -148,6 +149,7 @@ struct InputRegisterTimingPath
   std::string source_clock_name{};
   const RiseFall *target_clock_transition{nullptr};
   std::string target_clock_name{};
+  TimingPath source_clock_path{};
   TimingPath data_arrival_path{};
   TimingPath data_required_path{};
 };
@@ -155,6 +157,7 @@ struct InputRegisterTimingPath
 struct CombinationalTimingPath
 {
   float slack{std::numeric_limits<float>::max()};
+  TimingPath source_clock_path{};
   TimingPath combinational_delay_path{};
 };
 

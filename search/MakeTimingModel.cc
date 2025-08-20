@@ -328,12 +328,12 @@ TimingPathVertex extractTimingPathVertexDescription(StaState *sta_state,
   return timing_path_vertex;
 }
 
-std::vector<TimingPathVertex> extractTimingPathVertices(const Path *path, const RiseFall *rise_fall, bool skip_clk_vertex)
+std::vector<TimingPathVertex> extractTimingPathVertices(const Path *path, int starting_index, const RiseFall *rise_fall)
 {
   StaState* sta_state = Sta::sta();
 
   PathExpanded expanded(path, sta_state);
-  std::size_t path_first_index = skip_clk_vertex ? 1 : 0;
+  std::size_t path_first_index = starting_index;
   std::size_t path_last_index = expanded.size() - 1;
 
   bool is_clock_propagated = path->clkInfo(sta_state->search())->isPropagated();
@@ -344,16 +344,16 @@ std::vector<TimingPathVertex> extractTimingPathVertices(const Path *path, const 
 
   std::vector<TimingPathVertex> vertices;
   vertices.reserve(path_last_index - path_first_index + 1);
-  for (std::size_t i = path_first_index; i <= path_last_index; ++i) {
-    const Path *path_element = expanded.path(i);
+  for (std::size_t index = path_first_index; index <= path_last_index; ++index) {
+    const Path *path_element = expanded.path(index);
 
     bool is_clk_start = path_element->vertex(sta_state) == clk_start;
     bool is_clk = path_element->isClock(sta_state->search());
     
-    if (is_clk && !is_clock_propagated && !is_clk_start) {
+    if (is_clk && !is_clock_propagated && index != path_first_index && index != path_last_index) {
       continue;
     }
-  
+
     TimingPathVertex timing_path_vertex = extractTimingPathVertexDescription(sta_state, rise_fall, dcalc_ap, path_element, is_clock_propagated);
     vertices.emplace_back(timing_path_vertex);
   }
@@ -430,15 +430,24 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
 
   InputRegisterTimingPath input_register_timing_path{};
 
-  const Path *path = path_end->path();
-  static constexpr bool INCLUDE_CLOCK_VERTEX = false;
-  input_register_timing_path.data_arrival_path.vertices = extractTimingPathVertices(path, input_rf, INCLUDE_CLOCK_VERTEX);
+  const PathExpanded path_expanded{path_end->path(), sta_state};
+  
+  const Path *source_clock_path = path_expanded.clkPath();
+  int starting_index = 0;
+  if (source_clock_path) {
+    const RiseFall *source_clock_transition = source_clock_path->transition(sta_state);
+    input_register_timing_path.source_clock_path.vertices = extractTimingPathVertices(source_clock_path, starting_index, source_clock_transition);
+    input_register_timing_path.source_clock_path.name = TimingPath::Names::SOURCE_CLOCK.at(source_clock_transition->index());
+    starting_index = path_expanded.startIndex();
+  }
+  
+  input_register_timing_path.data_arrival_path.vertices = extractTimingPathVertices(path_expanded.endPath(), starting_index, input_rf);
   input_register_timing_path.data_arrival_path.time = path_end->dataArrivalTime(sta_state);
   input_register_timing_path.data_arrival_path.rise_fall = input_rf;
   input_register_timing_path.data_arrival_path.name = TimingPath::Names::DATA_ARRIVAL.at(input_rf->index());
   
-  const Path *clock_path = path_end->targetClkPath();
-  input_register_timing_path.data_required_path.vertices = extractDataRequiredTimingPathVertices(clock_path, input_rf);
+  const Path *target_clock_path = path_end->targetClkPath();
+  input_register_timing_path.data_required_path.vertices = extractDataRequiredTimingPathVertices(target_clock_path, input_rf);
   input_register_timing_path.data_required_path.time = path_end->requiredTime(sta_state);
   input_register_timing_path.data_required_path.rise_fall = input_rf;
   input_register_timing_path.data_required_path.name = TimingPath::Names::DATA_REQUIRED.at(input_rf->index());
@@ -604,8 +613,8 @@ MakeTimingModel::findOutputDelays(const RiseFall *input_rf,
             timing_path.combinational_delay_path.name = TimingPath::Names::COMBINATIONAL.at(output_rf->index());
             timing_path.combinational_delay_path.rise_fall = input_rf;
 
-            static constexpr bool INCLUDE_CLOCK_VERTEX = false;
-            timing_path.combinational_delay_path.vertices = extractTimingPathVertices(path, input_rf, INCLUDE_CLOCK_VERTEX);
+            const int starting_index = 0;
+            timing_path.combinational_delay_path.vertices = extractTimingPathVertices(path, starting_index, input_rf);
             timing_path.combinational_delay_path.time = path->arrival();
           }
         }
@@ -747,10 +756,18 @@ MakeTimingModel::findClkedOutputPaths()
           Required required = path->required();
           timing_path.slack = arrival - required;
           if (write_timing_paths_ && (timing_paths.count(output_rf) == 0 || timing_path.slack < timing_paths.at(output_rf).slack)) {
+            const PathExpanded path_expanded{path, sta_};
+            const Path *source_clock_path = path_expanded.clkPath();
+            int starting_index = 0;
+            if (source_clock_path) {
+              const RiseFall *source_clock_transition = source_clock_path->transition(sta_);
+              timing_path.source_clock_path.vertices = extractTimingPathVertices(source_clock_path, starting_index, source_clock_transition);
+              timing_path.source_clock_path.name = TimingPath::Names::SOURCE_CLOCK.at(source_clock_transition->index());
+              starting_index = path_expanded.startIndex();
+            }
+            
             timing_path.combinational_delay_path.name = TimingPath::Names::CLOCKED_OUTPUT.at(output_rf->index());
-
-            static constexpr bool SKIP_CLOCK_VERTEX = true;
-            timing_path.combinational_delay_path.vertices = extractTimingPathVertices(path, output_rf, SKIP_CLOCK_VERTEX);
+            timing_path.combinational_delay_path.vertices = extractTimingPathVertices(path, starting_index, output_rf);
             timing_path.combinational_delay_path.time = delay;
             timing_path.combinational_delay_path.rise_fall = output_rf;
             timing_paths[output_rf] = std::move(timing_path);
@@ -778,6 +795,9 @@ MakeTimingModel::findClkedOutputPaths()
               attrs->setModel(output_rf, gate_model);
               if (write_timing_paths_) {
                 attrs->mergeSlack(timing_paths.at(output_rf).slack);
+                if (!timing_paths.at(output_rf).source_clock_path.vertices.empty()) {
+                  attrs->addTimingPath(timing_paths.at(output_rf).source_clock_path);
+                }
                 attrs->addTimingPath(timing_paths.at(output_rf).combinational_delay_path);
               }
             }
