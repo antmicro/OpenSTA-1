@@ -1,4 +1,4 @@
-module timing_cell (input in, input clk, output out);
+module internal_paths_cell (input in, input clk, output out);
 
   wire w1, w2, w3, w4, w5, w6, w7;
 
@@ -8,8 +8,8 @@ module timing_cell (input in, input clk, output out);
   BUF_X1 u3 (.A(w2), .Z(w3));
   BUF_X1 u5 (.A(w3), .Z(w4));
   BUF_X1 u6 (.A(w4), .Z(w5));
-  BUF_X1 u6 (.A(w5), .Z(w6));
-  BUF_X1 u6 (.A(w6), .Z(w7));
+  BUF_X1 u7 (.A(w5), .Z(w6));
+  BUF_X1 u8 (.A(w6), .Z(w7));
   
   // r1 - r2 with one delay buffer
   // path group: clk
