@@ -172,7 +172,6 @@ library (timing_cell_dff) {
           }
           rise_source_clock() {
             time: 0.00000;
-            vertex("", "timing_cell_dff", "clk", "", "^", 0.00000, 0.00000, 0.35582, 1);
             vertex("r1", "DFFHQx4_ASAP7_75t_R", "r1/CLK", "clk", "^", 0.00000, 0.00000, 0.35582, 0);
           }
         }

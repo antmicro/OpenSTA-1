@@ -18,10 +18,9 @@
       "slew": 0.000e+00
     },
     {
-      "instance": "tt1",
-      "cell": "timing_cell_dff",
-      "verilog_src": "",
-      "pin": "tt1/clk",
+      "instance": "r1",
+      "cell": "DFFHQx4_ASAP7_75t_R",
+      "pin": "tt1/r1/CLK",
       "net": "clk",
       "arrival": 0.000e+00,
       "slew": 0.000e+00

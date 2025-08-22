@@ -337,9 +337,6 @@ std::vector<TimingPathVertex> extractTimingPathVertices(const Path *path, int st
   std::size_t path_last_index = expanded.size() - 1;
 
   bool is_clock_propagated = path->clkInfo(sta_state->search())->isPropagated();
-  const Path *clk_path = expanded.clkPath();
-  Vertex *clk_start = clk_path ? clk_path->vertex(sta_state) : nullptr;
-
   DcalcAnalysisPt *dcalc_ap = path->pathAnalysisPt(sta_state)->dcalcAnalysisPt();
 
   std::vector<TimingPathVertex> vertices;
@@ -347,7 +344,6 @@ std::vector<TimingPathVertex> extractTimingPathVertices(const Path *path, int st
   for (std::size_t index = path_first_index; index <= path_last_index; ++index) {
     const Path *path_element = expanded.path(index);
 
-    bool is_clk_start = path_element->vertex(sta_state) == clk_start;
     bool is_clk = path_element->isClock(sta_state->search());
     
     if (is_clk && !is_clock_propagated && index != path_first_index && index != path_last_index) {
@@ -436,6 +432,7 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   int starting_index = 0;
   if (source_clock_path) {
     const RiseFall *source_clock_transition = source_clock_path->transition(sta_state);
+    starting_index = 1;
     input_register_timing_path.source_clock_path.vertices = extractTimingPathVertices(source_clock_path, starting_index, source_clock_transition);
     input_register_timing_path.source_clock_path.name = TimingPath::Names::SOURCE_CLOCK.at(source_clock_transition->index());
     starting_index = path_expanded.startIndex();
@@ -758,7 +755,7 @@ MakeTimingModel::findClkedOutputPaths()
           if (write_timing_paths_ && (timing_paths.count(output_rf) == 0 || timing_path.slack < timing_paths.at(output_rf).slack)) {
             const PathExpanded path_expanded{path, sta_};
             const Path *source_clock_path = path_expanded.clkPath();
-            int starting_index = 0;
+            int starting_index = 1;
             if (source_clock_path) {
               const RiseFall *source_clock_transition = source_clock_path->transition(sta_);
               timing_path.source_clock_path.vertices = extractTimingPathVertices(source_clock_path, starting_index, source_clock_transition);

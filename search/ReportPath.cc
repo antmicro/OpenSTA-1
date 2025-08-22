@@ -3502,6 +3502,9 @@ void ReportPath::reportTimingPath(const char *instance_name, const TimingArc *ti
 {
   const auto &timing_paths = timing_arc->set()->timingPaths();
   const auto &timing_path = timing_paths.at(TimingPath::ROLE_PATH_MAPPINGS.at(timing_arc->role()).at(timing_arc->toEdge()->asRiseFall()->index()));
+  if (timing_paths.find(TimingPath::Names::SOURCE_CLOCK.at(timing_arc->fromEdge()->asRiseFall()->index())) != timing_paths.end()) {
+    reportTimingPath(instance_name, timing_paths.at(TimingPath::Names::SOURCE_CLOCK.at(timing_arc->fromEdge()->asRiseFall()->index())), min_max, base_arrival);
+  }
   reportTimingPath(instance_name, timing_path, min_max, base_arrival);
 }
 
