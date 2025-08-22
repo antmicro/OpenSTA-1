@@ -420,6 +420,11 @@ public:
                                       	       PathGroupNameSet *groups,
                                                unsigned int path_count);
 
+  PathsContainer mergePaths(const PathEndSeq *path_ends,
+                            const InternalPathSeq *timing_paths,
+                            bool sort_by_slack,
+                            unsigned int path_count);
+
 protected:
   void init(StaState *sta);
   void initVars();
@@ -595,6 +600,11 @@ protected:
   bool isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *group_names) const;
   void insertTimingPath(const InputRegisterTimingPath *timing_path,
                         InternalPathSeq &timing_paths) const;
+  PathGroup *findPathGroupForInternalPath(const InputRegisterTimingPath *timing_path) const;
+  void mergePathsBySlack(
+    PathEndSeq &input_path_ends, InternalPathSeq &input_internal_paths,
+    PathEndSeq &filtered_path_ends, InternalPathSeq &filtered_internal_paths,
+    unsigned int group_path_count) const;
 
   ////////////////////////////////////////////////////////////////
 

@@ -2542,6 +2542,20 @@ Sta::findWorstInternalTimingPaths(
 
 ////////////////////////////////////////////////////////////////
 
+PathsContainer
+Sta::mergePaths(const PathEndSeq *path_ends,
+                const InternalPathSeq *timing_paths,
+                bool sort_by_slack,
+                unsigned int path_count)
+{
+  return search_->mergePaths(path_ends,
+	       timing_paths,
+         sort_by_slack,
+	       path_count);
+}
+
+////////////////////////////////////////////////////////////////
+
 // Overall flow:
 //  make graph
 //  propagate constants
@@ -2661,9 +2675,9 @@ Sta::reportPathEnds(PathEndSeq *ends)
 }
 
 void
-Sta::reportPaths(PathEndSeq *ends, InternalPathSeq *internal_paths)
+Sta::reportPaths(const PathsContainer *paths_container)
 {
-  report_path_->reportPaths(ends, internal_paths);
+  report_path_->reportPaths(paths_container);
 }
 
 void

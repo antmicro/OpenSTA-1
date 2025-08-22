@@ -2784,6 +2784,12 @@ ReportPath::reportPathFull(const Path *path) const
 }
 
 void
+ReportPath::reportPaths(const PathsContainer *paths_container) const
+{
+
+}
+
+void
 ReportPath::reportPath(const InternalPathSeq *timing_paths, bool prev_path) const
 {
   for (auto& timing_path : *timing_paths) {
@@ -3064,131 +3070,6 @@ ReportPath::reportTimingPathJson(std::string &result, int indent, const std::str
     stringAppend(result, "%*s    \"arrival\": %.3e,\n", indent, "", delayAsFloat(vertex.arrival));
     stringAppend(result, "%*s    \"slew\": %.3e\n", indent, "", delayAsFloat(vertex.slew));
     stringAppend(result, "%*s  }%s\n", indent, "", (index < timing_path->vertices.size() - 1) ? "," : "");
-  }
-}
-
-void
-ReportPath::reportPaths(const PathEndSeq *ends, const InternalPathSeq *timing_paths) const
-{
-  if (timing_paths->empty()) {
-    reportPathEnds(ends);
-    return;
-  }
-
-  std::unordered_map<PathGroup*, PathEndSeq> grouped_path_ends;
-  for (auto& path_end : *ends) {
-    PathGroup *path_group = search_->pathGroup(path_end);
-    grouped_path_ends[path_group].emplace_back(path_end);
-  }
-
-  std::unordered_map<PathGroup*, InternalPathSeq> grouped_internal_paths;
-  for (auto& internal_timing_path : *timing_paths) {
-    PathGroup *path_group = findPathGroupForInternalPath(internal_timing_path);
-    if (path_group) {
-      grouped_internal_paths[path_group].emplace_back(internal_timing_path);
-    }
-  }
-
-  PathEndSeq filtered_path_ends{};
-  InternalPathSeq filtered_internal_paths{};
-  for (auto& [path_group, path_ends] : grouped_path_ends) {
-    if (grouped_internal_paths.find(path_group) != grouped_internal_paths.end()) {
-      InternalPathSeq &internal_paths = grouped_internal_paths.at(path_group);
-      mergePathsBySlack(path_ends, internal_paths, filtered_path_ends, filtered_internal_paths);
-      grouped_internal_paths.erase(path_group);
-    } else {
-      filtered_path_ends.insert(filtered_path_ends.end(), path_ends.begin(), path_ends.end());
-    }
-  }
-
-  for (auto& [path_group, internal_paths] : grouped_internal_paths) {
-    filtered_internal_paths.insert(filtered_internal_paths.end(), internal_paths.begin(), internal_paths.end());
-  }
-
-  bool prev_path = false;
-  for (auto& path_end : filtered_path_ends) {
-    reportPathEnd(path_end);
-    prev_path = true;
-  }
-
-  for (auto& internal_path : filtered_internal_paths) {
-    reportPath(internal_path, prev_path);
-    prev_path = true;
-  }
-}
-
-PathGroup *
-ReportPath::findPathGroupForInternalPath(const InputRegisterTimingPath *timing_path) const
-{
-  const MinMax *min_max = timing_path->path_type == "max" ? MinMax::max() : MinMax::min();
-  if (timing_path->path_group_name == "clk") {
-    Pin *clock_pin = network_->findPin(timing_path->target_clock_name.c_str());
-    auto clock_set = network_->clkNetwork()->clocks(clock_pin);
-    auto clock = *clock_set->begin();
-    return search_->findPathGroup(clock, min_max);
-  }
-
-  if (!PathGroups::isGroupPathName(timing_path->path_group_name.c_str())) {
-    return search_->findPathGroup(timing_path->path_group_name.c_str(), min_max);
-  }
-
-  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::pathDelayPathGroupName())) {
-    return search_->pathGroups()->pathDelayGroup(min_max);
-  }
-
-  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::gatedClkPathGroupName())) {
-    return search_->pathGroups()->gatedClkGroup(min_max);
-  }
-
-  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::asyncPathGroupName())) {
-    return search_->pathGroups()->asyncGroup(min_max);
-  }
-
-  if (stringEq(timing_path->path_group_name.c_str(), PathGroups::unconstrainedPathGroupName())) {
-    return search_->pathGroups()->unconstrainedGroup(min_max);
-  }
-
-  return nullptr;
-}
-
-void
-ReportPath::mergePathsBySlack(
-    PathEndSeq &input_path_ends, InternalPathSeq &input_internal_paths,
-    PathEndSeq &filtered_path_ends, InternalPathSeq &filtered_internal_paths) const
-{
-  unsigned int total_reported_count = std::min(group_path_count_, static_cast<int>(input_path_ends.size() + input_internal_paths.size()));
-
-  unsigned int first_index = 0;
-  unsigned int second_index = 0;
-
-  sort(input_path_ends, PathEndLess(this));
-  sort(input_internal_paths, InputRegisterTimingPathLess{});
-  
-  unsigned int current_index = 0;
-  while (current_index < total_reported_count) {
-    current_index += 1;
-
-    if (first_index >= input_path_ends.size()) {
-      filtered_internal_paths.emplace_back(input_internal_paths.at(second_index));
-      second_index += 1;
-      continue;
-    }
-
-    if (second_index >= input_internal_paths.size()) {
-      filtered_path_ends.emplace_back(input_path_ends.at(first_index));
-      first_index += 1;
-      continue;
-    }
-
-    float path_end_slack = input_path_ends.at(first_index)->slack(this);
-    float internal_path_slack = input_internal_paths.at(second_index)->slack;
-    if (path_end_slack < internal_path_slack) {
-      filtered_path_ends.emplace_back(input_path_ends.at(first_index));
-      first_index += 1;
-    } else {
-      filtered_internal_paths.emplace_back(input_internal_paths.at(second_index));
-      second_index += 1;
-    }
   }
 }
 

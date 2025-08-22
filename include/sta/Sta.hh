@@ -843,6 +843,10 @@ public:
                                                bool sort_by_slack,
                                                PathGroupNameSet *groups,
                                                int path_count);
+  PathsContainer mergePaths(const PathEndSeq *path_ends,
+                            const InternalPathSeq *timing_paths,
+                            bool sort_by_slack,
+                            unsigned int path_count);
   void setReportPathFormat(ReportPathFormat format);
   void setReportPathFieldOrder(StringSeq *field_names);
   void setReportPathFields(bool report_input_pin,
@@ -871,7 +875,7 @@ public:
 		     PathEnd *prev_end);
   void reportPathEnd(PathEnd *end);
   void reportPathEnds(PathEndSeq *ends);
-  void reportPaths(PathEndSeq *ends, InternalPathSeq *internal_paths);
+  void reportPaths(const PathsContainer *paths_container);
   ReportPath *reportPath() { return report_path_; }
   void reportPath(const Path *path);
   void reportPath(const InputRegisterTimingPath *internal_path);

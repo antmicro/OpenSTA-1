@@ -139,6 +139,12 @@ enum class ReportDeduplicationMode { none,
 			      keep_different
 };
 
+struct PathsContainer
+{
+  PathEndSeq path_ends;
+  InternalPathSeq internal_timing_paths;
+};
+
 static const TagIndex tag_index_bit_count = 28;
 static const TagIndex tag_index_max = (1 << tag_index_bit_count) - 1;
 static const TagIndex tag_index_null = tag_index_max;

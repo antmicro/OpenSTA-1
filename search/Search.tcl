@@ -322,6 +322,36 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
 
 ################################################################
 
+define_cmd_args "merge_paths_cmd" \
+  {[-group_path_count path_count] \
+   [-sort_by_slack]}
+
+proc merge_paths_cmd { cmd args_var path_ends_var internal_paths_var } {
+  upvar 1 $args_var args
+  upvar 1 $path_ends_var path_ends
+  upvar 1 $internal_paths_var internal_paths
+
+  parse_key_args $cmd args \
+    keys {-group_path_count} \
+    flags {-sort_by_slack} 0
+
+  set group_path_count 1
+  if [info exists keys(-group_path_count)] {
+    set group_path_count $keys(-group_path_count)
+  }
+  check_positive_integer "-group_path_count" $group_path_count
+  if { $group_path_count < 1 } {
+    sta_error 513 "-group_path_count must be >= 1."
+  }
+
+  set sort_by_slack [info exists flags(-sort_by_slack)]
+
+  set merged_paths [merge_paths $path_ends_var NULL $sort_by_slack $group_path_count]
+  return $merged_paths
+}
+
+################################################################
+
 define_cmd_args "report_arrival" {pin}
 
 proc report_arrival { pin } {
@@ -520,7 +550,8 @@ proc_redirect report_checks {
   set args_copy $args
   set path_ends [find_timing_paths_cmd "report_checks" args]
   set internal_paths [find_internal_timing_paths_cmd "report_checks" args_copy]
-  report_paths $path_ends $internal_paths
+  set merged_paths [merge_paths_cmd "report_checks" args_copy path_ends internal_paths]
+  report_paths $merged_paths
 }
 
 ################################################################

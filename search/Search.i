@@ -397,6 +397,22 @@ find_worst_internal_timing_paths(
 
 ////////////////////////////////////////////////////////////////
 
+PathsContainer
+merge_paths(
+	       PathEndSeq *path_ends,
+         InternalPathSeq *timing_paths,
+         bool sort_by_slack,
+         unsigned int path_count)
+{
+  Sta *sta = Sta::sta();
+  return sta->mergePaths(path_ends,
+	       timing_paths,
+	       sort_by_slack,
+	       path_count);
+}
+
+////////////////////////////////////////////////////////////////
+
 void
 report_path_end_header()
 {
@@ -529,11 +545,10 @@ report_path_ends(PathEndSeq *ends)
 }
 
 void
-report_paths(PathEndSeq *ends, InternalPathSeq *internal_paths)
+report_paths(PathsContainer *paths_container)
 {
-  Sta::sta()->reportPaths(ends, internal_paths);
-  delete ends;
-  delete internal_paths;
+  Sta::sta()->reportPaths(paths_container);
+  delete paths_container;
 }
 
 void
