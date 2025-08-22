@@ -150,15 +150,17 @@ library (timing_cell) {
           slack : 59.70571;
           fall_clocked_output() {
             time: 59.70571;
-            vertex("d2", "DFFHQx4_ASAP7_75t_R", "d2/CLK", "clk", "^", 0.00000, 0.00000, 0.74655, 0);
             vertex("d2", "DFFHQx4_ASAP7_75t_R", "d2/Q", "out", "v", 59.70571, 6.50280, 0.00000, 1);
             vertex("", "timing_cell", "out", "", "v", 59.70571, 6.50280, 0.00000, 0);
           }
           rise_clocked_output() {
             time: 63.93688;
-            vertex("d2", "DFFHQx4_ASAP7_75t_R", "d2/CLK", "clk", "^", 0.00000, 0.00000, 0.75516, 0);
             vertex("d2", "DFFHQx4_ASAP7_75t_R", "d2/Q", "out", "^", 63.93688, 7.95060, 0.00000, 1);
             vertex("", "timing_cell", "out", "", "^", 63.93688, 7.95060, 0.00000, 0);
+          }
+          rise_source_clock() {
+            time: 0.00000;
+            vertex("d2", "DFFHQx4_ASAP7_75t_R", "d2/CLK", "clk", "^", 0.00000, 0.00000, 0.75516, 0);
           }
         }
       }
@@ -175,9 +177,12 @@ library (timing_cell) {
           target_clock_transition : "^";
           timing_path_group : "clk";
           timing_path_type : "check";
+          rise_source_clock() {
+            time: 0.00000;
+            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.22442, 0.35582, 0);
+          }
           rise_data_arrival() {
             time: 96.10009;
-            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.22442, 0.35582, 0);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/Q", "w1", "^", 64.55580, 8.70299, 0.39934, 1);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/A", "w1", "^", 64.55580, 8.70299, 0.39934, 0);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/Y", "w2", "^", 80.64001, 6.39546, 0.39934, 1);
@@ -202,9 +207,12 @@ library (timing_cell) {
           target_clock_transition : "^";
           timing_path_group : "clk";
           timing_path_type : "check";
+          rise_source_clock() {
+            time: 0.00000;
+            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.22442, 0.35582, 0);
+          }
           fall_data_arrival() {
             time: 94.09145;
-            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.22442, 0.35251, 0);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/Q", "w1", "v", 60.24781, 7.12158, 0.39404, 1);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/A", "w1", "v", 60.24781, 7.12158, 0.39404, 0);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/Y", "w2", "v", 77.21077, 6.29417, 0.39404, 1);
@@ -229,9 +237,12 @@ library (timing_cell) {
           target_clock_transition : "^";
           timing_path_group : "clk";
           timing_path_type : "check";
+          rise_source_clock() {
+            time: 0.00000;
+            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.72075, 0.47554, 0);
+          }
           rise_data_arrival() {
             time: 97.05834;
-            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.72075, 0.47554, 0);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/Q", "w1", "^", 64.76494, 8.95723, 0.53428, 1);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/A", "w1", "^", 64.76494, 8.95723, 0.53428, 0);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/Y", "w2", "^", 81.25244, 6.95546, 0.53428, 1);
@@ -256,9 +267,12 @@ library (timing_cell) {
           target_clock_transition : "^";
           timing_path_group : "clk";
           timing_path_type : "check";
+          rise_source_clock() {
+            time: 0.00000;
+            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.72075, 0.47554, 0);
+          }
           fall_data_arrival() {
             time: 94.95612;
-            vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 0.00000, 6.72075, 0.47543, 0);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/Q", "w1", "v", 60.44068, 7.34173, 0.53423, 1);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/A", "w1", "v", 60.44068, 7.34173, 0.53423, 0);
             vertex("b2", "BUFx2_ASAP7_75t_R", "b2/Y", "w2", "v", 77.77494, 6.74820, 0.53423, 1);
