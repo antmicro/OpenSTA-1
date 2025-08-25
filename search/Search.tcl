@@ -155,7 +155,7 @@ proc find_timing_paths_cmd { cmd args_var } {
     sta_error 511 "$cmd command failed."
   }
 
-  check_for_key_args $cmd args
+  check_for_key_args $cmd args 0
 
   if { [info exists flags(-unconstrained)] } {
     set unconstrained 1
