@@ -538,15 +538,23 @@ define_cmd_args "report_checks" \
 
 proc_redirect report_checks {
   global sta_report_unconstrained_paths
-  # Temporary solution as parse_key_args clears out args var
-  set args_copy $args
+
+  # Some keys/flags are used more than one time and parse_key_args
+  # function clears out the args variable from used keys/flags
+  # so keep the original contents
+  set original_args $args
+
   parse_report_path_options "report_checks" args "full" 0
-  set args $args_copy
+
+  set args $original_args
   set path_ends [find_timing_paths_cmd "report_checks" args]
-  set args $args_copy
+
+  set args $original_args
   set internal_paths [find_internal_timing_paths_cmd "report_checks" args]
-  set args $args_copy
+
+  set args $original_args
   set merged_paths [merge_paths_cmd "report_checks" args path_ends internal_paths]
+
   report_paths $merged_paths
 }
 
