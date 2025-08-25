@@ -998,8 +998,8 @@ proc parse_report_path_options { cmd args_var default_format
   if [info exists path_options] {
     unset path_options
   }
-  parse_key_args $cmd args path_options {-format -digits -fields -group_path_count} \
-    path_options {-no_line_splits -report_sigmas -dedup_by_word -sorted_by_slack} $unknown_key_is_error
+  parse_key_args $cmd args path_options {-format -digits -fields} \
+    path_options {-no_line_splits -report_sigmas -dedup_by_word} $unknown_key_is_error
 
   set format $default_format
   if [info exists path_options(-format)] {
