@@ -386,13 +386,15 @@ find_worst_internal_timing_paths(
 	       int path_count)
 {
   Sta *sta = Sta::sta();
-  return sta->findWorstInternalTimingPaths(delay_min_max,
+  InternalPathSeq internal_paths = sta->findWorstInternalTimingPaths(delay_min_max,
 	       transition_rise_fall,
 	       slack_min,
 	       slack_max,
 	       sort_by_slack,
          groups,
 	       path_count);
+  delete groups;
+  return internal_paths;
 }
 
 ////////////////////////////////////////////////////////////////

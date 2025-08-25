@@ -346,7 +346,7 @@ proc merge_paths_cmd { cmd args_var path_ends_var internal_paths_var } {
 
   set sort_by_slack [info exists flags(-sort_by_slack)]
 
-  set merged_paths [merge_paths $path_ends_var NULL $sort_by_slack $group_path_count]
+  set merged_paths [merge_paths $path_ends $internal_paths $sort_by_slack $group_path_count]
   return $merged_paths
 }
 
@@ -547,10 +547,11 @@ proc_redirect report_checks {
   set args_copy $args
   parse_report_path_options "report_checks" args "full" 0
   set args $args_copy
-  set args_copy $args
   set path_ends [find_timing_paths_cmd "report_checks" args]
-  set internal_paths [find_internal_timing_paths_cmd "report_checks" args_copy]
-  set merged_paths [merge_paths_cmd "report_checks" args_copy path_ends internal_paths]
+  set args $args_copy
+  set internal_paths [find_internal_timing_paths_cmd "report_checks" args]
+  set args $args_copy
+  set merged_paths [merge_paths_cmd "report_checks" args path_ends internal_paths]
   report_paths $merged_paths
 }
 
