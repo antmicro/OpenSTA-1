@@ -2774,19 +2774,19 @@ ReportPath::reportPathFull(const Path *path) const
 void
 ReportPath::reportPaths(const PathsContainer *paths_container) const
 {
-  if (paths_container->internal_timing_paths.empty()) {
-    reportPathEnds(&paths_container->path_ends);
+  if (!paths_container->hasInternalPaths()) {
+    reportPathEnds(&paths_container->pathEnds());
     return;
   }
 
   PathEnd *prev_end{nullptr};
-  for (const auto &path_end : paths_container->path_ends) {
+  for (const auto &path_end : paths_container->pathEnds()) {
     reportPathEnd(path_end, prev_end);
     prev_end = path_end;
   }
 
   bool prev_path = prev_end;
-  for (const auto &internal_path : paths_container->internal_timing_paths) {
+  for (const auto &internal_path : paths_container->internalPaths()) {
     reportPath(internal_path, prev_path);
     prev_path = true;
   }

@@ -139,10 +139,41 @@ enum class ReportDeduplicationMode { none,
 			      keep_different
 };
 
-struct PathsContainer
+class PathsContainer
 {
-  PathEndSeq path_ends;
-  InternalPathSeq internal_timing_paths;
+public:
+  PathsContainer() = default;
+
+  PathsContainer(
+      PathEndSeq path_ends,
+      InternalPathSeq internal_timing_paths,
+      bool sorted_by_slack)
+    : path_ends_{std::move(path_ends)},
+    internal_timing_paths_{std::move(internal_timing_paths)},
+    sorted_by_slack_{sorted_by_slack} {}
+
+  PathsContainer(
+      PathEndSeq path_ends,
+      bool sorted_by_slack)
+    : path_ends_{std::move(path_ends)},
+    sorted_by_slack_{sorted_by_slack} {}
+
+  PathsContainer(
+      InternalPathSeq internal_timing_paths,
+      bool sorted_by_slack)
+    : internal_timing_paths_{std::move(internal_timing_paths)},
+    sorted_by_slack_{sorted_by_slack} {}
+
+  bool hasPathEnds() const { return !path_ends_.empty(); }
+  const PathEndSeq &pathEnds() const { return path_ends_; }
+  bool hasInternalPaths() const { return !internal_timing_paths_.empty(); }
+  const InternalPathSeq &internalPaths() const { return internal_timing_paths_; }
+  bool sortedBySlack() const { return sorted_by_slack_; }
+
+private:
+  PathEndSeq path_ends_{};
+  InternalPathSeq internal_timing_paths_{};
+  bool sorted_by_slack_{false};
 };
 
 static const TagIndex tag_index_bit_count = 28;

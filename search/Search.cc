@@ -746,6 +746,10 @@ InternalPathSeq Search::findInternalTimingPaths(const MinMaxAll *delay_min_max,
     internal_path_seq.insert(internal_path_seq.end(), group_paths.begin(), group_paths.end());
   }
 
+  if (sort_by_slack) {
+    sort(internal_path_seq, InputRegisterTimingPathLess{});
+  }
+
   return internal_path_seq;
 }
 
@@ -775,15 +779,11 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
   }
 
   if (!has_timing_paths) {
-    PathsContainer paths_container{};
-    paths_container.path_ends = *path_ends;
-    return paths_container;
+    return PathsContainer{*path_ends, sort_by_slack};
   }
 
   if (!has_path_ends) {
-    PathsContainer paths_container{};
-    paths_container.internal_timing_paths = *timing_paths;
-    return paths_container;
+    return PathsContainer{*timing_paths, sort_by_slack};
   }
 
   std::unordered_map<PathGroup*, PathEndSeq> grouped_path_ends;
@@ -816,10 +816,12 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
     filtered_internal_paths.insert(filtered_internal_paths.end(), internal_paths.begin(), internal_paths.end());
   }
 
-  PathsContainer paths_container{};
-  paths_container.path_ends = std::move(filtered_path_ends);
-  paths_container.internal_timing_paths = std::move(filtered_internal_paths);
-  return paths_container;
+  if (sort_by_slack) {
+    sort(filtered_path_ends, PathEndLess{this});
+    sort(filtered_internal_paths, InputRegisterTimingPathLess{});
+  }
+
+  return PathsContainer{std::move(filtered_path_ends), std::move(filtered_internal_paths), sort_by_slack};
 }
 
 PathGroup *
