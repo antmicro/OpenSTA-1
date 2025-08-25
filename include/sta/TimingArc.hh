@@ -132,6 +132,10 @@ struct TimingPath
     {TimingRole::setup(), Names::DATA_ARRIVAL},
     {TimingRole::hold(), Names::DATA_ARRIVAL}
   };
+
+  bool isDataArrivalPath() const;
+  bool isDataRequiredPath() const;
+  bool isSourceClockPath() const;
 };
 
 struct InputRegisterTimingPath

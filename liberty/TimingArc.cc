@@ -46,6 +46,26 @@ timingArcsLess(const TimingArcSet *set1,
 
 ////////////////////////////////////////////////////////////////
 
+bool TimingPath::isDataArrivalPath() const
+{
+  return std::find(Names::DATA_ARRIVAL.begin(), Names::DATA_ARRIVAL.end(), name)
+         != Names::DATA_ARRIVAL.end();
+}
+
+bool TimingPath::isDataRequiredPath() const
+{
+  return std::find(Names::DATA_REQUIRED.begin(), Names::DATA_REQUIRED.end(), name)
+         != Names::DATA_REQUIRED.end();
+}
+
+bool TimingPath::isSourceClockPath() const
+{
+  return std::find(Names::SOURCE_CLOCK.begin(), Names::SOURCE_CLOCK.end(), name)
+         != Names::SOURCE_CLOCK.end();
+}
+
+////////////////////////////////////////////////////////////////
+
 TimingArcAttrs::TimingArcAttrs() :
   timing_type_(TimingType::combinational),
   timing_sense_(TimingSense::unknown),

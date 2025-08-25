@@ -46,8 +46,6 @@ public:
   virtual ~ReportPath();
   ReportPathFormat pathFormat() const { return format_; }
   void setPathFormat(ReportPathFormat format);
-  void setGroupPathCount(int group_path_count);
-  void setSortedBySlack(bool sorted_by_slack);
   void setReportFieldOrder(StringSeq *field_names);
   void setReportFields(bool report_input_pin,
                        bool report_hier_pins,
@@ -532,9 +530,6 @@ protected:
 
   const char *plus_zero_;
   const char *minus_zero_;
-
-  int group_path_count_ = 1;
-  int sorted_by_slack_ = false;
 
   static const float field_blank_;
   static const float field_skip_;

@@ -4675,8 +4675,8 @@ LibertyReader::visitPathDelay(LibertyAttr *attr)
 void
 LibertyReader::visitTimingPathLibrarySetupTime(LibertyAttr *attr)
 {
-  float library_setup_time = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
   if (traversing_cell_worst_timing_paths_) {
+    float library_setup_time = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
     register_to_register_timing_path_.library_setup_time = library_setup_time;
   }
 }
@@ -4777,14 +4777,21 @@ LibertyReader::endTimingPath(LibertyGroup *)
 {
   if (timing_) {
     timing_->attrs()->addTimingPath(std::move(timing_path_));
-  } else if (traversing_cell_worst_timing_paths_) {
-    if (timing_path_.name.rfind("data_arrival") != std::string::npos) {
-      register_to_register_timing_path_.data_arrival_path = std::move(timing_path_);
-    } else if (timing_path_.name.rfind("source_clock") != std::string::npos) {
-      register_to_register_timing_path_.source_clock_path = std::move(timing_path_);
-    } else {
-      register_to_register_timing_path_.data_required_path = std::move(timing_path_);
-    }
+    return;
+  }
+
+  if (timing_path_.isDataArrivalPath()) {
+    register_to_register_timing_path_.data_arrival_path = std::move(timing_path_);
+    return;
+  }
+
+  if (timing_path_.isDataRequiredPath()) {
+    register_to_register_timing_path_.data_required_path = std::move(timing_path_);
+    return;
+  }
+
+  if (timing_path_.isSourceClockPath()) {
+    register_to_register_timing_path_.source_clock_path = std::move(timing_path_);
   }
 }
 

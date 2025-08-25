@@ -1070,15 +1070,6 @@ proc parse_report_path_options { cmd args_var default_format
   set_report_path_fields $report_input_pin $report_hier_pins $report_net \
     $report_cap $report_slew $report_fanout $report_src_attr
 
-  set group_path_count 1
-  if [info exists path_options(-group_path_count)] {
-    set group_path_count $path_options(-group_path_count)
-  }
-  set_report_group_path_count $group_path_count
-
-  set sorted_by_slack [info exists path_options(-sorted_by_slack)]
-  set_report_sorted_by_slack $sorted_by_slack
-
   set_report_path_no_split [info exists path_options(-no_line_splits)]
 
   if { [info exists path_options(-dedup_by_word)] } {

@@ -273,18 +273,6 @@ ReportPath::setPathFormat(ReportPathFormat format)
 }
 
 void
-ReportPath::setGroupPathCount(int group_path_count)
-{
-  group_path_count_ = group_path_count;
-}
-
-void
-ReportPath::setSortedBySlack(bool sorted_by_slack)
-{
-  sorted_by_slack_ = sorted_by_slack;
-}
-
-void
 ReportPath::setNoSplit(bool no_split)
 {
   no_split_ = no_split;

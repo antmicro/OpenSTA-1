@@ -376,23 +376,22 @@ find_path_ends(ExceptionFrom *from,
 ////////////////////////////////////////////////////////////////
 
 InternalPathSeq
-find_internal_timing_paths(
-	       const MinMaxAll *delay_min_max,
-	       const RiseFallBoth *transition_rise_fall,
-	       float slack_min,
-	       float slack_max,
-	       bool sort_by_slack,
-         PathGroupNameSet *groups,
-	       int path_count)
+find_internal_timing_paths(const MinMaxAll *delay_min_max,
+                           const RiseFallBoth *transition_rise_fall,
+                           float slack_min,
+                           float slack_max,
+                           bool sort_by_slack,
+                           PathGroupNameSet *groups,
+                           int path_count)
 {
   Sta *sta = Sta::sta();
   InternalPathSeq internal_paths = sta->findInternalTimingPaths(delay_min_max,
-	       transition_rise_fall,
-	       slack_min,
-	       slack_max,
-	       sort_by_slack,
-         groups,
-	       path_count);
+                                                                transition_rise_fall,
+                                                                slack_min,
+                                                                slack_max,
+                                                                sort_by_slack,
+                                                                groups,
+                                                                path_count);
   delete groups;
   return internal_paths;
 }
@@ -400,17 +399,16 @@ find_internal_timing_paths(
 ////////////////////////////////////////////////////////////////
 
 PathsContainer
-merge_paths(
-	       PathEndSeq *path_ends,
-         InternalPathSeq *timing_paths,
-         bool sort_by_slack,
-         unsigned int path_count)
+merge_paths(PathEndSeq *path_ends,
+            InternalPathSeq *timing_paths,
+            bool sort_by_slack,
+            unsigned int path_count)
 {
   Sta *sta = Sta::sta();
   return sta->mergePaths(path_ends,
-	       timing_paths,
-	       sort_by_slack,
-	       path_count);
+                         timing_paths,
+                         sort_by_slack,
+                         path_count);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -469,18 +467,6 @@ set_report_path_fields(bool report_input_pin,
 				  report_slew,
 				  report_fanout,
 				  report_src_attr);
-}
-
-void
-set_report_group_path_count(int group_path_count)
-{
-  Sta::sta()->setReportGroupPathCount(group_path_count);
-}
-
-void
-set_report_sorted_by_slack(bool sorted_by_slack)
-{
-  Sta::sta()->setReportSortedBySlack(sorted_by_slack);
 }
 
 void

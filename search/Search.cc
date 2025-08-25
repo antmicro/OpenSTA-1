@@ -761,31 +761,6 @@ Search::isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *g
   return groups->empty() || groups->count(path_group) != 0;
 }
 
-void
-Search::insertTimingPath(const InputRegisterTimingPath *timing_path,
-                         InternalPathSeq &timing_paths) const
-{
-  if (timing_paths.empty()) {
-    timing_paths.emplace_back(timing_path);
-    return;
-  }
-
-  std::size_t starting_index = 0;
-  std::size_t ending_index = timing_paths.size() - 1;
-  while (starting_index < ending_index) {
-    std::size_t mid = (ending_index - starting_index) / 2;
-    if (timing_paths[mid]->slack > timing_path->slack) {
-      ending_index = mid;
-    } else {
-      starting_index = mid;
-    }
-  }
-
-  auto position = timing_paths.begin();
-  std::advance(position, starting_index);
-  timing_paths.insert(position, timing_path);
-}
-
 ////////////////////////////////////////////////////////////////
 
 PathsContainer Search::mergePaths(const PathEndSeq *path_ends,

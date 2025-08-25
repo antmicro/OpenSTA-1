@@ -598,8 +598,6 @@ protected:
                     ClockSet &clks) const;
   bool isSlackInsideSearchingBounds(float slack, float min_slack, float max_slack) const;
   bool isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *group_names) const;
-  void insertTimingPath(const InputRegisterTimingPath *timing_path,
-                        InternalPathSeq &timing_paths) const;
   PathGroup *findPathGroupForInternalPath(const InputRegisterTimingPath *timing_path) const;
   void mergePathsBySlack(
     PathEndSeq &input_path_ends, InternalPathSeq &input_internal_paths,

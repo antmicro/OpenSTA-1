@@ -2632,18 +2632,6 @@ Sta::setReportDedupByWord(bool dedup_by_word)
 }
 
 void
-Sta::setReportGroupPathCount(int group_path_count)
-{
-  report_path_->setGroupPathCount(group_path_count);
-}
-
-void
-Sta::setReportSortedBySlack(bool sorted_by_slack)
-{
-  report_path_->setSortedBySlack(sorted_by_slack);
-}
-
-void
 Sta::reportPathEndHeader()
 {
   report_path_->reportPathEndHeader();
