@@ -793,9 +793,21 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
                                   bool sort_by_slack,
                                   unsigned int path_count)
 {
-  if (!timing_paths || timing_paths->empty()) {
+  bool has_timing_paths = timing_paths && !timing_paths->empty();
+  bool has_path_ends = path_ends && !path_ends->empty();
+  if (!has_timing_paths && !has_path_ends) {
+    return PathsContainer{};
+  }
+
+  if (!has_timing_paths) {
     PathsContainer paths_container{};
     paths_container.path_ends = *path_ends;
+    return paths_container;
+  }
+
+  if (!has_path_ends) {
+    PathsContainer paths_container{};
+    paths_container.internal_timing_paths = *timing_paths;
     return paths_container;
   }
 
