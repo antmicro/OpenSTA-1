@@ -122,7 +122,7 @@ MakeTimingModel::makeTimingModel()
 
   findTimingFromInputs();
   findClkedOutputPaths();
-  findWorstSlackInternalPath();
+  findWorstInternalPaths();
   findClkTreeDelays();
 
   cell_->finish(false, report_, debug_);
@@ -889,7 +889,7 @@ bool isRegisterInput(const TimingArcSet *timing_arc_set)
 }
 
 void
-MakeTimingModel::findWorstSlackInternalPath()
+MakeTimingModel::findWorstInternalPaths()
 {
   if (!write_timing_paths_) {
     return;

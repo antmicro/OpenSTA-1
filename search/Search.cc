@@ -700,7 +700,7 @@ Search::seedFilterStarts()
 
 ////////////////////////////////////////////////////////////////
 
-InternalPathSeq Search::findWorstInternalTimingPaths(const MinMaxAll *delay_min_max,
+InternalPathSeq Search::findInternalTimingPaths(const MinMaxAll *delay_min_max,
                                                      const RiseFallBoth *transition_rise_fall,
                                                      float slack_min,
                                                      float slack_max,

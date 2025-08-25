@@ -412,7 +412,7 @@ public:
   void checkPrevPaths() const;
   void deletePaths(Vertex *vertex);
 
-  InternalPathSeq findWorstInternalTimingPaths(const MinMaxAll *delay_min_max,
+  InternalPathSeq findInternalTimingPaths(const MinMaxAll *delay_min_max,
                                                const RiseFallBoth *transition_rise_fall,
                                                float slack_min,
                                                float slack_max,

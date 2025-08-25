@@ -376,7 +376,7 @@ find_path_ends(ExceptionFrom *from,
 ////////////////////////////////////////////////////////////////
 
 InternalPathSeq
-find_worst_internal_timing_paths(
+find_internal_timing_paths(
 	       const MinMaxAll *delay_min_max,
 	       const RiseFallBoth *transition_rise_fall,
 	       float slack_min,
@@ -386,7 +386,7 @@ find_worst_internal_timing_paths(
 	       int path_count)
 {
   Sta *sta = Sta::sta();
-  InternalPathSeq internal_paths = sta->findWorstInternalTimingPaths(delay_min_max,
+  InternalPathSeq internal_paths = sta->findInternalTimingPaths(delay_min_max,
 	       transition_rise_fall,
 	       slack_min,
 	       slack_max,
