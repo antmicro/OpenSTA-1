@@ -179,6 +179,7 @@ record_sta_tests {
   timing_paths_non_propagated_clock
   internal_paths_cell
   internal_paths_top
+  internal_paths_top_sorted
 }
 
 define_test_group fast [group_tests all]

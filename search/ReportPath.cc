@@ -2811,13 +2811,47 @@ ReportPath::reportPaths(const PathsContainer *paths_container) const
     return;
   }
 
-  // To be continued in the next commit...
   reportPathEndHeader();
-  static constexpr bool NO_PATHS_MESSAGE = false;
-  reportPathEnds(&paths_container->pathEnds(), NO_PATHS_MESSAGE);
   
-  const bool prev_path = paths_container->hasPathEnds();
-  reportPaths(&paths_container->internalPaths(), prev_path);
+  const PathEndSeq &path_ends = paths_container->pathEnds();
+  //TODO: dedup
+  const InternalPathSeq &internal_paths = paths_container->internalPaths();
+
+  unsigned int first_index = 0;
+  unsigned int second_index = 0;
+
+  const PathEnd *prev_path_end = nullptr;
+  unsigned int current_index = 0;
+  while (current_index < paths_container->size()) {
+    if (first_index >= path_ends.size()) {
+      reportPath(internal_paths.at(second_index), current_index != 0);
+      second_index += 1;
+      current_index += 1;
+      continue;
+    }
+
+    if (second_index >= internal_paths.size()) {
+      reportPathEnd(path_ends.at(first_index), prev_path_end);
+      prev_path_end = path_ends.at(first_index);
+      first_index += 1;
+      current_index += 1;
+      continue;
+    }
+
+    float path_end_slack = path_ends.at(first_index)->slack(this);
+    float internal_path_slack = internal_paths.at(second_index)->slack;
+    if (path_end_slack < internal_path_slack) {
+      reportPathEnd(path_ends.at(first_index), prev_path_end);
+      prev_path_end = path_ends.at(first_index);
+      first_index += 1;
+    } else {
+      reportPath(internal_paths.at(second_index), current_index != 0);
+      second_index += 1;
+    }
+
+    current_index += 1;
+  }
+
   reportPathEndFooter();
 }
 
@@ -2929,8 +2963,11 @@ ReportPath::reportTimingPathType(const InputRegisterTimingPath *timing_path) con
 void
 ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
 {
-  static constexpr float DEFAULT_BASE_ARRIVAL = 0.0f;
-  reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, DEFAULT_BASE_ARRIVAL);
+  static constexpr float DEFAULT_BASE = 0.0f;
+  if (!timing_path->source_clock_path.vertices.empty()) {
+    reportTimingPath(timing_path->cell_name.c_str(), timing_path->source_clock_path, min_max, DEFAULT_BASE);
+  }
+  reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, DEFAULT_BASE);
   float data_arrival_time = timing_path->data_arrival_path.time;
   reportLine("data arrival time", data_arrival_time, min_max);
 }
