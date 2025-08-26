@@ -50,6 +50,9 @@ Path Type: max
    0.00  168.59 ^ internal_paths_cell/r6/D (DFFHQx4_ASAP7_75t_R)
          168.59   data arrival time
 
+ 500.00  500.00   clock clk (rise edge)
+   0.00  500.00   clock network delay (ideal)
+   0.00  500.00   clock reconvergence pessimism
    0.00  500.00 ^ internal_paths_cell/r6/CLK (DFFHQx4_ASAP7_75t_R)
  -12.61  487.39   library setup time
          487.39   data required time
@@ -84,6 +87,9 @@ Path Type: max
    0.00  170.63 v internal_paths_cell/r6/D (DFFHQx4_ASAP7_75t_R)
          170.63   data arrival time
 
+ 500.00  500.00   clock clk (rise edge)
+   0.00  500.00   clock network delay (ideal)
+   0.00  500.00   clock reconvergence pessimism
    0.00  500.00 ^ internal_paths_cell/r6/CLK (DFFHQx4_ASAP7_75t_R)
   -4.29  495.71   library setup time
          495.71   data required time
@@ -112,6 +118,9 @@ Path Type: max
    0.00  118.30 ^ internal_paths_cell/r4/D (DFFHQx4_ASAP7_75t_R)
          118.30   data arrival time
 
+ 500.00  500.00   clock clk (rise edge)
+   0.00  500.00   clock network delay (ideal)
+   0.00  500.00   clock reconvergence pessimism
    0.00  500.00 ^ internal_paths_cell/r4/CLK (DFFHQx4_ASAP7_75t_R)
  -12.98  487.02   library setup time
          487.02   data required time
@@ -140,6 +149,9 @@ Path Type: max
    0.00  116.79 v internal_paths_cell/r4/D (DFFHQx4_ASAP7_75t_R)
          116.79   data arrival time
 
+ 500.00  500.00   clock clk (rise edge)
+   0.00  500.00   clock network delay (ideal)
+   0.00  500.00   clock reconvergence pessimism
    0.00  500.00 ^ internal_paths_cell/r4/CLK (DFFHQx4_ASAP7_75t_R)
   -4.60  495.40   library setup time
          495.40   data required time

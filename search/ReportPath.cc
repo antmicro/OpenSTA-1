@@ -2979,6 +2979,39 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
   Pin *clock_pin = network_->findPin(timing_path->target_clock_name.c_str());
   auto clock_set = network_->clkNetwork()->clocks(clock_pin);
   auto clock = *clock_set->begin();
+
+	Arrival clk_arrival = timing_path->clk_arrival;
+
+  // void
+  // ReportPath::reportClkLine(const Clock *clk,
+  //         const char *clk_name,
+  //         const RiseFall *clk_rf,
+  //         Arrival prev_time,
+  //         Arrival clk_time,
+  //         const MinMax *min_max) const
+  // {
+  //   const char *rise_fall = asRiseFall(clk_rf);
+  //   auto clk_msg = stdstrPrint("clock %s (%s edge)", clk_name, rise_fall);
+  //   if (clk->isPropagated())
+  //     reportLine(clk_msg.c_str(), clk_time - prev_time, clk_time, min_max);
+  //   else {
+  //     // Report ideal clock slew.
+  //     float clk_slew = clk->slew(clk_rf, min_max);
+  //     reportLine(clk_msg.c_str(), clk_slew, clk_time - prev_time, clk_time, min_max);
+  //   }
+  // }
+
+  reportClkLine(clock, timing_path->target_clock_name.c_str(), timing_path->target_clock_transition, clk_arrival, min_max);
+
+  float clk_delay = 0.0f;
+	reportLine(clkNetworkDelayIdealProp(timing_path->is_clock_propagated), clk_delay, clk_arrival, min_max);
+
+  if (variables_->crprEnabled()) {
+    Crpr pessimism = timing_path->crpr;
+    clk_arrival += pessimism;
+    reportLine("clock reconvergence pessimism", pessimism, clk_arrival, nullptr);
+  }
+
   float previous_arrival = 0.0f;
   for (int index = timing_path->data_required_path.vertices.size() - 1; index >= 0; --index) {
     const auto& vertex = timing_path->data_required_path.vertices[index];

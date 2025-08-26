@@ -427,6 +427,8 @@ LibertyReader::defineVisitors()
   // Custom Liberty attrs/groups for handling timing paths
   defineAttrVisitor("slack", &LibertyReader::visitSlack);
   defineAttrVisitor("crpr", &LibertyReader::visitCrpr);
+  defineAttrVisitor("clk_arrival", &LibertyReader::visitClkArrival);
+  defineAttrVisitor("clk_propagated", &LibertyReader::visitClkPropagated);
   defineAttrVisitor("path_delay", &LibertyReader::visitPathDelay);
   defineAttrVisitor("library_setup_time", &LibertyReader::visitTimingPathLibrarySetupTime);
   defineAttrVisitor("source_clock", &LibertyReader::visitTimingPathSourceClock);
@@ -4660,6 +4662,23 @@ LibertyReader::visitCrpr(LibertyAttr *attr)
   if (traversing_cell_worst_timing_paths_) {
     float crpr = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
     register_to_register_timing_path_.crpr = crpr;
+  }
+}
+
+void
+LibertyReader::visitClkArrival(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    float clk_arrival = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+    register_to_register_timing_path_.clk_arrival = clk_arrival;
+  }
+}
+
+void
+LibertyReader::visitClkPropagated(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.is_clock_propagated = attr->firstValue()->floatValue() > 0.5f;
   }
 }
 
