@@ -452,11 +452,13 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   input_register_timing_path.slack = delayAsFloat(path_end->slack(sta_state), early_late, sta_state);
   input_register_timing_path.crpr = delayAsFloat(path_end->checkCrpr(sta_state));
 
+  float clk_delay = path_end->targetClkDelay(sta_state);
+  input_register_timing_path.clk_delay = delayAsFloat(clk_delay);
+
   float src_offset = path_end->sourceClkOffset(sta_state);
   float clk_time = path_end->targetClkTime(sta_state)
     + path_end->targetClkMcpAdjustment(sta_state)
     + src_offset;
-  Arrival clk_delay = path_end->targetClkDelay(sta_state);
   Arrival clk_arrival = clk_time + clk_delay;
   input_register_timing_path.clk_arrival = delayAsFloat(clk_arrival);
 

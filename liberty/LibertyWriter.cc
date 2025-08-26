@@ -338,6 +338,7 @@ LibertyWriter::writeCell(const LibertyCell *cell)
           fprintf(stream_, "          slack : %s;\n", time_unit_->asString(timing_path.slack, 5));
           fprintf(stream_, "          crpr : %s;\n", time_unit_->asString(timing_path.crpr, 5));
           fprintf(stream_, "          clk_arrival : %s;\n", time_unit_->asString(timing_path.clk_arrival, 5));
+          fprintf(stream_, "          clk_delay : %s;\n", time_unit_->asString(timing_path.clk_delay, 5));
           fprintf(stream_, "          clk_propagated : %d;\n", timing_path.is_clock_propagated);
 
           if (timing_path.has_path_delay) {

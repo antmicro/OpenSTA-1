@@ -2984,8 +2984,7 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
 
   reportClkLine(clock, timing_path->target_clock_name.c_str(), timing_path->target_clock_transition, clk_arrival, min_max);
 
-  float clk_delay = 0.0f;
-	reportLine(clkNetworkDelayIdealProp(timing_path->is_clock_propagated), clk_delay, clk_arrival, min_max);
+	reportLine(clkNetworkDelayIdealProp(timing_path->is_clock_propagated), timing_path->clk_delay, clk_arrival, min_max);
 
   if (variables_->crprEnabled()) {
     Crpr pessimism = timing_path->crpr;

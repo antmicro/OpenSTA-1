@@ -171,6 +171,7 @@ library (internal_paths_cell) {
           slack : 86.42416;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : -4.64063;
           source_clock : "clk";
@@ -199,6 +200,7 @@ library (internal_paths_cell) {
           slack : 103.56506;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : -4.64066;
           source_clock : "clk";
@@ -229,6 +231,7 @@ library (internal_paths_cell) {
           slack : 120.70599;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : -4.64066;
           source_clock : "clk";
@@ -263,6 +266,7 @@ library (internal_paths_cell) {
           slack : 69.57392;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 8.66784;
           source_clock : "clk";
@@ -291,6 +295,7 @@ library (internal_paths_cell) {
           slack : 87.81725;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 8.66772;
           source_clock : "clk";
@@ -321,6 +326,7 @@ library (internal_paths_cell) {
           slack : 106.06090;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 8.66772;
           source_clock : "clk";
@@ -355,6 +361,7 @@ library (internal_paths_cell) {
           slack : 318.80005;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 12.60721;
           source_clock : "clk";
@@ -393,6 +400,7 @@ library (internal_paths_cell) {
           slack : 350.83527;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 12.98237;
           source_clock : "clk";
@@ -427,6 +435,7 @@ library (internal_paths_cell) {
           slack : 368.71844;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 12.98237;
           source_clock : "clk";
@@ -461,6 +470,7 @@ library (internal_paths_cell) {
           slack : 325.07687;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 4.29073;
           source_clock : "clk";
@@ -499,6 +509,7 @@ library (internal_paths_cell) {
           slack : 359.68555;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 4.60145;
           source_clock : "clk";
@@ -533,6 +544,7 @@ library (internal_paths_cell) {
           slack : 378.60504;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 4.60145;
           source_clock : "clk";

@@ -295,6 +295,7 @@ library (timing_cell_cdc) {
           slack : 69.42394;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : -4.71449;
           source_clock : "clk";
@@ -323,6 +324,7 @@ library (timing_cell_cdc) {
           slack : 51.65410;
           crpr : 0.00000;
           clk_arrival : 0.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 8.71955;
           source_clock : "clk";
@@ -351,6 +353,7 @@ library (timing_cell_cdc) {
           slack : 422.26083;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 12.93637;
           source_clock : "clk";
@@ -379,6 +382,7 @@ library (timing_cell_cdc) {
           slack : 435.13882;
           crpr : 0.00000;
           clk_arrival : 500.00000;
+          clk_delay : 0.00000;
           clk_propagated : 0;
           library_setup_time : 4.39112;
           source_clock : "clk";

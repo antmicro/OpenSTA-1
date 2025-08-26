@@ -428,6 +428,7 @@ LibertyReader::defineVisitors()
   defineAttrVisitor("slack", &LibertyReader::visitSlack);
   defineAttrVisitor("crpr", &LibertyReader::visitCrpr);
   defineAttrVisitor("clk_arrival", &LibertyReader::visitClkArrival);
+  defineAttrVisitor("clk_delay", &LibertyReader::visitClkDelay);
   defineAttrVisitor("clk_propagated", &LibertyReader::visitClkPropagated);
   defineAttrVisitor("path_delay", &LibertyReader::visitPathDelay);
   defineAttrVisitor("library_setup_time", &LibertyReader::visitTimingPathLibrarySetupTime);
@@ -4671,6 +4672,15 @@ LibertyReader::visitClkArrival(LibertyAttr *attr)
   if (traversing_cell_worst_timing_paths_) {
     float clk_arrival = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
     register_to_register_timing_path_.clk_arrival = clk_arrival;
+  }
+}
+
+void
+LibertyReader::visitClkDelay(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    float clk_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+    register_to_register_timing_path_.clk_delay = clk_delay;
   }
 }
 
