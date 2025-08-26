@@ -2977,29 +2977,10 @@ void
 ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
 {
   Pin *clock_pin = network_->findPin(timing_path->target_clock_name.c_str());
-  auto clock_set = network_->clkNetwork()->clocks(clock_pin);
-  auto clock = *clock_set->begin();
+  const ClockSet *clock_set = network_->clkNetwork()->clocks(clock_pin);
+  const Clock *clock = *clock_set->begin();
 
 	Arrival clk_arrival = timing_path->clk_arrival;
-
-  // void
-  // ReportPath::reportClkLine(const Clock *clk,
-  //         const char *clk_name,
-  //         const RiseFall *clk_rf,
-  //         Arrival prev_time,
-  //         Arrival clk_time,
-  //         const MinMax *min_max) const
-  // {
-  //   const char *rise_fall = asRiseFall(clk_rf);
-  //   auto clk_msg = stdstrPrint("clock %s (%s edge)", clk_name, rise_fall);
-  //   if (clk->isPropagated())
-  //     reportLine(clk_msg.c_str(), clk_time - prev_time, clk_time, min_max);
-  //   else {
-  //     // Report ideal clock slew.
-  //     float clk_slew = clk->slew(clk_rf, min_max);
-  //     reportLine(clk_msg.c_str(), clk_slew, clk_time - prev_time, clk_time, min_max);
-  //   }
-  // }
 
   reportClkLine(clock, timing_path->target_clock_name.c_str(), timing_path->target_clock_transition, clk_arrival, min_max);
 
