@@ -189,7 +189,7 @@ library (timing_cell) {
           timing_path_group : "clk";
           timing_path_type : "check";
           rise_source_clock() {
-            time: 0.00000;
+            time: 12.76048;
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/A", "clk", "^", 0.00000, 0.00000, 0.75516, 0);
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/Y", "clk_d", "^", 12.76048, 6.22442, 0.35582, 1);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 12.76048, 6.22442, 0.35582, 0);
@@ -224,7 +224,7 @@ library (timing_cell) {
           timing_path_group : "clk";
           timing_path_type : "check";
           rise_source_clock() {
-            time: 0.00000;
+            time: 12.76048;
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/A", "clk", "^", 0.00000, 0.00000, 0.75516, 0);
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/Y", "clk_d", "^", 12.76048, 6.22442, 0.35582, 1);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 12.76048, 6.22442, 0.35582, 0);
@@ -259,7 +259,7 @@ library (timing_cell) {
           timing_path_group : "clk";
           timing_path_type : "check";
           rise_source_clock() {
-            time: 0.00000;
+            time: 13.04533;
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/A", "clk", "^", 0.00000, 0.00000, 1.00982, 0);
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/Y", "clk_d", "^", 13.04533, 6.72075, 0.47554, 1);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 13.04533, 6.72075, 0.47554, 0);
@@ -294,7 +294,7 @@ library (timing_cell) {
           timing_path_group : "clk";
           timing_path_type : "check";
           rise_source_clock() {
-            time: 0.00000;
+            time: 13.04533;
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/A", "clk", "^", 0.00000, 0.00000, 1.00982, 0);
             vertex("b1", "BUFx2_ASAP7_75t_R", "b1/Y", "clk_d", "^", 13.04533, 6.72075, 0.47554, 1);
             vertex("d1", "DFFHQx4_ASAP7_75t_R", "d1/CLK", "clk_d", "^", 13.04533, 6.72075, 0.47554, 0);

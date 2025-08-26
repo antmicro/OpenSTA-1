@@ -432,6 +432,7 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   int starting_index = 0;
   if (source_clock_path) {
     const RiseFall *source_clock_transition = source_clock_path->transition(sta_state);
+    input_register_timing_path.source_clock_path.time = source_clock_path->arrival();
     input_register_timing_path.source_clock_path.vertices = extractDataRequiredTimingPathVertices(source_clock_path, source_clock_transition);
     input_register_timing_path.source_clock_path.name = TimingPath::Names::SOURCE_CLOCK.at(source_clock_transition->index());
     starting_index = path_expanded.startIndex();
