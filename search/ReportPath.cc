@@ -369,6 +369,14 @@ void
 ReportPath::reportPathEnds(const PathEndSeq *ends) const
 {
   reportPathEndHeader();
+  static constexpr bool NO_PATHS_MESSAGE = true;
+  reportPathEnds(ends, NO_PATHS_MESSAGE);
+  reportPathEndFooter();
+}
+
+void
+ReportPath::reportPathEnds(const PathEndSeq *ends, bool no_paths_message) const
+{
   if (ends && !ends->empty()) {
     PathEnd *prev_end = nullptr;
     PathEndSeq::ConstIterator end_iter(ends);
@@ -387,11 +395,9 @@ ReportPath::reportPathEnds(const PathEndSeq *ends) const
       }
     } 
   }
-  else {
-    if (format_ != ReportPathFormat::json)
+  else if (no_paths_message && format_ != ReportPathFormat::json) {
       report_->reportLine("No paths found.");
   }
-  reportPathEndFooter();
 }
 
 Set<PathEnd *>
@@ -2789,21 +2795,46 @@ ReportPath::reportPaths(const PathsContainer *paths_container) const
     return;
   }
 
-  PathEnd *prev_end{nullptr};
-  for (const auto &path_end : paths_container->pathEnds()) {
-    reportPathEnd(path_end, prev_end);
-    prev_end = path_end;
+  if (!paths_container->hasPathEnds()) {
+    reportPaths(&paths_container->internalPaths());
+    return;
   }
 
-  bool prev_path = prev_end;
-  for (const auto &internal_path : paths_container->internalPaths()) {
-    reportPath(internal_path, prev_path);
-    prev_path = true;
+  if (!paths_container->sortedBySlack()) {
+    reportPathEndHeader();
+    static constexpr bool NO_PATHS_MESSAGE = false;
+    reportPathEnds(&paths_container->pathEnds(), NO_PATHS_MESSAGE);
+    
+    const bool prev_path = paths_container->hasPathEnds();
+    reportPaths(&paths_container->internalPaths(), prev_path);
+    reportPathEndFooter();
+    return;
   }
+
+  // To be continued in the next commit...
+  reportPathEndHeader();
+  static constexpr bool NO_PATHS_MESSAGE = false;
+  reportPathEnds(&paths_container->pathEnds(), NO_PATHS_MESSAGE);
+  
+  const bool prev_path = paths_container->hasPathEnds();
+  reportPaths(&paths_container->internalPaths(), prev_path);
+  reportPathEndFooter();
 }
 
 void
-ReportPath::reportPath(const InternalPathSeq *timing_paths, bool prev_path) const
+ReportPath::reportPaths(const InternalPathSeq *timing_paths) const
+{
+  reportPathEndHeader();
+  bool prev_path = false;
+  for (auto& timing_path : *timing_paths) {
+    reportPath(timing_path, prev_path);
+    prev_path = true;
+  }
+  reportPathEndFooter();
+}
+
+void
+ReportPath::reportPaths(const InternalPathSeq *timing_paths, bool prev_path) const
 {
   for (auto& timing_path : *timing_paths) {
     reportPath(timing_path, prev_path);

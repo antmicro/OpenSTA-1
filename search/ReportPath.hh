@@ -75,7 +75,7 @@ public:
 		     const PathEnd *prev_end) const;
   void reportPathEnds(const PathEndSeq *ends) const;
   void reportPath(const Path *path) const;
-  void reportPath(const InternalPathSeq *timing_paths, bool prev_path) const;
+  void reportPaths(const InternalPathSeq *timing_paths) const;
   void reportPath(const InputRegisterTimingPath *timing_path, bool prev_path) const;
   void reportPaths(const PathsContainer *paths_container) const;
   void reportPathsSorted(const PathsContainer *paths_container) const;
@@ -485,8 +485,10 @@ protected:
   Delay delayIncr(Delay time,
 		  Delay prev,
 		  const MinMax *min_max) const;
+  void reportPathEnds(const PathEndSeq *ends, bool no_paths_message) const;
   Set<PathEnd *> dedupByWord(const PathEndSeq *ends) const;
 
+  void reportPaths(const InternalPathSeq *timing_paths, bool prev_path) const;
   std::unordered_map<const Instance*, const TimingArc*> extractInstancesTimingArcs(const PathExpanded &path_expanded, const TimingArc *end_check_arc) const;
   bool hasTimingPaths(const TimingArc *timing_arc) const;
   void reportTimingPath(const char *instance_name, const TimingArc *timing_arc, const MinMax *min_max, float prev_arrival) const;

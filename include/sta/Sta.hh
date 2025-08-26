@@ -877,7 +877,7 @@ public:
   ReportPath *reportPath() { return report_path_; }
   void reportPath(const Path *path);
   void reportPath(const InputRegisterTimingPath *internal_path);
-  void reportPath(const InternalPathSeq *internal_paths);
+  void reportPaths(const InternalPathSeq *internal_paths);
 
   // Report clk skews for clks.
   void reportClkSkew(ConstClockSeq &clks,

@@ -2675,9 +2675,9 @@ Sta::reportPath(const Path *path)
 }
 
 void
-Sta::reportPath(const InternalPathSeq *internal_paths)
+Sta::reportPaths(const InternalPathSeq *internal_paths)
 {
-  report_path_->reportPath(internal_paths, false);
+  report_path_->reportPaths(internal_paths);
 }
 
 void
