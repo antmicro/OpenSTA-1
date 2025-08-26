@@ -787,13 +787,13 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
   }
 
   std::unordered_map<PathGroup*, PathEndSeq> grouped_path_ends;
-  for (auto& path_end : *path_ends) {
+  for (auto &path_end : *path_ends) {
     PathGroup *path_group = search_->pathGroup(path_end);
     grouped_path_ends[path_group].emplace_back(path_end);
   }
 
   std::unordered_map<PathGroup*, InternalPathSeq> grouped_internal_paths;
-  for (auto& internal_timing_path : *timing_paths) {
+  for (auto &internal_timing_path : *timing_paths) {
     PathGroup *path_group = findPathGroupForInternalPath(internal_timing_path);
     if (path_group) {
       grouped_internal_paths[path_group].emplace_back(internal_timing_path);
@@ -802,7 +802,7 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
 
   PathEndSeq filtered_path_ends{};
   InternalPathSeq filtered_internal_paths{};
-  for (auto& [path_group, path_ends] : grouped_path_ends) {
+  for (auto &[path_group, path_ends] : grouped_path_ends) {
     if (grouped_internal_paths.find(path_group) != grouped_internal_paths.end()) {
       InternalPathSeq &internal_paths = grouped_internal_paths.at(path_group);
       mergePathsBySlack(path_ends, internal_paths, filtered_path_ends, filtered_internal_paths, path_count);
@@ -812,7 +812,7 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
     }
   }
 
-  for (auto& [path_group, internal_paths] : grouped_internal_paths) {
+  for (auto &[path_group, internal_paths] : grouped_internal_paths) {
     filtered_internal_paths.insert(filtered_internal_paths.end(), internal_paths.begin(), internal_paths.end());
   }
 
