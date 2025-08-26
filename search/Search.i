@@ -533,7 +533,7 @@ report_path_ends(PathEndSeq *ends)
 }
 
 void
-report_paths(PathsContainer *paths_container)
+report_paths_combined(PathsContainer *paths_container)
 {
   Sta::sta()->reportPaths(paths_container);
   delete paths_container;

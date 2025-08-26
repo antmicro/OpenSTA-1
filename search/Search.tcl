@@ -555,7 +555,7 @@ proc_redirect report_checks {
   set args $original_args
   set merged_paths [merge_paths_cmd "report_checks" args path_ends internal_paths]
 
-  report_paths $merged_paths
+  report_paths_combined $merged_paths
 }
 
 ################################################################
