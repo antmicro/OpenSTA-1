@@ -2826,10 +2826,11 @@ ReportPath::reportPaths(const PathsContainer *paths_container) const
   const PathEnd *prev_path_end = nullptr;
   unsigned int current_index = 0;
   while (current_index < paths_container->size()) {
+    current_index += 1;
+
     if (first_index >= path_ends.size()) {
-      reportPath(internal_paths.at(second_index), current_index != 0);
+      reportPath(internal_paths.at(second_index), current_index > 1);
       second_index += 1;
-      current_index += 1;
       continue;
     }
 
@@ -2837,7 +2838,6 @@ ReportPath::reportPaths(const PathsContainer *paths_container) const
       reportPathEnd(path_ends.at(first_index), prev_path_end);
       prev_path_end = path_ends.at(first_index);
       first_index += 1;
-      current_index += 1;
       continue;
     }
 
@@ -2848,11 +2848,9 @@ ReportPath::reportPaths(const PathsContainer *paths_container) const
       prev_path_end = path_ends.at(first_index);
       first_index += 1;
     } else {
-      reportPath(internal_paths.at(second_index), current_index != 0);
+      reportPath(internal_paths.at(second_index), current_index > 1);
       second_index += 1;
     }
-
-    current_index += 1;
   }
 
   reportPathEndFooter();
