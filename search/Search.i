@@ -542,7 +542,7 @@ report_paths(PathsContainer *paths_container)
 void
 report_internal_paths(InternalPathSeq *internal_paths)
 {
-  Sta::sta()->reportPath(internal_paths);
+  Sta::sta()->reportPaths(internal_paths);
   delete internal_paths;
 }
 
