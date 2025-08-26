@@ -2814,7 +2814,10 @@ ReportPath::reportPaths(const PathsContainer *paths_container) const
   reportPathEndHeader();
   
   const PathEndSeq &path_ends = paths_container->pathEnds();
-  //TODO: dedup
+  Set<PathEnd *> qualified_ends;
+  if (dedup_by_word_) {
+    qualified_ends = dedupByWord(&path_ends);
+  }
   const InternalPathSeq &internal_paths = paths_container->internalPaths();
 
   unsigned int first_index = 0;
@@ -2830,7 +2833,7 @@ ReportPath::reportPaths(const PathsContainer *paths_container) const
       continue;
     }
 
-    if (second_index >= internal_paths.size()) {
+    if (second_index >= internal_paths.size() && (!dedup_by_word_ || qualified_ends.count(path_ends.at(first_index)))) {
       reportPathEnd(path_ends.at(first_index), prev_path_end);
       prev_path_end = path_ends.at(first_index);
       first_index += 1;
