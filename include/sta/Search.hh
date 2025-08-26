@@ -413,12 +413,12 @@ public:
   void deletePaths(Vertex *vertex);
 
   InternalPathSeq findInternalTimingPaths(const MinMaxAll *delay_min_max,
-                                               const RiseFallBoth *transition_rise_fall,
-                                               float slack_min,
-                                               float slack_max,
-                                               bool sort_by_slack,
-                                      	       PathGroupNameSet *groups,
-                                               unsigned int path_count);
+                                          const RiseFallBoth *transition_rise_fall,
+                                          float slack_min,
+                                          float slack_max,
+                                          bool sort_by_slack,
+                                          PathGroupNameSet *groups,
+                                          unsigned int path_count);
 
   PathsContainer mergePaths(const PathEndSeq *path_ends,
                             const InternalPathSeq *timing_paths,

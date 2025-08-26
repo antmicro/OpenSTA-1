@@ -168,17 +168,6 @@ struct CombinationalTimingPath
   TimingPath combinational_delay_path{};
 };
 
-class InputRegisterTimingPathLess
-{
-public:
-  InputRegisterTimingPathLess() = default;
-  bool operator()(const InputRegisterTimingPath *first_timing_path,
-		              const InputRegisterTimingPath *second_timing_path) const
-  {
-    return first_timing_path->slack < second_timing_path->slack;
-  }
-};
-
 ////////////////////////////////////////////////////////////////
 
 class TimingArcAttrs

@@ -2532,12 +2532,12 @@ Sta::findInternalTimingPaths(
       int path_count)
 {
   return search_->findInternalTimingPaths(delay_min_max,
-	       transition_rise_fall,
-	       slack_min,
-	       slack_max,
-         sort_by_slack,
-         groups,
-	       path_count);
+                                          transition_rise_fall,
+                                          slack_min,
+                                          slack_max,
+                                          sort_by_slack,
+                                          groups,
+                                          path_count);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2549,9 +2549,9 @@ Sta::mergePaths(const PathEndSeq *path_ends,
                 unsigned int path_count)
 {
   return search_->mergePaths(path_ends,
-	       timing_paths,
-         sort_by_slack,
-	       path_count);
+                             timing_paths,
+                             sort_by_slack,
+                             path_count);
 }
 
 ////////////////////////////////////////////////////////////////

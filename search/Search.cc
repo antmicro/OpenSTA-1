@@ -747,7 +747,7 @@ InternalPathSeq Search::findInternalTimingPaths(const MinMaxAll *delay_min_max,
   }
 
   if (sort_by_slack) {
-    sort(internal_path_seq, InputRegisterTimingPathLess{});
+    sort(internal_path_seq, std::less<const InputRegisterTimingPath*>{});
   }
 
   return internal_path_seq;
@@ -818,7 +818,7 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
 
   if (sort_by_slack) {
     sort(filtered_path_ends, PathEndLess{this});
-    sort(filtered_internal_paths, InputRegisterTimingPathLess{});
+    sort(filtered_internal_paths, std::less<const InputRegisterTimingPath*>{});
   }
 
   return PathsContainer{std::move(filtered_path_ends), std::move(filtered_internal_paths), sort_by_slack};
@@ -870,7 +870,7 @@ Search::mergePathsBySlack(
   unsigned int second_index = 0;
 
   sort(input_path_ends, PathEndLess(this));
-  sort(input_internal_paths, InputRegisterTimingPathLess{});
+  sort(input_internal_paths, std::less<const InputRegisterTimingPath*>{});
   
   unsigned int current_index = 0;
   while (current_index < total_reported_count) {
