@@ -485,6 +485,7 @@ protected:
   Delay delayIncr(Delay time,
 		  Delay prev,
 		  const MinMax *min_max) const;
+  Set<PathEnd *> dedupByWord(const PathEndSeq *ends) const;
 
   std::unordered_map<const Instance*, const TimingArc*> extractInstancesTimingArcs(const PathExpanded &path_expanded, const TimingArc *end_check_arc) const;
   bool hasTimingPaths(const TimingArc *timing_arc) const;

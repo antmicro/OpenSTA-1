@@ -376,21 +376,7 @@ ReportPath::reportPathEnds(const PathEndSeq *ends) const
     Set<PathEnd *> qualified_ends;
 
     if (dedup_by_word_) {
-      Map<std::string, PathEnd *> worst_slack_by_bus;
-      while (end_iter.hasNext()) {
-        PathEnd *end = end_iter.next();
-        auto bus_name = getBusName(this, sdc_network_, end);
-        if (bus_name.length()) {
-          if (worst_slack_by_bus.count(bus_name) == 0 ||
-              worst_slack_by_bus[bus_name]->slack(this) > end->slack(this))
-            worst_slack_by_bus[bus_name] = end;
-        }
-        else
-          qualified_ends.insert(end);
-      }
-      
-      for (auto &[_, end]: worst_slack_by_bus)
-        qualified_ends.insert(end);
+      qualified_ends = dedupByWord(ends);
     }
     end_iter = ends;
     while (end_iter.hasNext()) {
@@ -406,6 +392,30 @@ ReportPath::reportPathEnds(const PathEndSeq *ends) const
       report_->reportLine("No paths found.");
   }
   reportPathEndFooter();
+}
+
+Set<PathEnd *>
+ReportPath::dedupByWord(const PathEndSeq *ends) const
+{
+  Set<PathEnd *> qualified_ends;
+  PathEndSeq::ConstIterator end_iter(ends);
+  Map<std::string, PathEnd *> worst_slack_by_bus;
+  while (end_iter.hasNext()) {
+    PathEnd *end = end_iter.next();
+    auto bus_name = getBusName(this, sdc_network_, end);
+    if (bus_name.length()) {
+      if (worst_slack_by_bus.count(bus_name) == 0 ||
+          worst_slack_by_bus[bus_name]->slack(this) > end->slack(this))
+        worst_slack_by_bus[bus_name] = end;
+    }
+    else
+      qualified_ends.insert(end);
+  }
+  
+  for (auto &[_, end]: worst_slack_by_bus)
+    qualified_ends.insert(end);
+
+  return qualified_ends;
 }
 
 void
