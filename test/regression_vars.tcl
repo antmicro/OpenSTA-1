@@ -180,6 +180,7 @@ record_sta_tests {
   internal_paths_cell
   internal_paths_top
   internal_paths_top_sorted
+  internal_paths_top_skipped
 }
 
 define_test_group fast [group_tests all]

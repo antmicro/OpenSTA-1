@@ -233,8 +233,6 @@ define_cmd_args "find_internal_timing_paths_cmd" \
      [-through through_list|-rise_through through_list|-fall_through through_list]\
      [-to to_list|-rise_to to_list|-fall_to to_list]\
      [-path_delay min|min_rise|min_fall|max|max_rise|max_fall|min_max]\
-     [-unconstrained]
-     [-corner corner]\
      [-group_path_count path_count] \
      [-endpoint_path_count path_count]\
      [-unique_paths_to_endpoint]\
@@ -247,11 +245,19 @@ proc find_internal_timing_paths_cmd { cmd args_var } {
   upvar 1 $args_var args
 
   parse_key_args $cmd args \
-    keys {-from -rise_from -fall_from -to -rise_to -fall_to \
-	    -path_delay -corner -group_count -endpoint_count \
-	    -group_path_count -endpoint_path_count \
+    keys {-from -rise_from -fall_from \
+      -to -rise_to -fall_to \
+      -through -rise_through -fall_through \
+      -path_delay -group_count \
+      -endpoint_count -group_path_count \
 	    -slack_max -slack_min -path_group} \
-    flags {-unconstrained -sort_by_slack -unique_paths_to_endpoint} 0
+    flags {-sort_by_slack} 0
+
+  if { [info exists keys(-from)] || [info exists keys(-rise_from)] || [info exists keys(-fall_from)] ||
+       [info exists keys(-through)] || [info exists keys(-rise_through)] || [info exists keys(-fall_through)] ||
+       [info exists keys(-to)] || [info exists keys(-rise_to)] || [info exists keys(-fall_to)] } {
+    return NULL
+  }
 
   set min_max "max"
   set end_rf "rise_fall"
