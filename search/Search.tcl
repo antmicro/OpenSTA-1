@@ -217,10 +217,6 @@ proc find_timing_paths_cmd { cmd args_var } {
     set groups [parse_path_group_arg $keys(-path_group)]
   }
 
-  if { [llength $args] != 0 } {
-    delete_from_thrus_to $from $thrus $to
-  }
-
   set path_ends [find_path_ends $from $thrus $to $unconstrained \
 		   $corner $min_max \
 		   $group_path_count $endpoint_path_count $unique_pins \
