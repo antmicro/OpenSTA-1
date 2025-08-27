@@ -2982,9 +2982,9 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
 
 	Arrival clk_arrival = timing_path->clk_arrival;
 
-  reportClkLine(clock, timing_path->target_clock_name.c_str(), timing_path->target_clock_transition, timing_path->clk_time, min_max);
+  reportClkLine(clock, timing_path->target_clock_name.c_str(), timing_path->target_clock_transition, timing_path->target_clk_time, min_max);
 
-	reportLine(clkNetworkDelayIdealProp(timing_path->is_clock_propagated), timing_path->clk_delay, clk_arrival, min_max);
+	reportLine(clkNetworkDelayIdealProp(timing_path->is_clock_propagated), timing_path->target_clk_delay, clk_arrival, min_max);
 
   float previous_arrival = 0.0f;
   for (unsigned int index = 0; index < timing_path->data_required_path.vertices.size(); ++index) {
@@ -2994,7 +2994,7 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
     float increase = vertex.arrival - previous_arrival;
     previous_arrival = vertex.arrival;
 
-    float time = timing_path->clk_time + vertex.arrival;
+    float time = timing_path->target_clk_time + vertex.arrival;
 
     const RiseFall *rise_fall = RiseFall::find(vertex.transition.c_str());
 
@@ -3017,7 +3017,7 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
     reportLine("clock reconvergence pessimism", pessimism, clk_arrival, nullptr);
   }
 
-  clk_arrival += timing_path->clk_delay;
+  clk_arrival += timing_path->target_clk_delay;
 
   reportLine("library setup time", -timing_path->library_setup_time, clk_arrival - previous_arrival - timing_path->library_setup_time, min_max);
   float data_required_time = timing_path->data_required_path.time;

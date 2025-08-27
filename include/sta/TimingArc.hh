@@ -142,9 +142,7 @@ struct InputRegisterTimingPath
 {
   float slack{std::numeric_limits<float>::max()};
   float crpr{std::numeric_limits<float>::max()};
-  float clk_time{std::numeric_limits<float>::max()};
   float clk_arrival{std::numeric_limits<float>::max()};
-  float clk_delay{std::numeric_limits<float>::max()};
   float library_setup_time{std::numeric_limits<float>::max()};
   float path_delay{std::numeric_limits<float>::max()};
   bool has_path_delay{false};
@@ -155,8 +153,12 @@ struct InputRegisterTimingPath
   std::string type{};
   const RiseFall *source_clock_transition{nullptr};
   std::string source_clock_name{};
+  float source_clk_delay{std::numeric_limits<float>::max()};
+  float source_clk_time{std::numeric_limits<float>::max()};
   const RiseFall *target_clock_transition{nullptr};
   std::string target_clock_name{};
+  float target_clk_delay{std::numeric_limits<float>::max()};
+  float target_clk_time{std::numeric_limits<float>::max()};
   TimingPath source_clock_path{};
   TimingPath data_arrival_path{};
   TimingPath data_required_path{};

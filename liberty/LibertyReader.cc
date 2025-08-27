@@ -429,7 +429,8 @@ LibertyReader::defineVisitors()
   defineAttrVisitor("crpr", &LibertyReader::visitCrpr);
   defineAttrVisitor("clk_arrival", &LibertyReader::visitClkArrival);
   defineAttrVisitor("clk_time", &LibertyReader::visitClkTime);
-  defineAttrVisitor("clk_delay", &LibertyReader::visitClkDelay);
+  defineAttrVisitor("source_clk_delay", &LibertyReader::visitSourceClkDelay);
+  defineAttrVisitor("target_clk_delay", &LibertyReader::visitTargetClkDelay);
   defineAttrVisitor("clk_propagated", &LibertyReader::visitClkPropagated);
   defineAttrVisitor("path_delay", &LibertyReader::visitPathDelay);
   defineAttrVisitor("library_setup_time", &LibertyReader::visitTimingPathLibrarySetupTime);
@@ -4681,16 +4682,25 @@ LibertyReader::visitClkTime(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
     float clk_time = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-    register_to_register_timing_path_.clk_time = clk_time;
+    register_to_register_timing_path_.target_clk_time = clk_time;
   }
 }
 
 void
-LibertyReader::visitClkDelay(LibertyAttr *attr)
+LibertyReader::visitSourceClkDelay(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
-    float clk_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-    register_to_register_timing_path_.clk_delay = clk_delay;
+    float source_clk_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+    register_to_register_timing_path_.target_clk_delay = source_clk_delay;
+  }
+}
+
+void
+LibertyReader::visitTargetClkDelay(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    float target_clk_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+    register_to_register_timing_path_.target_clk_delay = target_clk_delay;
   }
 }
 

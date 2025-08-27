@@ -369,7 +369,8 @@ public:
   virtual void visitCrpr(LibertyAttr *attr);
   virtual void visitClkArrival(LibertyAttr *attr);
   virtual void visitClkTime(LibertyAttr *attr);
-  virtual void visitClkDelay(LibertyAttr *attr);
+  virtual void visitSourceClkDelay(LibertyAttr *attr);
+  virtual void visitTargetClkDelay(LibertyAttr *attr);
   virtual void visitClkPropagated(LibertyAttr *attr);
   virtual void visitPathDelay(LibertyAttr *attr);
   virtual void visitTimingPathLibrarySetupTime(LibertyAttr *attr);

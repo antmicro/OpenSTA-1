@@ -435,14 +435,20 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
     input_register_timing_path.source_clock_path.time = source_clock_path->arrival();
     input_register_timing_path.source_clock_path.vertices = extractDataRequiredTimingPathVertices(source_clock_path, source_clock_transition);
     input_register_timing_path.source_clock_path.name = TimingPath::Names::SOURCE_CLOCK.at(source_clock_transition->index());
+
+    float src_clk_offset = path_end->sourceClkOffset(sta_state);
+    input_register_timing_path.source_clk_delay = delayAsFloat(src_clk_offset);
+    const ClockEdge *clk_edge = source_clock_path->clkEdge(sta_state);
+    input_register_timing_path.source_clk_time = delayAsFloat(clk_edge->time() + src_clk_offset);
+
     starting_index = path_expanded.startIndex();
   }
-  
+
   input_register_timing_path.data_arrival_path.vertices = extractTimingPathVertices(path_expanded.endPath(), starting_index, input_rf);
   input_register_timing_path.data_arrival_path.time = path_end->dataArrivalTime(sta_state);
   input_register_timing_path.data_arrival_path.rise_fall = input_rf;
   input_register_timing_path.data_arrival_path.name = TimingPath::Names::DATA_ARRIVAL.at(input_rf->index());
-  
+
   const Path *target_clock_path = path_end->targetClkPath();
   input_register_timing_path.data_required_path.vertices = extractDataRequiredTimingPathVertices(target_clock_path, input_rf);
   input_register_timing_path.data_required_path.time = path_end->requiredTime(sta_state);
@@ -453,15 +459,15 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   input_register_timing_path.slack = delayAsFloat(path_end->slack(sta_state), early_late, sta_state);
   input_register_timing_path.crpr = delayAsFloat(path_end->checkCrpr(sta_state));
 
-  float clk_delay = path_end->targetClkDelay(sta_state);
-  input_register_timing_path.clk_delay = delayAsFloat(clk_delay);
+  float target_clk_delay = path_end->targetClkDelay(sta_state);
+  input_register_timing_path.target_clk_delay = delayAsFloat(target_clk_delay);
 
   float src_offset = path_end->sourceClkOffset(sta_state);
   float clk_time = path_end->targetClkTime(sta_state)
     + path_end->targetClkMcpAdjustment(sta_state)
     + src_offset;
-  Arrival clk_arrival = clk_time + clk_delay;
-  input_register_timing_path.clk_time = delayAsFloat(clk_time);
+  Arrival clk_arrival = clk_time + target_clk_delay;
+  input_register_timing_path.target_clk_time = delayAsFloat(clk_time);
   input_register_timing_path.clk_arrival = delayAsFloat(clk_arrival);
 
   input_register_timing_path.is_clock_propagated = target_clock_path->clkInfo(sta_state->search())->isPropagated();
