@@ -1,4 +1,4 @@
-# timing paths non propagated clock example
+# timing paths propagated clock example
 read_liberty asap7_small.lib.gz
 read_verilog timing_paths_propagated_clock.v
 link_design timing_cell
