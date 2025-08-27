@@ -142,6 +142,7 @@ struct InputRegisterTimingPath
 {
   float slack{std::numeric_limits<float>::max()};
   float crpr{std::numeric_limits<float>::max()};
+  float clk_time{std::numeric_limits<float>::max()};
   float clk_arrival{std::numeric_limits<float>::max()};
   float clk_delay{std::numeric_limits<float>::max()};
   float library_setup_time{std::numeric_limits<float>::max()};

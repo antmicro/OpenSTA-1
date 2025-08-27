@@ -294,6 +294,7 @@ library (timing_cell_cdc) {
         timing_path() {
           slack : 69.42394;
           crpr : 0.00000;
+          clk_time : 0.00000;
           clk_arrival : 0.00000;
           clk_delay : 0.00000;
           clk_propagated : 0;
@@ -323,6 +324,7 @@ library (timing_cell_cdc) {
         timing_path() {
           slack : 51.65410;
           crpr : 0.00000;
+          clk_time : 0.00000;
           clk_arrival : 0.00000;
           clk_delay : 0.00000;
           clk_propagated : 0;
@@ -352,6 +354,7 @@ library (timing_cell_cdc) {
         timing_path() {
           slack : 422.26083;
           crpr : 0.00000;
+          clk_time : 500.00000;
           clk_arrival : 500.00000;
           clk_delay : 0.00000;
           clk_propagated : 0;
@@ -381,6 +384,7 @@ library (timing_cell_cdc) {
         timing_path() {
           slack : 435.13882;
           crpr : 0.00000;
+          clk_time : 500.00000;
           clk_arrival : 500.00000;
           clk_delay : 0.00000;
           clk_propagated : 0;

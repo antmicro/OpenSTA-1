@@ -461,6 +461,7 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
     + path_end->targetClkMcpAdjustment(sta_state)
     + src_offset;
   Arrival clk_arrival = clk_time + clk_delay;
+  input_register_timing_path.clk_time = delayAsFloat(clk_time);
   input_register_timing_path.clk_arrival = delayAsFloat(clk_arrival);
 
   input_register_timing_path.is_clock_propagated = target_clock_path->clkInfo(sta_state->search())->isPropagated();

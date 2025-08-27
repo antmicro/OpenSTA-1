@@ -2982,33 +2982,27 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
 
 	Arrival clk_arrival = timing_path->clk_arrival;
 
-  reportClkLine(clock, timing_path->target_clock_name.c_str(), timing_path->target_clock_transition, clk_arrival, min_max);
+  reportClkLine(clock, timing_path->target_clock_name.c_str(), timing_path->target_clock_transition, timing_path->clk_time, min_max);
 
 	reportLine(clkNetworkDelayIdealProp(timing_path->is_clock_propagated), timing_path->clk_delay, clk_arrival, min_max);
 
-  if (variables_->crprEnabled()) {
-    Crpr pessimism = timing_path->crpr;
-    clk_arrival += pessimism;
-    reportLine("clock reconvergence pessimism", pessimism, clk_arrival, nullptr);
-  }
-
   float previous_arrival = 0.0f;
-  for (int index = timing_path->data_required_path.vertices.size() - 1; index >= 0; --index) {
+  for (unsigned int index = 0; index < timing_path->data_required_path.vertices.size(); ++index) {
     const auto& vertex = timing_path->data_required_path.vertices[index];
     std::string description = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), vertex.pin.c_str(), vertex.cell.c_str());
     
-    float decrease = previous_arrival - vertex.arrival;
+    float increase = vertex.arrival - previous_arrival;
     previous_arrival = vertex.arrival;
 
-    float time = clock->period() - vertex.arrival;
+    float time = timing_path->clk_time + vertex.arrival;
 
     const RiseFall *rise_fall = RiseFall::find(vertex.transition.c_str());
 
     if (vertex.is_driver) {
-      reportLine(description.c_str(), vertex.capacitance, vertex.slew, field_blank_, decrease, time, false, min_max, rise_fall, "", "normal");
+      reportLine(description.c_str(), vertex.capacitance, vertex.slew, field_blank_, increase, time, false, min_max, rise_fall, "", "normal");
     }
     else {
-      reportLine(description.c_str(), field_blank_, vertex.slew, field_blank_, decrease, time, false, min_max, rise_fall, "", "normal");
+      reportLine(description.c_str(), field_blank_, vertex.slew, field_blank_, increase, time, false, min_max, rise_fall, "", "normal");
     }
 
     if (report_net_) {
@@ -3017,7 +3011,15 @@ ReportPath::reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_p
     }
   }
 
-  reportLine("library setup time", -timing_path->library_setup_time, clock->period() - previous_arrival - timing_path->library_setup_time, min_max);
+  if (variables_->crprEnabled()) {
+    Crpr pessimism = timing_path->crpr;
+    clk_arrival += pessimism;
+    reportLine("clock reconvergence pessimism", pessimism, clk_arrival, nullptr);
+  }
+
+  clk_arrival += timing_path->clk_delay;
+
+  reportLine("library setup time", -timing_path->library_setup_time, clk_arrival - previous_arrival - timing_path->library_setup_time, min_max);
   float data_required_time = timing_path->data_required_path.time;
   reportLine("data required time", data_required_time, min_max);
 }
