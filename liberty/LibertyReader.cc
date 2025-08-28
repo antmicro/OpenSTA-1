@@ -431,6 +431,14 @@ LibertyReader::defineVisitors()
   defineAttrVisitor("clk_time", &LibertyReader::visitClkTime);
   defineAttrVisitor("source_clk_delay", &LibertyReader::visitSourceClkDelay);
   defineAttrVisitor("target_clk_delay", &LibertyReader::visitTargetClkDelay);
+  defineAttrVisitor("source_clk_offset", &LibertyReader::visitSourceClkOffset);
+  defineAttrVisitor("target_clk_offset", &LibertyReader::visitTargetClkOffset);
+  defineAttrVisitor("target_clk_mcp_adjustment", &LibertyReader::visitTargetClkMcpAdjustment);
+  defineAttrVisitor("target_clk_insertion_delay", &LibertyReader::visitTargetClkInsertionDelay);
+  defineAttrVisitor("target_clk_arrival", &LibertyReader::visitTargetClkArrival);
+  defineAttrVisitor("target_clk_insertion_offset", &LibertyReader::visitTargetClkInsertionOffset);
+  defineAttrVisitor("target_clk_non_inter_uncertainty", &LibertyReader::visitTargetClkNonInterUncertainty);
+  defineAttrVisitor("target_clk_uncertainty", &LibertyReader::visitTargetClkUncertainty);
   defineAttrVisitor("clk_propagated", &LibertyReader::visitClkPropagated);
   defineAttrVisitor("path_delay", &LibertyReader::visitPathDelay);
   defineAttrVisitor("library_setup_time", &LibertyReader::visitTimingPathLibrarySetupTime);
@@ -4696,11 +4704,74 @@ LibertyReader::visitSourceClkDelay(LibertyAttr *attr)
 }
 
 void
+LibertyReader::visitSourceClkOffset(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.source_clk_offset = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
+LibertyReader::visitTargetClkOffset(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clk_offset = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
+LibertyReader::visitTargetClkMcpAdjustment(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clk_mcp_adjustment = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
+LibertyReader::visitTargetClkInsertionDelay(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clk_insertion_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
+LibertyReader::visitTargetClkArrival(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clk_arrival = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
 LibertyReader::visitTargetClkDelay(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
-    float target_clk_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-    register_to_register_timing_path_.target_clk_delay = target_clk_delay;
+    register_to_register_timing_path_.target_clk_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
+LibertyReader::visitTargetClkInsertionOffset(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clk_insertion_offset = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
+LibertyReader::visitTargetClkNonInterUncertainty(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clk_non_inter_uncertainty = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
+  }
+}
+
+void
+LibertyReader::visitTargetClkUncertainty(LibertyAttr *attr)
+{
+  if (traversing_cell_worst_timing_paths_) {
+    register_to_register_timing_path_.target_clk_uncertainty = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
   }
 }
 
@@ -4708,7 +4779,7 @@ void
 LibertyReader::visitClkPropagated(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.is_clock_propagated = attr->firstValue()->floatValue() > 0.5f;
+    register_to_register_timing_path_.is_target_clock_propagated = attr->firstValue()->floatValue() > 0.5f;
   }
 }
 

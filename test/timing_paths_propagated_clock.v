@@ -9,6 +9,6 @@ module timing_cell (input in, input clk, output out);
   BUFx2_ASAP7_75t_R b2 (.A(w1), .Y(w2));
   BUFx2_ASAP7_75t_R b3 (.A(w2), .Y(w3));
 
-  DFFHQx4_ASAP7_75t_R d2 (.D(w3), .Q(out), .CLK(clk));
+  DFFHQx4_ASAP7_75t_R d2 (.D(w3), .Q(out), .CLK(clk_d));
 
 endmodule

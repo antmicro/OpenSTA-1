@@ -292,6 +292,13 @@ protected:
 		     Arrival prev_time,
 		     Arrival clk_time,
 		     const MinMax *min_max) const ;
+  void reportClkLine(const char *clk_name,
+               const RiseFall *clk_rf,
+               Arrival prev_time,
+               Arrival clk_time,
+               float clk_slew,
+               bool is_propagated,
+               const MinMax *min_max) const;
   void reportRequired(const PathEnd *end,
 		      std::string margin_msg) const ;
   Required calculateRequired(const PathEnd *end) const;
@@ -503,7 +510,10 @@ protected:
   void reportTimingPathEndLine(const InputRegisterTimingPath *timing_path) const;
   void reportTimingPathSummaryLine(const InputRegisterTimingPath *timing_path) const;
   void reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
-  void reportTimingPathRequiredPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
+  void reportTimingPathTargetClock(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
+  void reportTimingPathClockPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max, float time_offset) const;
+  void reportTimingPathClkUncertainty(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival) const;
+  void reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival) const;
   void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival) const;
   void reportTimingPathJson(const InputRegisterTimingPath *timing_path, bool prev_path) const;
   void reportTimingPathJson(const char *instance_name, const TimingArc *timing_arc, int indent, bool last_path, std::string &result, bool is_clk_path, float prev_time) const;

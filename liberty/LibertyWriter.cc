@@ -340,7 +340,16 @@ LibertyWriter::writeCell(const LibertyCell *cell)
           fprintf(stream_, "          clk_time : %s;\n", time_unit_->asString(timing_path.target_clk_time, 5));
           fprintf(stream_, "          clk_arrival : %s;\n", time_unit_->asString(timing_path.clk_arrival, 5));
           fprintf(stream_, "          clk_delay : %s;\n", time_unit_->asString(timing_path.target_clk_delay, 5));
-          fprintf(stream_, "          clk_propagated : %d;\n", timing_path.is_clock_propagated);
+          fprintf(stream_, "          clk_propagated : %d;\n", timing_path.is_target_clock_propagated);
+          fprintf(stream_, "          source_clk_offset : %s;\n", time_unit_->asString(timing_path.source_clk_offset, 5));
+          fprintf(stream_, "          target_clk_offset : %s;\n", time_unit_->asString(timing_path.target_clk_offset, 5));
+          fprintf(stream_, "          target_clk_mcp_adjustment : %s;\n", time_unit_->asString(timing_path.target_clk_mcp_adjustment, 5));
+          fprintf(stream_, "          target_clk_insertion_delay : %s;\n", time_unit_->asString(timing_path.target_clk_insertion_delay, 5));
+          fprintf(stream_, "          target_clk_arrival : %s;\n", time_unit_->asString(timing_path.target_clk_arrival, 5));
+          fprintf(stream_, "          target_clk_delay : %s;\n", time_unit_->asString(timing_path.target_clk_delay, 5));
+          fprintf(stream_, "          target_clk_insertion_offset : %s;\n", time_unit_->asString(timing_path.target_clk_insertion_offset, 5));
+          fprintf(stream_, "          target_clk_non_inter_uncertainty : %s;\n", time_unit_->asString(timing_path.target_clk_non_inter_uncertainty, 5));
+          fprintf(stream_, "          target_clk_uncertainty : %s;\n", time_unit_->asString(timing_path.target_clk_uncertainty, 5));
 
           if (timing_path.has_path_delay) {
             fprintf(stream_, "          path_delay : %s;\n", time_unit_->asString(timing_path.path_delay, 5));
