@@ -369,6 +369,11 @@ public:
   virtual void visitCrpr(LibertyAttr *attr);
   virtual void visitClkArrival(LibertyAttr *attr);
   virtual void visitClkTime(LibertyAttr *attr);
+  virtual void visitSourceClkPropagated(LibertyAttr *attr);
+  virtual void visitSourceClkArrival(LibertyAttr *attr);
+  virtual void visitSourceClkTime(LibertyAttr *attr);
+  virtual void visitSourceClkLatency(LibertyAttr *attr);
+  virtual void visitSourceClkInsertionDelay(LibertyAttr *attr);
   virtual void visitSourceClkDelay(LibertyAttr *attr);
   virtual void visitTargetClkDelay(LibertyAttr *attr);
   virtual void visitSourceClkOffset(LibertyAttr *attr);
@@ -379,7 +384,7 @@ public:
   virtual void visitTargetClkInsertionOffset(LibertyAttr *attr);
   virtual void visitTargetClkNonInterUncertainty(LibertyAttr *attr);
   virtual void visitTargetClkUncertainty(LibertyAttr *attr);
-  virtual void visitClkPropagated(LibertyAttr *attr);
+  virtual void visitTargetClkPropagated(LibertyAttr *attr);
   virtual void visitPathDelay(LibertyAttr *attr);
   virtual void visitTimingPathLibrarySetupTime(LibertyAttr *attr);
   virtual void visitTimingPathSourceClock(LibertyAttr *attr);

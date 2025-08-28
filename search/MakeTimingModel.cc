@@ -420,45 +420,6 @@ MakeEndTimingArcs::setInputRf(const RiseFall *input_rf)
   input_rf_ = input_rf;
 }
 
-// bool
-// pathFromGenPropClk(StaState *sta_state,
-//              const Path *clk_path,
-// 			       const EarlyLate *early_late)
-// {
-//   ClkInfo *clk_info = clk_path->tag(sta_state->search())->clkInfo();
-//   const ClockEdge *clk_edge = clk_info->clkEdge();
-//   if (clk_edge) {
-//     const Clock *clk = clk_edge->clock();
-//     float insertion;
-//     bool exists;
-//     sta_state->sdc()->clockInsertion(clk, clk_info->clkSrc(),
-// 			 clk_edge->transition(),
-// 			 clk_path->minMax(sta_state),
-// 			 early_late,
-// 			 insertion, exists);
-//     return !exists
-//       && clk->isGeneratedWithPropagatedMaster();
-//   }
-//   else
-//     return false;
-// }
-
-// bool
-// isGenPropClk(StaState *sta_state,
-//        const Clock *clk,
-// 			 const RiseFall *clk_rf,
-// 			 const MinMax *min_max,
-// 			 const EarlyLate *early_late)
-// {
-//   float insertion;
-//   bool exists;
-//   sta_state->sdc()->clockInsertion(clk, clk->srcPin(), clk_rf,
-// 		       min_max, early_late,
-// 		       insertion, exists);
-//   return !exists
-//     && clk->isGeneratedWithPropagatedMaster();
-// }
-
 InputRegisterTimingPath
 extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
 {
@@ -476,10 +437,15 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
     input_register_timing_path.source_clock_path.vertices = extractDataRequiredTimingPathVertices(source_clock_path, source_clock_transition);
     input_register_timing_path.source_clock_path.name = TimingPath::Names::SOURCE_CLOCK.at(source_clock_transition->index());
 
-    float src_clk_offset = path_end->sourceClkOffset(sta_state);
-    input_register_timing_path.source_clk_delay = delayAsFloat(src_clk_offset);
     const ClockEdge *clk_edge = source_clock_path->clkEdge(sta_state);
-    input_register_timing_path.source_clk_time = delayAsFloat(clk_edge->time() + src_clk_offset);
+    input_register_timing_path.source_clk_time = clk_edge->time();
+
+    input_register_timing_path.source_clk_offset = path_end->sourceClkOffset(sta_state);
+    input_register_timing_path.source_clk_arrival = sta_state->search()->clkPathArrival(source_clock_path);
+    input_register_timing_path.source_clk_latency = path_end->sourceClkLatency(sta_state);
+    input_register_timing_path.source_clk_insertion_delay = path_end->sourceClkInsertionDelay(sta_state);
+
+    input_register_timing_path.is_source_clock_propagated = source_clock_path->clkInfo(sta_state->search())->isPropagated();
 
     starting_index = path_expanded.startIndex();
   }
@@ -495,19 +461,11 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   input_register_timing_path.data_required_path.rise_fall = input_rf;
   input_register_timing_path.data_required_path.name = TimingPath::Names::DATA_REQUIRED.at(input_rf->index());
 
-  // const ClockEdge *clk_edge = end->targetClkEdge(this);
-  // Clock *clk = clk_edge->clock();
-  // const RiseFall *clk_rf = clk_edge->transition();
-  // const RiseFall *clk_end_rf = end->targetClkEndTrans(this);
-  // string clk_name = clkName(clk, clk_end_rf != clk_rf);
-
-  input_register_timing_path.source_clk_offset = path_end->sourceClkOffset(sta_state);
-
   input_register_timing_path.target_clk_offset = path_end->targetClkOffset(sta_state);
   input_register_timing_path.target_clk_mcp_adjustment = path_end->targetClkMcpAdjustment(sta_state);
   input_register_timing_path.target_clk_insertion_delay = path_end->targetClkInsertionDelay(sta_state);
   input_register_timing_path.target_clk_arrival = path_end->targetClkArrival(sta_state);
-  input_register_timing_path.target_clk_delay = path_end->targetClkArrival(sta_state);
+  input_register_timing_path.target_clk_delay = path_end->targetClkDelay(sta_state);
   input_register_timing_path.target_clk_non_inter_uncertainty = path_end->targetNonInterClkUncertainty(sta_state);
   input_register_timing_path.target_clk_uncertainty = path_end->interClkUncertainty(sta_state);
 
@@ -524,61 +482,6 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   Arrival path_insertion = sta_state->search()->clockInsertion(clk, src_pin, clk_rf, min_max, min_max, path_ap);
   Arrival tgt_insertion = sta_state->search()->clockInsertion(clk, src_pin, clk_rf, min_max, early_late, path_ap);
   input_register_timing_path.target_clk_insertion_offset = delayAsFloat(tgt_insertion - path_insertion);
-
-  // input_register_timing_path.from_gen_prop_clk = clk_path
-  //   ? pathFromGenPropClk(sta_state, clk_path, early_late)
-  //   : isGenPropClk(sta_state, clk, clk_rf, min_max, early_late);
-
-  // PathAnalysisPt *path_ap = end->pathAnalysisPt(this)->tgtClkAnalysisPt();
-  // const MinMax *min_max = path_ap->pathMinMax();
-  // const Path *clk_path = end->targetClkPath();
-  // reportClkLine(clk, clk_name.c_str(), clk_end_rf, prev_time, clk_time, min_max);
-  // const TimingRole *check_role = end->checkRole(this);
-  // if (is_prop && reportClkPath()) {
-  //   float time_offset = prev_time
-  //     + end->targetClkOffset(this)
-  //     + end->targetClkMcpAdjustment(this);
-  //   const EarlyLate *early_late = check_role->tgtClkEarlyLate();
-  //   if (reportGenClkSrcPath(clk_path, clk, clk_rf, min_max, early_late)) {
-  //     float insertion_offset = 
-	// clk_path ? tgtClkInsertionOffet(clk_path, early_late, path_ap) : 0.0;
-  //     reportGenClkSrcAndPath(clk_path, clk, clk_rf, early_late, path_ap,
-	// 		     time_offset, time_offset + insertion_offset, false);
-  //   }
-  //   else {
-  //     Arrival insertion = end->targetClkInsertionDelay(this);
-  //     if (clk_path) {
-	// reportClkSrcLatency(insertion, clk_time, early_late);
-	// PathExpanded clk_expanded(clk_path, this);
-	// float insertion_offset = tgtClkInsertionOffet(clk_path, early_late,
-	// 					      path_ap);
-	// reportPath6(clk_path, clk_expanded, 0, is_prop, reportClkPath(),
-	// 	    delay_zero, time_offset + insertion_offset, end->checkArc());
-  //     }
-  //     else {
-	// // Output departure.
-	// Arrival clk_arrival = clk_time + clk_delay;
-	// reportLine(clkNetworkDelayIdealProp(clk->isPropagated()),
-	// 	   clk_delay, clk_arrival, min_max);
-  //     }
-  //   }
-  //   reportClkUncertainty(end, clk_arrival);
-  //   reportCommonClkPessimism(end, clk_arrival);
-  // }
-  // else {
-  //   reportLine(clkNetworkDelayIdealProp(is_prop), clk_delay,
-  //              clk_arrival, min_max);
-  //   reportClkUncertainty(end, clk_arrival);
-  //   reportCommonClkPessimism(end, clk_arrival);
-  //   if (clk_path) {
-  //     Vertex *clk_vertex = clk_path->vertex(this);
-  //     reportLine(descriptionField(clk_vertex).c_str(),
-	// 	 prev_time
-	// 	 + end->targetClkArrival(this)
-	// 	 + end->sourceClkOffset(this),
-	// 	 min_max, clk_end_rf);
-  //   }
-  // }
 
   input_register_timing_path.slack = delayAsFloat(path_end->slack(sta_state), early_late, sta_state);
   input_register_timing_path.crpr = delayAsFloat(path_end->checkCrpr(sta_state));

@@ -146,6 +146,7 @@ struct InputRegisterTimingPath
   float library_setup_time{std::numeric_limits<float>::max()};
   float path_delay{std::numeric_limits<float>::max()};
   bool has_path_delay{false};
+  bool is_source_clock_propagated{false};
   bool is_target_clock_propagated{false};
   std::string cell_name{};
   std::string path_group_name{};
@@ -156,6 +157,9 @@ struct InputRegisterTimingPath
   float source_clk_offset{std::numeric_limits<float>::max()};
   float source_clk_delay{std::numeric_limits<float>::max()};
   float source_clk_time{std::numeric_limits<float>::max()};
+  float source_clk_arrival{std::numeric_limits<float>::max()};
+  float source_clk_latency{std::numeric_limits<float>::max()};
+  float source_clk_insertion_delay{std::numeric_limits<float>::max()};
   const RiseFall *target_clock_transition{nullptr};
   std::string target_clock_name{};
   float target_clk_delay{std::numeric_limits<float>::max()};

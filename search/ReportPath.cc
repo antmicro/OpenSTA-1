@@ -2983,11 +2983,26 @@ ReportPath::reportTimingPathType(const InputRegisterTimingPath *timing_path) con
 void
 ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
 {
-  static constexpr float DEFAULT_BASE = 0.0f;
-  if (!timing_path->source_clock_path.vertices.empty()) {
-    reportTimingPath(timing_path->cell_name.c_str(), timing_path->source_clock_path, min_max, DEFAULT_BASE);
+  float prev_time = 0.0f;
+  float src_offset = timing_path->source_clk_offset;
+  float clk_slew = 0.0f;
+  float clk_time = timing_path->source_clk_time;
+  string clk_name = timing_path->source_clock_name;
+  const EarlyLate *early_late = min_max;
+  if (timing_path->is_source_clock_propagated && reportClkPath()) {
+    reportClkLine(clk_name.c_str(), timing_path->source_clock_transition, prev_time, clk_time, clk_slew, timing_path->is_source_clock_propagated, min_max);
+    reportClkSrcLatency(timing_path->target_clk_insertion_delay, clk_time, early_late);
+    reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, 0.0f, timing_path->target_clk_insertion_offset);
   }
-  reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, DEFAULT_BASE);
+  else {
+    reportClkLine(clk_name.c_str(), timing_path->source_clock_transition, prev_time, clk_time, clk_slew, timing_path->is_source_clock_propagated, min_max);
+    Arrival clk_delay = timing_path->source_clk_latency;
+    Arrival clk_arrival = timing_path->source_clk_arrival;
+    float time_offset = clk_arrival;
+    reportLine(clkNetworkDelayIdealProp(timing_path->is_source_clock_propagated), clk_delay, clk_arrival, early_late);
+    reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, 0.0f, time_offset);
+  }
+
   float data_arrival_time = timing_path->data_arrival_path.time;
   reportLine("data arrival time", data_arrival_time, min_max);
 }
@@ -2996,28 +3011,27 @@ void
 ReportPath::reportTimingPathTargetClock(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
 {
   string clk_name = timing_path->target_clock_name;
-  float clk_time = timing_path->target_clk_time;
+  float prev_time = 0.0f;
+  float clk_time = prev_time + timing_path->target_clk_time;
   Arrival clk_delay = timing_path->target_clk_delay;
   Arrival clk_arrival = clk_time + clk_delay;
-  float prev_time = 0.0f;
   float clk_slew = 0.0f;
   reportClkLine(clk_name.c_str(), timing_path->target_clock_transition, prev_time, clk_time, clk_slew, timing_path->is_target_clock_propagated, min_max);
 
-  const EarlyLate *early_late = nullptr;
+  const EarlyLate *early_late = min_max;
   if (timing_path->is_target_clock_propagated && reportClkPath()) {
     float time_offset = prev_time + timing_path->target_clk_offset + timing_path->target_clk_mcp_adjustment;
     Arrival insertion = timing_path->target_clk_insertion_delay;
     reportClkSrcLatency(insertion, clk_time, early_late);
     reportTimingPathClockPath(timing_path, min_max, delayAsFloat(time_offset + timing_path->target_clk_insertion_offset));
-    reportTimingPathClkUncertainty(timing_path, clk_arrival);
-    reportTimingPathCommonClkPessimism(timing_path, clk_arrival);
+    reportTimingPathClkUncertainty(timing_path, clk_arrival, early_late);
+    reportTimingPathCommonClkPessimism(timing_path, clk_arrival, early_late);
   }
   else {
     reportLine(clkNetworkDelayIdealProp(timing_path->is_target_clock_propagated), clk_delay, clk_arrival, min_max);
-    reportTimingPathClkUncertainty(timing_path, clk_arrival);
-    reportTimingPathCommonClkPessimism(timing_path, clk_arrival);
-    float prev_time = timing_path->target_clk_arrival + timing_path->source_clk_offset;
-    reportTimingPathClockPath(timing_path, min_max, prev_time);
+    reportTimingPathClkUncertainty(timing_path, clk_arrival, early_late);
+    reportTimingPathCommonClkPessimism(timing_path, clk_arrival, early_late);
+    reportTimingPathClockPath(timing_path, min_max, clk_arrival);
   }
 
   reportLine("library setup time", -timing_path->library_setup_time, clk_arrival - timing_path->library_setup_time, min_max);
@@ -3026,9 +3040,8 @@ ReportPath::reportTimingPathTargetClock(const InputRegisterTimingPath *timing_pa
 }
 
 void
-ReportPath::reportTimingPathClkUncertainty(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival) const
+ReportPath::reportTimingPathClkUncertainty(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival, const EarlyLate *early_late) const
 {
-  const EarlyLate *early_late = nullptr;
   float uncertainty = timing_path->target_clk_non_inter_uncertainty;
   clk_arrival += uncertainty;
   if (uncertainty != 0.0)
@@ -3041,10 +3054,9 @@ ReportPath::reportTimingPathClkUncertainty(const InputRegisterTimingPath *timing
 }
 
 void
-ReportPath::reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival) const
+ReportPath::reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival, const EarlyLate *early_late) const
 {
   if (variables_->crprEnabled()) {
-    const EarlyLate *early_late = nullptr;
     Crpr pessimism = timing_path->crpr;
     clk_arrival += pessimism;
     reportLine("clock reconvergence pessimism", pessimism, clk_arrival, early_late);
@@ -3054,12 +3066,6 @@ ReportPath::reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *ti
 void
 ReportPath::reportTimingPathClockPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max, float time_offset) const
 {
-  Pin *clock_pin = network_->findPin(timing_path->target_clock_name.c_str());
-  const ClockSet *clock_set = network_->clkNetwork()->clocks(clock_pin);
-  const Clock *clock = *clock_set->begin();
-
-	Arrival clk_arrival = timing_path->clk_arrival;
-
   float previous_arrival = 0.0f;
   for (unsigned int index = 0; index < timing_path->data_required_path.vertices.size(); ++index) {
     const auto& vertex = timing_path->data_required_path.vertices[index];
@@ -3068,7 +3074,7 @@ ReportPath::reportTimingPathClockPath(const InputRegisterTimingPath *timing_path
     float increase = vertex.arrival - previous_arrival;
     previous_arrival = vertex.arrival;
 
-    float time = timing_path->target_clk_time + vertex.arrival;
+    float time = time_offset + vertex.arrival;
 
     const RiseFall *rise_fall = RiseFall::find(vertex.transition.c_str());
 
@@ -3084,8 +3090,6 @@ ReportPath::reportTimingPathClockPath(const InputRegisterTimingPath *timing_path
       reportLine(net_description.c_str(), field_blank_, field_blank_, field_blank_, field_blank_, field_blank_, false, min_max, nullptr, "", "");
     }
   }
-
-  clk_arrival += timing_path->target_clk_delay;
 }
 
 void
@@ -3551,9 +3555,9 @@ void ReportPath::reportTimingPath(const char *instance_name, const TimingArc *ti
 }
 
 void
-ReportPath::reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float base_arrival) const
+ReportPath::reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float base_arrival, float prev_time) const
 {
-  float previous_arrival = 0.0f;
+  float previous_arrival = prev_time;
   for (std::size_t index = 0; index < timing_path.vertices.size(); ++index) {
     const auto& vertex = timing_path.vertices[index];
     std::string description = stdstrPrint("%s/%s (%s)", instance_name, vertex.pin.c_str(), vertex.cell.c_str());

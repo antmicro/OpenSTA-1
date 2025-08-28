@@ -178,6 +178,7 @@ record_sta_tests {
   timing_paths_propagated_clock
   timing_paths_propagated_clock_report
   timing_paths_non_propagated_clock
+  timing_paths_non_propagated_clock_report
   internal_paths_cell
   internal_paths_top
   internal_paths_top_sorted

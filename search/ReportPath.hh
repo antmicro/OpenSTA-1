@@ -512,9 +512,9 @@ protected:
   void reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPathTargetClock(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPathClockPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max, float time_offset) const;
-  void reportTimingPathClkUncertainty(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival) const;
-  void reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival) const;
-  void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival) const;
+  void reportTimingPathClkUncertainty(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival, const EarlyLate *early_late) const;
+  void reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival, const EarlyLate *early_late) const;
+  void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival, float prev_time = 0.0f) const;
   void reportTimingPathJson(const InputRegisterTimingPath *timing_path, bool prev_path) const;
   void reportTimingPathJson(const char *instance_name, const TimingArc *timing_arc, int indent, bool last_path, std::string &result, bool is_clk_path, float prev_time) const;
   void reportTimingPathJson(std::string &result, int indent, const std::string &cell_name, const TimingPath *timing_path) const;
