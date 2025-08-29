@@ -2542,7 +2542,7 @@ Sta::findInternalTimingPaths(
 
 ////////////////////////////////////////////////////////////////
 
-PathsContainer
+PathsStitch
 Sta::mergePaths(const PathEndSeq *path_ends,
                 const InternalPathSeq *timing_paths,
                 bool sort_by_slack,
@@ -2663,9 +2663,9 @@ Sta::reportPathEnds(PathEndSeq *ends)
 }
 
 void
-Sta::reportPaths(const PathsContainer *paths_container)
+Sta::reportPaths(const PathsStitch *paths_stitch)
 {
-  report_path_->reportPaths(paths_container);
+  report_path_->reportPaths(paths_stitch);
 }
 
 void

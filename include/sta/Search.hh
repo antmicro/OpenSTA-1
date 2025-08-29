@@ -420,10 +420,10 @@ public:
                                           PathGroupNameSet *groups,
                                           unsigned int path_count);
 
-  PathsContainer mergePaths(const PathEndSeq *path_ends,
-                            const InternalPathSeq *timing_paths,
-                            bool sort_by_slack,
-                            unsigned int path_count);
+  PathsStitch mergePaths(const PathEndSeq *path_ends,
+                         const InternalPathSeq *timing_paths,
+                         bool sort_by_slack,
+                         unsigned int path_count);
 
 protected:
   void init(StaState *sta);

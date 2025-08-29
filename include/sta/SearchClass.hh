@@ -139,12 +139,12 @@ enum class ReportDeduplicationMode { none,
 			      keep_different
 };
 
-class PathsContainer
+class PathsStitch
 {
 public:
-  PathsContainer() = default;
+  PathsStitch() = default;
 
-  PathsContainer(
+  PathsStitch(
       PathEndSeq path_ends,
       InternalPathSeq internal_timing_paths,
       bool sorted_by_slack)
@@ -153,14 +153,14 @@ public:
     sorted_by_slack_{sorted_by_slack},
     num_of_paths_{static_cast<unsigned int>(path_ends_.size() + internal_timing_paths_.size())} {}
 
-  PathsContainer(
+  PathsStitch(
       PathEndSeq path_ends,
       bool sorted_by_slack)
     : path_ends_{std::move(path_ends)},
     sorted_by_slack_{sorted_by_slack},
     num_of_paths_{static_cast<unsigned int>(path_ends_.size())} {}
 
-  PathsContainer(
+  PathsStitch(
       InternalPathSeq internal_timing_paths,
       bool sorted_by_slack)
     : internal_timing_paths_{std::move(internal_timing_paths)},

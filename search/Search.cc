@@ -700,13 +700,14 @@ Search::seedFilterStarts()
 
 ////////////////////////////////////////////////////////////////
 
-InternalPathSeq Search::findInternalTimingPaths(const MinMaxAll *delay_min_max,
-                                                const RiseFallBoth *transition_rise_fall,
-                                                float slack_min,
-                                                float slack_max,
-                                                bool sort_by_slack,
-                                                PathGroupNameSet *groups,
-                                                unsigned int path_count)
+InternalPathSeq
+Search::findInternalTimingPaths(const MinMaxAll *delay_min_max,
+                                const RiseFallBoth *transition_rise_fall,
+                                float slack_min,
+                                float slack_max,
+                                bool sort_by_slack,
+                                PathGroupNameSet *groups,
+                                unsigned int path_count)
 {
   std::unordered_map<std::string, InternalPathSet> found_timing_paths{};
   LibertyLibraryIterator *liberty_library_iterator = network_->libertyLibraryIterator();
@@ -770,23 +771,24 @@ Search::isMatchingSearchedPathGroups(const char *path_group, PathGroupNameSet *g
 
 ////////////////////////////////////////////////////////////////
 
-PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
-                                  const InternalPathSeq *timing_paths,
-                                  bool sort_by_slack,
-                                  unsigned int path_count)
+PathsStitch
+Search::mergePaths(const PathEndSeq *path_ends,
+                   const InternalPathSeq *timing_paths,
+                   bool sort_by_slack,
+                   unsigned int path_count)
 {
   bool has_timing_paths = timing_paths && !timing_paths->empty();
   bool has_path_ends = path_ends && !path_ends->empty();
   if (!has_timing_paths && !has_path_ends) {
-    return PathsContainer{};
+    return PathsStitch{};
   }
 
   if (!has_timing_paths) {
-    return PathsContainer{*path_ends, sort_by_slack};
+    return PathsStitch{*path_ends, sort_by_slack};
   }
 
   if (!has_path_ends) {
-    return PathsContainer{*timing_paths, sort_by_slack};
+    return PathsStitch{*timing_paths, sort_by_slack};
   }
 
   std::unordered_map<PathGroup*, PathEndSeq> grouped_path_ends;
@@ -824,7 +826,7 @@ PathsContainer Search::mergePaths(const PathEndSeq *path_ends,
     sort(filtered_internal_paths, std::less<const InputRegisterTimingPath*>{});
   }
 
-  return PathsContainer{std::move(filtered_path_ends), std::move(filtered_internal_paths), sort_by_slack};
+  return PathsStitch{std::move(filtered_path_ends), std::move(filtered_internal_paths), sort_by_slack};
 }
 
 PathGroup *

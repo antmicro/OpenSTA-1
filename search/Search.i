@@ -398,7 +398,7 @@ find_internal_timing_paths(const MinMaxAll *delay_min_max,
 
 ////////////////////////////////////////////////////////////////
 
-PathsContainer
+PathsStitch
 merge_paths(PathEndSeq *path_ends,
             InternalPathSeq *timing_paths,
             bool sort_by_slack,
@@ -533,10 +533,10 @@ report_path_ends(PathEndSeq *ends)
 }
 
 void
-report_paths_combined(PathsContainer *paths_container)
+report_paths_combined(PathsStitch *paths_stitch)
 {
-  Sta::sta()->reportPaths(paths_container);
-  delete paths_container;
+  Sta::sta()->reportPaths(paths_stitch);
+  delete paths_stitch;
 }
 
 void

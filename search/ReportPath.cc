@@ -2807,44 +2807,44 @@ ReportPath::reportPathFull(const Path *path) const
 }
 
 void
-ReportPath::reportPaths(const PathsContainer *paths_container) const
+ReportPath::reportPaths(const PathsStitch *paths_stitch) const
 {
-  if (!paths_container->hasInternalPaths()) {
-    reportPathEnds(&paths_container->pathEnds());
+  if (!paths_stitch->hasInternalPaths()) {
+    reportPathEnds(&paths_stitch->pathEnds());
     return;
   }
 
-  if (!paths_container->hasPathEnds()) {
-    reportPaths(&paths_container->internalPaths());
+  if (!paths_stitch->hasPathEnds()) {
+    reportPaths(&paths_stitch->internalPaths());
     return;
   }
 
-  if (!paths_container->sortedBySlack()) {
+  if (!paths_stitch->sortedBySlack()) {
     reportPathEndHeader();
     static constexpr bool NO_PATHS_MESSAGE = false;
-    reportPathEnds(&paths_container->pathEnds(), NO_PATHS_MESSAGE);
+    reportPathEnds(&paths_stitch->pathEnds(), NO_PATHS_MESSAGE);
     
-    const bool prev_path = paths_container->hasPathEnds();
-    reportPaths(&paths_container->internalPaths(), prev_path);
+    const bool prev_path = paths_stitch->hasPathEnds();
+    reportPaths(&paths_stitch->internalPaths(), prev_path);
     reportPathEndFooter();
     return;
   }
 
   reportPathEndHeader();
   
-  const PathEndSeq &path_ends = paths_container->pathEnds();
+  const PathEndSeq &path_ends = paths_stitch->pathEnds();
   Set<PathEnd *> qualified_ends;
   if (dedup_by_word_) {
     qualified_ends = dedupByWord(&path_ends);
   }
-  const InternalPathSeq &internal_paths = paths_container->internalPaths();
+  const InternalPathSeq &internal_paths = paths_stitch->internalPaths();
 
   unsigned int first_index = 0;
   unsigned int second_index = 0;
 
   const PathEnd *prev_path_end = nullptr;
   unsigned int current_index = 0;
-  while (current_index < paths_container->size()) {
+  while (current_index < paths_stitch->size()) {
     current_index += 1;
 
     if (first_index >= path_ends.size()) {

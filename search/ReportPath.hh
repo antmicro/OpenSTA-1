@@ -77,8 +77,8 @@ public:
   void reportPath(const Path *path) const;
   void reportPaths(const InternalPathSeq *timing_paths) const;
   void reportPath(const InputRegisterTimingPath *timing_path, bool prev_path) const;
-  void reportPaths(const PathsContainer *paths_container) const;
-  void reportPathsSorted(const PathsContainer *paths_container) const;
+  void reportPaths(const PathsStitch *paths_stitch) const;
+  void reportPathsSorted(const PathsStitch *paths_stitch) const;
 
   void reportShort(const PathEndUnconstrained *end) const;
   void reportShort(const PathEndCheck *end) const;
