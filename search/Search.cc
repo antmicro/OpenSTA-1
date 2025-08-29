@@ -830,8 +830,20 @@ Search::findPathGroupForInternalPath(const InputRegisterTimingPath *timing_path)
   const MinMax *min_max = timing_path->path_type == "max" ? MinMax::max() : MinMax::min();
   if (timing_path->path_group_name == "clk") {
     Pin *clock_pin = network_->findPin(timing_path->target_clock_name.c_str());
-    auto clock_set = network_->clkNetwork()->clocks(clock_pin);
-    auto clock = *clock_set->begin();
+    if (!clock_pin) {
+      return nullptr;
+    }
+
+    const ClockSet *clock_set = network_->clkNetwork()->clocks(clock_pin);
+    if (!clock_set) {
+      return nullptr;
+    }
+
+    const Clock *clock = *clock_set->begin();
+    if (!clock) {
+      return nullptr;
+    }
+
     return search_->findPathGroup(clock, min_max);
   }
 
