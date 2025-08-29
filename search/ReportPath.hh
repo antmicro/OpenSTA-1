@@ -512,6 +512,7 @@ protected:
   void reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPathTargetClock(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const;
   void reportTimingPathClockPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max, float time_offset) const;
+  void reportTimingPathVertex(const char *cell_name, const TimingPathVertex &timing_path_vertex, const MinMax *min_max, float increase, float arrival) const;
   void reportTimingPathClkUncertainty(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival, const EarlyLate *early_late) const;
   void reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *timing_path, Arrival &clk_arrival, const EarlyLate *early_late) const;
   void reportTimingPath(const char *instance_name, const TimingPath &timing_path, const MinMax *min_max, float prev_arrival, float prev_time = 0.0f) const;

@@ -7,6 +7,7 @@ Path Type: max
 ---------------------------------------------------------
    0.00    0.00   clock clk (rise edge)
    0.00    0.00   clock network delay (ideal)
+   0.00    0.00 ^ internal_paths_cell/r1/CLK (DFFHQx4_ASAP7_75t_R)
   64.76   64.76 ^ internal_paths_cell/r1/Q (DFFHQx4_ASAP7_75t_R)
    0.00   64.76 ^ internal_paths_cell/u2/A (BUFx2_ASAP7_75t_R)
   17.77   82.53 ^ internal_paths_cell/u2/Y (BUFx2_ASAP7_75t_R)
@@ -45,6 +46,7 @@ Path Type: max
 ---------------------------------------------------------
    0.00    0.00   clock clk (rise edge)
    0.00    0.00   clock network delay (ideal)
+   0.00    0.00 ^ internal_paths_cell/r1/CLK (DFFHQx4_ASAP7_75t_R)
   60.44   60.44 v internal_paths_cell/r1/Q (DFFHQx4_ASAP7_75t_R)
    0.00   60.44 v internal_paths_cell/u2/A (BUFx2_ASAP7_75t_R)
   18.51   78.96 v internal_paths_cell/u2/Y (BUFx2_ASAP7_75t_R)
@@ -83,6 +85,7 @@ Path Type: max
 ---------------------------------------------------------
    0.00    0.00   clock clk (rise edge)
    0.00    0.00   clock network delay (ideal)
+   0.00    0.00 ^ internal_paths_cell/r1/CLK (DFFHQx4_ASAP7_75t_R)
   64.76   64.76 ^ internal_paths_cell/r1/Q (DFFHQx4_ASAP7_75t_R)
    0.00   64.76 ^ internal_paths_cell/u2/A (BUFx2_ASAP7_75t_R)
   17.77   82.53 ^ internal_paths_cell/u2/Y (BUFx2_ASAP7_75t_R)
@@ -115,6 +118,7 @@ Path Type: max
 ---------------------------------------------------------
    0.00    0.00   clock clk (rise edge)
    0.00    0.00   clock network delay (ideal)
+   0.00    0.00 ^ internal_paths_cell/r1/CLK (DFFHQx4_ASAP7_75t_R)
   60.44   60.44 v internal_paths_cell/r1/Q (DFFHQx4_ASAP7_75t_R)
    0.00   60.44 v internal_paths_cell/u2/A (BUFx2_ASAP7_75t_R)
   18.51   78.96 v internal_paths_cell/u2/Y (BUFx2_ASAP7_75t_R)

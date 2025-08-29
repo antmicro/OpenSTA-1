@@ -177,8 +177,10 @@ record_sta_tests {
   timing_cell_complex_cdc
   timing_paths_propagated_clock
   timing_paths_propagated_clock_report
+  timing_paths_propagated_clock_report_full
   timing_paths_non_propagated_clock
   timing_paths_non_propagated_clock_report
+  timing_paths_non_propagated_clock_report_full
   internal_paths_cell
   internal_paths_top
   internal_paths_top_sorted

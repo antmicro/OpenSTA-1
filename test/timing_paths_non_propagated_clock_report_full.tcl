@@ -9,4 +9,4 @@ set_clock_uncertainty 0.1 {clk}
 set_clock_latency 1.0 {clk}
 set_input_delay -clock clk 0 {in}
 
-report_checks
+report_checks -format full_clock_expanded

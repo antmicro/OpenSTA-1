@@ -2992,6 +2992,7 @@ ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_pa
   if (timing_path->is_source_clock_propagated && reportClkPath()) {
     reportClkLine(clk_name.c_str(), timing_path->source_clock_transition, prev_time, clk_time, clk_slew, timing_path->is_source_clock_propagated, min_max);
     reportClkSrcLatency(timing_path->target_clk_insertion_delay, clk_time, early_late);
+    reportTimingPath(timing_path->cell_name.c_str(), timing_path->source_clock_path, min_max, 0.0f, 0.0f);
     reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, 0.0f, timing_path->target_clk_insertion_offset);
   }
   else {
@@ -2999,7 +3000,8 @@ ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_pa
     Arrival clk_delay = timing_path->source_clk_latency;
     Arrival clk_arrival = timing_path->source_clk_arrival;
     float time_offset = clk_arrival;
-    reportLine(clkNetworkDelayIdealProp(timing_path->is_source_clock_propagated), clk_delay, clk_arrival, early_late);
+    reportLine(clkNetworkDelayIdealProp(timing_path->is_source_clock_propagated), time_offset, time_offset, early_late);
+    reportTimingPathVertex(timing_path->cell_name.c_str(), timing_path->source_clock_path.vertices.back(), min_max, 0.0f, time_offset);
     reportTimingPath(timing_path->cell_name.c_str(), timing_path->data_arrival_path, min_max, 0.0f, time_offset);
   }
 
@@ -3031,7 +3033,7 @@ ReportPath::reportTimingPathTargetClock(const InputRegisterTimingPath *timing_pa
     reportLine(clkNetworkDelayIdealProp(timing_path->is_target_clock_propagated), clk_delay, clk_arrival, min_max);
     reportTimingPathClkUncertainty(timing_path, clk_arrival, early_late);
     reportTimingPathCommonClkPessimism(timing_path, clk_arrival, early_late);
-    reportTimingPathClockPath(timing_path, min_max, clk_arrival);
+    reportTimingPathVertex(timing_path->cell_name.c_str(), timing_path->data_required_path.vertices.back(), min_max, 0.0f, clk_arrival);
   }
 
   reportLine("library setup time", -timing_path->library_setup_time, clk_arrival - timing_path->library_setup_time, min_max);
@@ -3064,31 +3066,38 @@ ReportPath::reportTimingPathCommonClkPessimism(const InputRegisterTimingPath *ti
 }
 
 void
+ReportPath::reportTimingPathVertex(const char *cell_name, const TimingPathVertex &timing_path_vertex, const MinMax *min_max, float increase, float arrival) const
+{
+  std::string description = stdstrPrint("%s/%s (%s)", cell_name, timing_path_vertex.pin.c_str(), timing_path_vertex.cell.c_str());
+  
+  const RiseFall *rise_fall = RiseFall::find(timing_path_vertex.transition.c_str());
+
+  if (timing_path_vertex.is_driver) {
+    reportLine(description.c_str(), timing_path_vertex.capacitance, timing_path_vertex.slew, field_blank_, increase, arrival, false, min_max, rise_fall, "", "normal");
+  }
+  else {
+    reportLine(description.c_str(), field_blank_, timing_path_vertex.slew, field_blank_, increase, arrival, false, min_max, rise_fall, "", "normal");
+  }
+
+  if (report_net_) {
+    const std::string net_description = stdstrPrint("%s (net)", timing_path_vertex.net.c_str());
+    reportLine(net_description.c_str(), field_blank_, field_blank_, field_blank_, field_blank_, field_blank_, false, min_max, nullptr, "", "");
+  }
+}
+
+void
 ReportPath::reportTimingPathClockPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max, float time_offset) const
 {
   float previous_arrival = 0.0f;
   for (unsigned int index = 0; index < timing_path->data_required_path.vertices.size(); ++index) {
     const auto& vertex = timing_path->data_required_path.vertices[index];
-    std::string description = stdstrPrint("%s/%s (%s)", timing_path->cell_name.c_str(), vertex.pin.c_str(), vertex.cell.c_str());
     
     float increase = vertex.arrival - previous_arrival;
     previous_arrival = vertex.arrival;
-
+    
     float time = time_offset + vertex.arrival;
 
-    const RiseFall *rise_fall = RiseFall::find(vertex.transition.c_str());
-
-    if (vertex.is_driver) {
-      reportLine(description.c_str(), vertex.capacitance, vertex.slew, field_blank_, increase, time, false, min_max, rise_fall, "", "normal");
-    }
-    else {
-      reportLine(description.c_str(), field_blank_, vertex.slew, field_blank_, increase, time, false, min_max, rise_fall, "", "normal");
-    }
-
-    if (report_net_) {
-      const std::string net_description = stdstrPrint("%s (net)", vertex.net.c_str());
-      reportLine(net_description.c_str(), field_blank_, field_blank_, field_blank_, field_blank_, field_blank_, false, min_max, nullptr, "", "");
-    }
+    reportTimingPathVertex(timing_path->cell_name.c_str(), vertex, min_max, increase, time);
   }
 }
 
