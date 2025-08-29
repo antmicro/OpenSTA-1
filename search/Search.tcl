@@ -234,7 +234,6 @@ define_cmd_args "find_internal_timing_paths_cmd" \
      [-to to_list|-rise_to to_list|-fall_to to_list]\
      [-path_delay min|min_rise|min_fall|max|max_rise|max_fall|min_max]\
      [-group_path_count path_count] \
-     [-endpoint_path_count path_count]\
      [-unique_paths_to_endpoint]\
      [-slack_max slack_max]\
      [-slack_min slack_min]\
