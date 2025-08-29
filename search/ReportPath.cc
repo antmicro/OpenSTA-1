@@ -2983,9 +2983,8 @@ ReportPath::reportTimingPathType(const InputRegisterTimingPath *timing_path) con
 void
 ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_path, const MinMax *min_max) const
 {
-  float prev_time = 0.0f;
-  float src_offset = timing_path->source_clk_offset;
-  float clk_slew = 0.0f;
+  const float prev_time = 0.0f;
+  const float clk_slew = 0.0f;
   float clk_time = timing_path->source_clk_time;
   string clk_name = timing_path->source_clock_name;
   const EarlyLate *early_late = min_max;
@@ -2997,7 +2996,6 @@ ReportPath::reportTimingPathArrivalPath(const InputRegisterTimingPath *timing_pa
   }
   else {
     reportClkLine(clk_name.c_str(), timing_path->source_clock_transition, prev_time, clk_time, clk_slew, timing_path->is_source_clock_propagated, min_max);
-    Arrival clk_delay = timing_path->source_clk_latency;
     Arrival clk_arrival = timing_path->source_clk_arrival;
     float time_offset = clk_arrival;
     reportLine(clkNetworkDelayIdealProp(timing_path->is_source_clock_propagated), time_offset, time_offset, early_late);
@@ -3017,7 +3015,7 @@ ReportPath::reportTimingPathTargetClock(const InputRegisterTimingPath *timing_pa
   float clk_time = prev_time + timing_path->target_clk_time;
   Arrival clk_delay = timing_path->target_clk_delay;
   Arrival clk_arrival = clk_time + clk_delay;
-  float clk_slew = 0.0f;
+  const float clk_slew = 0.0f;
   reportClkLine(clk_name.c_str(), timing_path->target_clock_transition, prev_time, clk_time, clk_slew, timing_path->is_target_clock_propagated, min_max);
 
   const EarlyLate *early_late = min_max;
@@ -3025,7 +3023,7 @@ ReportPath::reportTimingPathTargetClock(const InputRegisterTimingPath *timing_pa
     float time_offset = prev_time + timing_path->target_clk_offset + timing_path->target_clk_mcp_adjustment;
     Arrival insertion = timing_path->target_clk_insertion_delay;
     reportClkSrcLatency(insertion, clk_time, early_late);
-    reportTimingPathClockPath(timing_path, min_max, delayAsFloat(time_offset + timing_path->target_clk_insertion_offset));
+    reportTimingPathClockPath(timing_path, min_max, time_offset + timing_path->target_clk_insertion_offset);
     reportTimingPathClkUncertainty(timing_path, clk_arrival, early_late);
     reportTimingPathCommonClkPessimism(timing_path, clk_arrival, early_late);
   }

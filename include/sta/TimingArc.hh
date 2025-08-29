@@ -154,12 +154,8 @@ struct InputRegisterTimingPath
   std::string type{};
   const RiseFall *source_clock_transition{nullptr};
   std::string source_clock_name{};
-  float source_clk_offset{std::numeric_limits<float>::max()};
-  float source_clk_delay{std::numeric_limits<float>::max()};
   float source_clk_time{std::numeric_limits<float>::max()};
   float source_clk_arrival{std::numeric_limits<float>::max()};
-  float source_clk_latency{std::numeric_limits<float>::max()};
-  float source_clk_insertion_delay{std::numeric_limits<float>::max()};
   const RiseFall *target_clock_transition{nullptr};
   std::string target_clock_name{};
   float target_clk_delay{std::numeric_limits<float>::max()};
@@ -167,7 +163,6 @@ struct InputRegisterTimingPath
   float target_clk_offset{std::numeric_limits<float>::max()};
   float target_clk_mcp_adjustment{std::numeric_limits<float>::max()};
   float target_clk_insertion_delay{std::numeric_limits<float>::max()};
-  float target_clk_arrival{std::numeric_limits<float>::max()};
   float target_clk_insertion_offset{std::numeric_limits<float>::max()};
   float target_clk_non_inter_uncertainty{std::numeric_limits<float>::max()};
   float target_clk_uncertainty{std::numeric_limits<float>::max()};

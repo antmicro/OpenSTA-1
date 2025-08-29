@@ -439,11 +439,7 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
 
     const ClockEdge *clk_edge = source_clock_path->clkEdge(sta_state);
     input_register_timing_path.source_clk_time = clk_edge->time();
-
-    input_register_timing_path.source_clk_offset = path_end->sourceClkOffset(sta_state);
     input_register_timing_path.source_clk_arrival = sta_state->search()->clkPathArrival(source_clock_path);
-    input_register_timing_path.source_clk_latency = path_end->sourceClkLatency(sta_state);
-    input_register_timing_path.source_clk_insertion_delay = path_end->sourceClkInsertionDelay(sta_state);
 
     input_register_timing_path.is_source_clock_propagated = source_clock_path->clkInfo(sta_state->search())->isPropagated();
 
@@ -464,7 +460,6 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   input_register_timing_path.target_clk_offset = path_end->targetClkOffset(sta_state);
   input_register_timing_path.target_clk_mcp_adjustment = path_end->targetClkMcpAdjustment(sta_state);
   input_register_timing_path.target_clk_insertion_delay = path_end->targetClkInsertionDelay(sta_state);
-  input_register_timing_path.target_clk_arrival = path_end->targetClkArrival(sta_state);
   input_register_timing_path.target_clk_delay = path_end->targetClkDelay(sta_state);
   input_register_timing_path.target_clk_non_inter_uncertainty = path_end->targetNonInterClkUncertainty(sta_state);
   input_register_timing_path.target_clk_uncertainty = path_end->interClkUncertainty(sta_state);

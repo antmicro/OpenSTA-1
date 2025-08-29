@@ -432,15 +432,10 @@ LibertyReader::defineVisitors()
   defineAttrVisitor("source_clk_propagated", &LibertyReader::visitSourceClkPropagated);
   defineAttrVisitor("source_clk_arrival", &LibertyReader::visitSourceClkArrival);
   defineAttrVisitor("source_clk_time", &LibertyReader::visitSourceClkTime);
-  defineAttrVisitor("source_clk_latency", &LibertyReader::visitSourceClkLatency);
-  defineAttrVisitor("source_clk_insertion_delay", &LibertyReader::visitSourceClkInsertionDelay);
-  defineAttrVisitor("source_clk_delay", &LibertyReader::visitSourceClkDelay);
   defineAttrVisitor("target_clk_delay", &LibertyReader::visitTargetClkDelay);
-  defineAttrVisitor("source_clk_offset", &LibertyReader::visitSourceClkOffset);
   defineAttrVisitor("target_clk_offset", &LibertyReader::visitTargetClkOffset);
   defineAttrVisitor("target_clk_mcp_adjustment", &LibertyReader::visitTargetClkMcpAdjustment);
   defineAttrVisitor("target_clk_insertion_delay", &LibertyReader::visitTargetClkInsertionDelay);
-  defineAttrVisitor("target_clk_arrival", &LibertyReader::visitTargetClkArrival);
   defineAttrVisitor("target_clk_insertion_offset", &LibertyReader::visitTargetClkInsertionOffset);
   defineAttrVisitor("target_clk_non_inter_uncertainty", &LibertyReader::visitTargetClkNonInterUncertainty);
   defineAttrVisitor("target_clk_uncertainty", &LibertyReader::visitTargetClkUncertainty);
@@ -4724,39 +4719,6 @@ LibertyReader::visitSourceClkTime(LibertyAttr *attr)
 }
 
 void
-LibertyReader::visitSourceClkLatency(LibertyAttr *attr)
-{
-  if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.source_clk_latency = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-  }
-}
-
-void
-LibertyReader::visitSourceClkInsertionDelay(LibertyAttr *attr)
-{
-  if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.source_clk_insertion_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-  }
-}
-
-void
-LibertyReader::visitSourceClkDelay(LibertyAttr *attr)
-{
-  if (traversing_cell_worst_timing_paths_) {
-    float source_clk_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-    register_to_register_timing_path_.target_clk_delay = source_clk_delay;
-  }
-}
-
-void
-LibertyReader::visitSourceClkOffset(LibertyAttr *attr)
-{
-  if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.source_clk_offset = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-  }
-}
-
-void
 LibertyReader::visitTargetClkOffset(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
@@ -4777,14 +4739,6 @@ LibertyReader::visitTargetClkInsertionDelay(LibertyAttr *attr)
 {
   if (traversing_cell_worst_timing_paths_) {
     register_to_register_timing_path_.target_clk_insertion_delay = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
-  }
-}
-
-void
-LibertyReader::visitTargetClkArrival(LibertyAttr *attr)
-{
-  if (traversing_cell_worst_timing_paths_) {
-    register_to_register_timing_path_.target_clk_arrival = library_->units()->timeUnit()->userToSta(attr->firstValue()->floatValue());
   }
 }
 
