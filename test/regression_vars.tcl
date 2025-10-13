@@ -161,8 +161,8 @@ record_sta_tests {
   path_group_names
   path_dedup_worst
   pin_props
-  prima3
   power_json
+  prima3
   report_checks_sorted
   report_checks_src_attr
   report_json1
@@ -170,6 +170,7 @@ record_sta_tests {
   sdc_strip_escaped_bus
   suppress_msg
   verilog_attribute
+  verilog_specify
   write_timing_model_scalar
 }
 
