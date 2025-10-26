@@ -325,8 +325,8 @@ using namespace sta;
 %typemap(out) StdStringSeq {
   StdStringSeq &strs = $1;
   Tcl_Obj *list = Tcl_NewListObj(0, nullptr);
-  for (string& str : strs) {
-    Tcl_Obj *obj = Tcl_NewStringObj(str.c_str(), str.length());
+  for (const std::string &str : strs) {
+    Tcl_Obj *obj = Tcl_NewStringObj(str.c_str(), str.size());
     Tcl_ListObjAppendElement(interp, list, obj);
   }
   Tcl_SetObjResult(interp, list);
