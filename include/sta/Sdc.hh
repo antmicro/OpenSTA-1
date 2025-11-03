@@ -996,6 +996,12 @@ public:
                           const MinMax *min_max,
                           bool match_min_max_exactly,
                           bool require_to_pin) const;
+  void groupPathsTo(const Pin *pin,
+		    const RiseFall *rf,
+		    const ClockEdge *clk_edge,
+		    const MinMax *min_max,
+		    // Return value.
+		    ExceptionPathSeq &group_paths) const;
   bool isCompleteTo(ExceptionState *state,
 		    const Pin *pin,
 		    const RiseFall *rf,
@@ -1048,6 +1054,7 @@ protected:
   ExceptionPath *findMergeMatch(ExceptionPath *exception);
   void addException1(ExceptionPath *exception);
   void addException2(ExceptionPath *exception);
+  void recordExceptionPins(ExceptionPath *exception);
   void recordPathDelayInternalFrom(ExceptionPath *exception);
   void unrecordPathDelayInternalFrom(ExceptionPath *exception);
   bool pathDelayFrom(const Pin *pin);
@@ -1164,6 +1171,13 @@ protected:
 		   // Return values.
 		   ExceptionPath *&hi_priority_exception,
 		   int &hi_priority) const;
+  void groupPathsTo(const ExceptionPathSet *to_exceptions,
+		    const Pin *pin,
+		    const RiseFall *rf,
+		    const ClockEdge *clk_edge,
+		    const MinMax *min_max,
+		    // Return value.
+		    ExceptionPathSeq &group_paths) const;
   void makeLoopPath(ExceptionThruSeq *thrus);
   void makeLoopException(const Pin *loop_input_pin,
 			 const Pin *loop_pin,
@@ -1356,6 +1370,7 @@ protected:
   PinExceptionsMap first_to_pin_exceptions_;
   ClockExceptionsMap first_to_clk_exceptions_;
   InstanceExceptionsMap first_to_inst_exceptions_;
+  PinExceptionsMap pin_exceptions_;
   // Edges that traverse hierarchical exception pins.
   EdgeExceptionsMap first_thru_edge_exceptions_;
   // Exception hash with one missing from/thru/to point, used for merging.
