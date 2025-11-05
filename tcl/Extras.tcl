@@ -27,7 +27,7 @@ proc_redirect report_echo {
 
 # Dump metrics for target ppa and initialize empty bottlenecks lists
 proc dump_target_ppa { workdir } {
-  puts "Dumping metrics for target PPA..."
+  file mkdir -p "$workdir/results"
   set ppa_json [open "$workdir/results/target.ppa.json" "w"]
   puts $ppa_json "{"
   puts $ppa_json "  \"max_area\": [get_max_area],"
