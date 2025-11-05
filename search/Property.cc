@@ -1334,7 +1334,7 @@ Properties::getProperty(PathEnd *end,
   else if (property == "endpoint_clock_pin")
     return PropertyValue(end->targetClkPath()->pin(sta_));
   else if (property == "path_group")
-    return PropertyValue(end->pathGroup());
+    return PropertyValue(end->pathGroup()->name());
   else if (property == "slack")
     return PropertyValue(delayPropertyValue(end->slack(sta_)));
   else if (property == "points") {
