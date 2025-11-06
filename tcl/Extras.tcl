@@ -137,6 +137,17 @@ proc mem {} {
   return [exec ps -o rss= -p [pid]]
 }
 
+# Set difference function
+proc ldiff {a b} {
+  set result {}
+  foreach x $a {
+    if {[lsearch -exact $b $x] == -1} {
+      lappend result $x
+    }
+  }
+  return $result
+}
+
 ################################################################
 # TCL 8.6 forward-compatibility
 ################################################################
