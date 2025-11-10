@@ -1518,6 +1518,7 @@ Power::findUnannotatedPins(const Instance *inst,
     LibertyPort *liberty_port = sdc_network_->libertyPort(pin);
     if (!network_->direction(pin)->isInternal()
 	&& !network_->direction(pin)->isPowerGround()
+        && !network_->direction(pin)->isWell()
 	&& !(liberty_port && liberty_port->isPwrGnd())
         && user_activity_map_.find(pin) == user_activity_map_.end())
       unannotated_pins.push_back(pin);
@@ -1539,6 +1540,7 @@ Power::pinCount()
       LibertyPort *liberty_port = sdc_network_->libertyPort(pin);
       if (!network_->direction(pin)->isInternal()
 	  && !network_->direction(pin)->isPowerGround()
+          && !network_->direction(pin)->isWell()
 	  && !(liberty_port && liberty_port->isPwrGnd()))
         count++;
     }
