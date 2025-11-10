@@ -191,11 +191,10 @@ proc report_power_row { type row_result design_total field_width digits {report_
       report_line "  ,"
     }
     report_line "  \"$type\": {"
-    report_line "    \"internal\": $internal ,"
-    report_line "    \"switching\": $switching ,"
-    report_line "    \"leakage\": $leakage , "
-    report_line "    \"total\": $total , "
-    report_line "    \"percent\": $percent "
+    report_line "    \"internal\":[power_col $internal $field_width $digits],"
+    report_line "    \"switching\":[power_col $switching $field_width $digits],"
+    report_line "    \"leakage\":[power_col $leakage $field_width $digits],"
+    report_line "    \"total\":[power_col $total $field_width $digits]"
     report_line "  }"
     set last_row $type
   } else {
@@ -285,10 +284,10 @@ proc report_power_inst { inst power_result field_width digits {report_format "te
     }
     report_line "{"
     report_line "  \"name\": \"[get_full_name $inst]\","
-    report_line "  \"internal\": $internal ,"
-    report_line "  \"switching\": $switching ,"
-    report_line "  \"leakage\": $leakage ,"
-    report_line "  \"total\": $total"
+    report_line "  \"internal\":[power_col $internal $field_width $digits],"
+    report_line "  \"switching\":[power_col $switching $field_width $digits],"
+    report_line "  \"leakage\":[power_col $leakage $field_width $digits],"
+    report_line "  \"total\":[power_col $total $field_width $digits]"
     report_line "}"
     set last_inst $inst
   } elseif { $report_format == "text" }  {
