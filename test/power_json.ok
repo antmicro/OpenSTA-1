@@ -10,8 +10,8 @@ Warning: ../examples/gcd_sky130hd.v line 527, module sky130_fd_sc_hd__tapvpwrvgn
   ,
   "Combinational": {
     "internal": 0.00015870876086410135 ,
-    "switching": 0.0002051054034382105 ,
-    "leakage": 6.858974499479586e-10 , 
+    "switching": 0.00020510541799012572 ,
+    "leakage": 6.858975054591099e-10 , 
     "total": 0.00036381487734615803 , 
     "percent": 41.09519022666588 
   }
@@ -42,7 +42,7 @@ Warning: ../examples/gcd_sky130hd.v line 527, module sky130_fd_sc_hd__tapvpwrvgn
   ,
   "Total": {
     "internal": 0.0005121395224705338 ,
-    "switching": 0.00037315741064958274 ,
+    "switching": 0.0003731574397534132 ,
     "leakage": 1.0049683307755686e-9 , 
     "total": 0.0008852979517541826 , 
     "percent": 100.0 
