@@ -1,5 +1,5 @@
 # report_power gcd
-set sta_report_default_digits 6
+set sta_report_default_digits 4
 read_liberty ../examples/sky130hd_tt.lib.gz
 read_verilog ../examples/gcd_sky130hd.v
 link_design gcd
