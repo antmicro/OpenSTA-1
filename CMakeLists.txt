@@ -203,7 +203,6 @@ set(STA_SOURCE
   search/TagGroup.cc
   search/VertexVisitor.cc
   search/VisitPathEnds.cc
-  search/VisitPathGroupVertices.cc
   search/WorstSlack.cc
 
   spice/WritePathSpice.cc

@@ -561,7 +561,12 @@ proc get_lib_pins { args } {
     }
     set libcells [get_libcells_error "objects" $keys(-of_objects)]
     foreach libcell $libcells {
-      lappend ports {*}[$libcell find_liberty_ports_matching * 0 1]
+      foreach port [$libcell find_liberty_ports_matching * 0 1] {
+	# Filter pg ports.
+	if { ![$port is_pwr_gnd] } {
+	  lappend ports $port
+	}
+      }
     }
   } else {
     foreach pattern $patterns {
@@ -593,8 +598,11 @@ proc get_lib_pins { args } {
 	      set matches [$cell find_liberty_ports_matching $port_pattern \
 	  		   $regexp $nocase]
 	      foreach match $matches {
-		lappend ports $match
-		set found_match 1
+		# Filter pg ports.
+		if { ![$match is_pwr_gnd] } {
+		  lappend ports $match
+		  set found_match 1
+		}
 	      }
 	    }
 	  }
@@ -797,7 +805,10 @@ proc get_pins { args } {
       set pin_iter [$inst pin_iterator]
       while { [$pin_iter has_next] } {
 	set pin [$pin_iter next]
-	lappend pins $pin
+	# Filter pg ports.
+	if { ![$pin is_pwr_gnd] } {
+	  lappend pins $pin
+	}
       }
       $pin_iter finish
     }
@@ -805,7 +816,10 @@ proc get_pins { args } {
       set pin_iter [$net pin_iterator]
       while { [$pin_iter has_next] } {
 	set pin [$pin_iter next]
-	lappend pins $pin
+	# Filter pg ports.
+	if { ![$pin is_pwr_gnd] } {
+	  lappend pins $pin
+	}
       }
       $pin_iter finish
     }
@@ -835,7 +849,12 @@ proc get_pins { args } {
 	} else {
 	  set matches [find_pins_matching $pattern $regexp $nocase]
 	}
-	set pins [concat $pins $matches]
+	foreach match $matches {
+	  # Filter pg ports.
+	  if { ![$match is_pwr_gnd] } {
+	    lappend pins $match
+	  }
+	}
 	if { $matches == {} && !$quiet } {
 	  sta_warn 363 "pin '$pattern' not found."
 	}

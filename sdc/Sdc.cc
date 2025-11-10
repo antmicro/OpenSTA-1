@@ -3983,13 +3983,29 @@ Sdc::unrecordPathDelayInternalFrom(ExceptionPath *exception)
   }
 }
 
+template<class OBJ>
+const ExceptionPathSet *
+findExceptions(const UnorderedMap<const OBJ*, ExceptionPathSet> &map,
+	       const OBJ *obj)
+{
+  const auto itr = map.find(obj);
+  if (itr != map.end())
+    return &itr->second;
+  else
+    return nullptr;
+}
+
 bool
 Sdc::pathDelayFrom(const Pin *pin)
 {
-  ExceptionPathSet *exceptions = first_from_pin_exceptions_.findKey(pin);
-  for (ExceptionPath *exception : *exceptions) {
-    if (exception->isPathDelay())
-      return true;
+  
+  const ExceptionPathSet *exceptions =
+    findExceptions<Pin>(first_from_pin_exceptions_, pin);
+  if (exceptions) {
+    for (ExceptionPath *exception : *exceptions) {
+      if (exception->isPathDelay())
+	return true;
+    }
   }
   return false;
 }
@@ -4068,10 +4084,13 @@ Sdc::hasLibertyCheckTo(const Pin *pin)
 bool
 Sdc::pathDelayTo(const Pin *pin)
 {
-  ExceptionPathSet *exceptions = first_to_pin_exceptions_.findKey(pin);
-  for (ExceptionPath *exception : *exceptions) {
-    if (exception->isPathDelay())
-      return true;
+  const ExceptionPathSet *exceptions =
+    findExceptions<Pin>(first_to_pin_exceptions_, pin);
+  if (exceptions) {
+    for (ExceptionPath *exception : *exceptions) {
+      if (exception->isPathDelay())
+	return true;
+    }
   }
   return false;
 }
@@ -4236,11 +4255,14 @@ void
 Sdc::deleteLoopExceptions()
 {
   // erase prevents range iteration.
-  ExceptionPathSet::Iterator except_iter(exceptions_);
-  while (except_iter.hasNext()) {
-  ExceptionPath *except = except_iter.next();
-  if (except->isLoop())
-    deleteException(except);
+  for (auto itr = exceptions_.begin(); itr != exceptions_.end(); ) {
+    ExceptionPath *except = *itr;
+    if (except->isLoop()) {
+      itr = exceptions_.erase(itr);
+      deleteException(except);
+    }
+    else
+      itr++;
   }
 }
 
@@ -4446,10 +4468,10 @@ Sdc::findMatchingExceptionsFirstThru(ExceptionPath *exception,
     for (const Net *net : *thru->nets()) {
       // Potential matches includes exceptions that match net that are not
       // the first exception point.
-      ExceptionPathSet *potential_matches =
-	first_thru_net_exceptions_.findKey(net);
+      const ExceptionPathSet *potential_matches = 
+	findExceptions<Net>(first_thru_net_exceptions_, net);
       if (potential_matches) {
-        for (ExceptionPath *match : *potential_matches) {
+	for (ExceptionPath *match : *potential_matches) {
 	  ExceptionThru *match_thru = (*match->thrus())[0];
 	  if (match_thru->nets()->hasKey(net)
 	      && match->overrides(exception)
@@ -4483,8 +4505,11 @@ Sdc::findMatchingExceptionsClks(ExceptionPath *exception,
 {
   if (clks) {
     ExceptionPathSet clks_matches;
-    for (Clock *clk : *clks)
-      clks_matches.insertSet(exception_map.findKey(clk));
+    for (Clock *clk : *clks) {
+      auto itr = exception_map.find(clk);
+      if (itr != exception_map.end())
+	clks_matches.insert(itr->second.begin(), itr->second.end());
+    }
     findMatchingExceptions(exception, &clks_matches, matches);
   }
 }
@@ -4497,8 +4522,11 @@ Sdc::findMatchingExceptionsPins(ExceptionPath *exception,
 {
   if (pins) {
     ExceptionPathSet pins_matches;
-    for (const Pin *pin : *pins)
-      pins_matches.insertSet(exception_map.findKey(pin));
+    for (const Pin *pin : *pins) {
+      auto itr = exception_map.find(pin);
+      if (itr != exception_map.end())
+	pins_matches.insert(itr->second.begin(), itr->second.end());
+    }
     findMatchingExceptions(exception, &pins_matches, matches);
   }
 }
@@ -4510,10 +4538,13 @@ Sdc::findMatchingExceptionsInsts(ExceptionPath *exception,
 				 ExceptionPathSet &matches)
 {
   if (insts) {
-    ExceptionPathSet insts_matches;
-    for (const Instance *inst : *insts)
-      insts_matches.insertSet(exception_map.findKey(inst));
-    findMatchingExceptions(exception, &insts_matches, matches);
+    ExceptionPathSet inst_matches;
+    for (const Instance *inst : *insts) {
+      auto itr = exception_map.find(inst);
+      if (itr != exception_map.end())
+	inst_matches.insert(itr->second.begin(), itr->second.end());
+    }
+    findMatchingExceptions(exception, &inst_matches, matches);
   }
 }
 
@@ -4665,12 +4696,8 @@ Sdc::recordMergeHash(ExceptionPath *exception,
              hash,
              exception->asString(network_),
              missing_pt->asString(network_));
-  ExceptionPathSet *set = exception_merge_hash_.findKey(hash);
-  if (set == nullptr) {
-    set = new ExceptionPathSet;
-    exception_merge_hash_[hash] = set;
-  }
-  set->insert(exception);
+  ExceptionPathSet &set = exception_merge_hash_[hash];
+  set.insert(exception);
 }
 
 // Record a mapping from first pin/clock/instance's to a set of exceptions.
@@ -4742,12 +4769,8 @@ Sdc::recordExceptionClks(ExceptionPath *exception,
 {
   if (clks) {
     for (Clock *clk : *clks) {
-      ExceptionPathSet *set = exception_map.findKey(clk);
-      if (set == nullptr) {
-        set = new ExceptionPathSet;
-        exception_map[clk] = set;
-      }
-      set->insert(exception);
+      ExceptionPathSet &set = exception_map[clk];
+      set.insert(exception);
     }
   }
 }
@@ -4759,12 +4782,8 @@ Sdc::recordExceptionEdges(ExceptionPath *exception,
 {
   if (edges) {
     for (const EdgePins &edge : *edges) {
-      ExceptionPathSet *set = exception_map.findKey(edge);
-      if (set == nullptr) {
-        set = new ExceptionPathSet;
-        exception_map.insert(edge, set);
-      }
-      set->insert(exception);
+      ExceptionPathSet &set = exception_map[edge];
+      set.insert(exception);
     }
   }
 }
@@ -4776,12 +4795,8 @@ Sdc::recordExceptionPins(ExceptionPath *exception,
 {
   if (pins) {
     for (const Pin *pin : *pins) {
-      ExceptionPathSet *set = exception_map.findKey(pin);
-      if (set == nullptr) {
-        set = new ExceptionPathSet;
-        exception_map.insert(pin, set);
-      }
-      set->insert(exception);
+      ExceptionPathSet &set = exception_map[pin];
+      set.insert(exception);
     }
   }
 }
@@ -4791,12 +4806,8 @@ Sdc::recordExceptionHpin(ExceptionPath *exception,
 			 Pin *pin,
 			 PinExceptionsMap &exception_map)
 {
-  ExceptionPathSet *set = exception_map.findKey(pin);
-  if (set == nullptr) {
-    set = new ExceptionPathSet;
-    exception_map.insert(pin, set);
-  }
-  set->insert(exception);
+  ExceptionPathSet &set = exception_map[pin];
+  set.insert(exception);
 }
 
 void
@@ -4806,12 +4817,8 @@ Sdc::recordExceptionInsts(ExceptionPath *exception,
 {
   if (insts) {
     for (const Instance *inst : *insts) {
-      ExceptionPathSet *set = exception_map.findKey(inst);
-      if (set == nullptr) {
-        set = new ExceptionPathSet;
-        exception_map[inst] = set;
-      }
-      set->insert(exception);
+      ExceptionPathSet &set = exception_map[inst];
+      set.insert(exception);
     }
   }
 }
@@ -4823,12 +4830,8 @@ Sdc::recordExceptionNets(ExceptionPath *exception,
 {
   if (nets) {
     for (const Net *net : *nets) {
-      ExceptionPathSet *set = exception_map.findKey(net);
-      if (set == nullptr) {
-        set = new ExceptionPathSet;
-        exception_map[net] = set;
-      }
-      set->insert(exception);
+      ExceptionPathSet &set = exception_map[net];
+      set.insert(exception);
     }
   }
 }
@@ -4862,9 +4865,10 @@ Sdc::findMergeMatch(ExceptionPath *exception)
   while (missing_pt_iter.hasNext()) {
     ExceptionPt *missing_pt = missing_pt_iter.next();
     size_t hash = exception->hash(missing_pt);
-    ExceptionPathSet *matches = exception_merge_hash_.findKey(hash);
-    if (matches) {
-      for (ExceptionPath *match : *matches) {
+    auto itr = exception_merge_hash_.find(hash);
+    if (itr != exception_merge_hash_.end()) {
+      ExceptionPathSet &matches = itr->second;
+      for (ExceptionPath *match : matches) {
 	ExceptionPt *match_missing_pt;
 	if (match != exception
 	    // Exceptions are not merged if their priorities are
@@ -4902,35 +4906,29 @@ Sdc::findMergeMatch(ExceptionPath *exception)
 void
 Sdc::deleteExceptions()
 {
-  exceptions_.deleteContentsClear();
+  exceptions_.clear();
   exception_id_ = 0;
 
-  first_from_pin_exceptions_.deleteContentsClear();
-  first_from_clk_exceptions_.deleteContentsClear();
-  first_from_inst_exceptions_.deleteContentsClear();
-  first_to_pin_exceptions_.deleteContentsClear();
-  first_to_clk_exceptions_.deleteContentsClear();
-  first_to_inst_exceptions_.deleteContentsClear();
-  first_thru_pin_exceptions_.deleteContentsClear();
-  first_thru_inst_exceptions_.deleteContentsClear();
-  first_thru_net_exceptions_.deleteContentsClear();
-  first_thru_edge_exceptions_.deleteContentsClear();
+  first_from_pin_exceptions_.clear();
+  first_from_clk_exceptions_.clear();
+  first_from_inst_exceptions_.clear();
+  first_to_pin_exceptions_.clear();
+  first_to_clk_exceptions_.clear();
+  first_to_inst_exceptions_.clear();
+  first_thru_pin_exceptions_.clear();
+  first_thru_inst_exceptions_.clear();
+  first_thru_net_exceptions_.clear();
+  first_thru_edge_exceptions_.clear();
   first_thru_edge_exceptions_.clear();
   path_delay_internal_from_.clear();
   path_delay_internal_from_break_.clear();
   path_delay_internal_to_.clear();
   path_delay_internal_to_break_.clear();
-  pin_exceptions_.deleteContentsClear();
+  pin_exceptions_.clear();
 
-  deleteExceptionPtHashMapSets(exception_merge_hash_);
+  exception_merge_hash_.clear();
   exception_merge_hash_.clear();
   have_thru_hpin_exceptions_ = false;
-}
-
-void
-Sdc::deleteExceptionPtHashMapSets(ExceptionPathPtHash &map)
-{
-  map.deleteContents();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -4939,22 +4937,21 @@ void
 Sdc::deleteExceptionsReferencing(Clock *clk)
 {
   // erase prevents range iteration.
-  ExceptionPathSet::ConstIterator exception_iter(exceptions_);
-  while (exception_iter.hasNext()) {
-    ExceptionPath *exception = exception_iter.next();
+  for (auto itr = exceptions_.begin(); itr != exceptions_.end(); ) {
+    ExceptionPath *exception = *itr;
     bool deleted = false;
     ExceptionFrom *from = exception->from();
     if (from) {
       ClockSet *clks = from->clks();
       if (clks && clks->hasKey(clk)) {
+	itr = exceptions_.erase(itr);
 	unrecordException(exception);
+	deleted = true;
 	from->deleteClock(clk);
 	if (from->hasObjects())
 	  recordException(exception);
-	else {
+	else
 	  deleteException(exception);
-          deleted = true;
-	}
       }
     }
 
@@ -4963,6 +4960,8 @@ Sdc::deleteExceptionsReferencing(Clock *clk)
       if (to) {
 	ClockSet *clks = to->clks();
 	if (clks && clks->hasKey(clk)) {
+	  itr = exceptions_.erase(itr);
+	  deleted = true;
 	  unrecordException(exception);
 	  to->deleteClock(clk);
 	  if (to->hasObjects())
@@ -4972,6 +4971,8 @@ Sdc::deleteExceptionsReferencing(Clock *clk)
 	}
       }
     }
+    if (!deleted)
+      itr++;
   }
 }
 
@@ -5012,9 +5013,11 @@ Sdc::unrecordMergeHash(ExceptionPath *exception,
              hash,
              exception->asString(network_),
              missing_pt->asString(network_));
-  ExceptionPathSet *matches = exception_merge_hash_.findKey(hash);
-  if (matches)
-    matches->erase(exception);
+  auto itr = exception_merge_hash_.find(hash);
+  if (itr != exception_merge_hash_.end()) {
+    ExceptionPathSet &matches = itr->second;
+    matches.erase(exception);
+  }
 }
 
 void
@@ -5052,9 +5055,11 @@ Sdc::unrecordExceptionClks(ExceptionPath *exception,
 {
   if (clks) {
     for (Clock *clk : *clks) {
-      ExceptionPathSet *set = exception_map.findKey(clk);
-      if (set)
-        set->erase(exception);
+      auto itr = exception_map.find(clk);
+      if (itr != exception_map.end()) {
+	ExceptionPathSet &set = itr->second;
+        set.erase(exception);
+      }
     }
   }
 }
@@ -5066,9 +5071,11 @@ Sdc::unrecordExceptionPins(ExceptionPath *exception,
 {
   if (pins) {
     for (const Pin *pin : *pins) {
-      ExceptionPathSet *set = exception_map.findKey(pin);
-      if (set)
-        set->erase(exception);
+      auto itr = exception_map.find(pin);
+      if (itr != exception_map.end()) {
+	ExceptionPathSet &set = itr->second;
+        set.erase(exception);
+      }
     }
   }
 }
@@ -5080,9 +5087,11 @@ Sdc::unrecordExceptionInsts(ExceptionPath *exception,
 {
   if (insts) {
     for (const Instance *inst : *insts) {
-      ExceptionPathSet *set = exception_map.findKey(inst);
-      if (set)
-        set->erase(exception);
+      auto itr = exception_map.find(inst);
+      if (itr != exception_map.end()) {
+	ExceptionPathSet &set = itr->second;
+        set.erase(exception);
+      }
     }
   }
 }
@@ -5094,9 +5103,11 @@ Sdc::unrecordExceptionEdges(ExceptionPath *exception,
 {
   if (edges) {
     for (const EdgePins &edge : *edges) {
-      ExceptionPathSet *set = exception_map.findKey(edge);
-      if (set)
-        set->erase(exception);
+      auto itr = exception_map.find(edge);
+      if (itr != exception_map.end()) {
+	ExceptionPathSet &set = itr->second;
+        set.erase(exception);
+      }
     }
   }
 }
@@ -5108,9 +5119,11 @@ Sdc::unrecordExceptionNets(ExceptionPath *exception,
 {
   if (nets) {
     for (const Net *net : *nets) {
-      ExceptionPathSet *set = exception_map.findKey(net);
-      if (set)
-        set->erase(exception);
+      auto itr = exception_map.find(net);
+      if (itr != exception_map.end()) {
+	ExceptionPathSet &set = itr->second;
+        set.erase(exception);
+      }
     }
   }
 }
@@ -5120,9 +5133,11 @@ Sdc::unrecordExceptionHpin(ExceptionPath *exception,
 			   Pin *pin,
 			   PinExceptionsMap &exception_map)
 {
-  ExceptionPathSet *set = exception_map.findKey(pin);
-  if (set)
-    set->erase(exception);
+  auto itr = exception_map.find(pin);
+  if (itr != exception_map.end()) {
+    ExceptionPathSet &set = itr->second;
+    set.erase(exception);
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -5192,18 +5207,18 @@ Sdc::resetPath(ExceptionFrom *from,
 	       const MinMaxAll *min_max)
 {
   checkFromThrusTo(from, thrus, to);
-  ExceptionPathSet::Iterator except_iter(exceptions_);
-  while (except_iter.hasNext()) {
-    ExceptionPath *match = except_iter.next();
+  // erase prevents range iteration.
+  for (auto itr = exceptions_.begin(); itr != exceptions_.end(); ) {
+    ExceptionPath *match = *itr;
     if (match->resetMatch(from, thrus, to, min_max, network_)) {
       debugPrint(debug_, "exception_match", 3, "reset match %s",
                  match->asString(network_));
       ExceptionPathSet expansions;
       expandException(match, expansions);
+      itr = exceptions_.erase(itr);
       deleteException(match);
-      ExceptionPathSet::Iterator expand_iter(expansions);
-      while (expand_iter.hasNext()) {
-	ExceptionPath *expand = expand_iter.next();
+
+      for (ExceptionPath *expand : expansions) {
 	if (expand->resetMatch(from, thrus, to, min_max, network_)) {
 	  unrecordPathDelayInternalFrom(expand);
 	  unrecordPathDelayInternalTo(expand);
@@ -5213,6 +5228,8 @@ Sdc::resetPath(ExceptionFrom *from,
 	  addException(expand);
       }
     }
+    else
+      itr++;
   }
 }
 
@@ -5240,33 +5257,38 @@ Sdc::exceptionFromStates(const Pin *pin,
 {
   bool srch_from = true;
   if (pin) {
-    if (srch_from && !first_from_pin_exceptions_.empty())
-      srch_from &= exceptionFromStates(first_from_pin_exceptions_.findKey(pin),
-				       pin, rf, min_max, include_filter,
-				       states);
-    if (srch_from && !first_thru_pin_exceptions_.empty())
-      srch_from &= exceptionFromStates(first_thru_pin_exceptions_.findKey(pin),
-				       pin, rf, min_max, include_filter,
-				       states);
-
+    if (srch_from) {
+      const ExceptionPathSet *exceptions =
+	findExceptions<Pin>(first_from_pin_exceptions_, pin);
+      srch_from &= exceptionFromStates(exceptions, pin, rf, min_max,
+				       include_filter, states);
+    }
+    if (srch_from) {
+      const ExceptionPathSet *exceptions =
+	findExceptions<Pin>(first_thru_pin_exceptions_, pin);
+      srch_from &= exceptionFromStates(exceptions, pin, rf, min_max,
+				       include_filter, states);
+    }
     if (srch_from
 	&& (!first_from_inst_exceptions_.empty()
             || !first_thru_inst_exceptions_.empty())) {
       Instance *inst = network_->instance(pin);
-      if (srch_from && !first_from_inst_exceptions_.empty())
-	srch_from &= exceptionFromStates(first_from_inst_exceptions_.findKey(inst),
-					 pin, rf, min_max, include_filter,
-					 states);
-      if (srch_from && !first_thru_inst_exceptions_.empty())
-	srch_from &= exceptionFromStates(first_thru_inst_exceptions_.findKey(inst),
-					 pin, rf, min_max, include_filter,
-					 states);
+      const ExceptionPathSet *exceptions =
+	findExceptions<Instance>(first_from_inst_exceptions_, inst);
+      srch_from &= exceptionFromStates(exceptions, pin, rf, min_max,
+				       include_filter, states);
+      const ExceptionPathSet *exceptions2 =
+	findExceptions<Instance>(first_thru_inst_exceptions_, inst);
+      srch_from &= exceptionFromStates(exceptions2, pin, rf, min_max,
+				       include_filter, states);
     }
   }
-  if (srch_from && clk && !first_from_clk_exceptions_.empty())
-    srch_from &= exceptionFromStates(first_from_clk_exceptions_.findKey(clk),
-				     pin, clk_rf, min_max, include_filter,
-				     states);
+  if (srch_from && clk) {
+    const ExceptionPathSet *exceptions =
+      findExceptions<Clock>(first_from_clk_exceptions_, clk);
+    srch_from &= exceptionFromStates(exceptions, pin, clk_rf, min_max,
+				     include_filter, states);
+  }
   if (!srch_from) {
     delete states;
     states = nullptr;
@@ -5325,20 +5347,22 @@ Sdc::exceptionFromClkStates(const Pin *pin,
 			    ExceptionStateSet *&states) const
 {
   if (pin) {
-    if (!first_from_pin_exceptions_.empty())
-      exceptionFromStates(first_from_pin_exceptions_.findKey(pin),
-			  nullptr, rf, min_max, true, states);
+    const ExceptionPathSet *exceptions =
+      findExceptions<Pin>(first_from_pin_exceptions_, pin);
+    exceptionFromStates(exceptions, nullptr, rf, min_max, true, states);
     if (!first_from_inst_exceptions_.empty()) {
       Instance *inst = network_->instance(pin);
-      exceptionFromStates(first_from_inst_exceptions_.findKey(inst),
-			  pin, rf, min_max, true, states);
+      const ExceptionPathSet *exceptions =
+	findExceptions<Instance>(first_from_inst_exceptions_, inst);
+      exceptionFromStates(exceptions, pin, rf, min_max, true, states);
     }
-    exceptionThruStates(first_thru_pin_exceptions_.findKey(pin),
-                        rf, min_max, states);
+    const ExceptionPathSet *exceptions2 =
+      findExceptions<Pin>(first_thru_pin_exceptions_, pin);
+    exceptionThruStates(exceptions2, rf, min_max, states);
   }
-  if (!first_from_clk_exceptions_.empty())
-    exceptionFromStates(first_from_clk_exceptions_.findKey(clk),
-			pin, clk_rf, min_max, true, states);
+  const ExceptionPathSet *exceptions =
+    findExceptions<Clock>(first_from_clk_exceptions_, clk);
+  exceptionFromStates(exceptions, pin, clk_rf, min_max, true, states);
 }
 
 void
@@ -5348,10 +5372,10 @@ Sdc::filterRegQStates(const Pin *to_pin,
 		      ExceptionStateSet *&states) const
 {
   if (!first_from_pin_exceptions_.empty()) {
-    const ExceptionPathSet *exceptions =
-      first_from_pin_exceptions_.findKey(to_pin);
-    if (exceptions) {
-      for (ExceptionPath *exception : *exceptions) {
+    auto itr = first_from_pin_exceptions_.find(to_pin);
+    if (itr != first_from_pin_exceptions_.end()) {
+      const ExceptionPathSet &exceptions = itr->second;
+      for (ExceptionPath *exception : exceptions) {
 	// Hack for filter -from reg/Q.
 	if (exception->isFilter()
 	    && exception->matchesFirstPt(to_rf, min_max)) {
@@ -5372,19 +5396,25 @@ Sdc::exceptionThruStates(const Pin *from_pin,
 			 const MinMax *min_max,
                          ExceptionStateSet *&states) const
 {
-  exceptionThruStates(first_thru_pin_exceptions_.findKey(to_pin),
-                      to_rf, min_max, states);
+  const ExceptionPathSet *exceptions =
+    findExceptions<Pin>(first_thru_pin_exceptions_, to_pin);
+  exceptionThruStates(exceptions, to_rf, min_max, states);
+
   if (!first_thru_edge_exceptions_.empty()) {
     EdgePins edge_pins(from_pin, to_pin);
-    exceptionThruStates(first_thru_edge_exceptions_.findKey(edge_pins),
-			to_rf, min_max, states);
+    auto itr = first_thru_edge_exceptions_.find(edge_pins);
+    if (itr != first_thru_edge_exceptions_.end()) {
+      const ExceptionPathSet *exceptions = &itr->second;
+      exceptionThruStates(exceptions, to_rf, min_max, states);
+    }
   }
   if (!first_thru_inst_exceptions_.empty()
       && (network_->direction(to_pin)->isAnyOutput()
 	  || network_->isLatchData(to_pin))) {
     const Instance *to_inst = network_->instance(to_pin);
-    exceptionThruStates(first_thru_inst_exceptions_.findKey(to_inst),
-			to_rf, min_max, states);
+    const ExceptionPathSet *exceptions =
+      findExceptions<Instance>(first_thru_inst_exceptions_, to_inst);
+    exceptionThruStates(exceptions, to_rf, min_max, states);
   }
 }
 
@@ -5422,18 +5452,26 @@ Sdc::exceptionTo(ExceptionPathType type,
 {
   if (!first_to_inst_exceptions_.empty()) {
     Instance *inst = network_->instance(pin);
-    exceptionTo(first_to_inst_exceptions_.findKey(inst), type, pin, rf,
+    const ExceptionPathSet *exceptions =
+      findExceptions<Instance>(first_to_inst_exceptions_, inst);
+    exceptionTo(exceptions, type, pin, rf,
 		clk_edge, min_max, match_min_max_exactly,
 		hi_priority_exception, hi_priority);
   }
-  if (!first_to_pin_exceptions_.empty())
-    exceptionTo(first_to_pin_exceptions_.findKey(pin), type, pin, rf,
+  if (!first_to_pin_exceptions_.empty()) {
+    const ExceptionPathSet *exceptions =
+      findExceptions<Pin>(first_to_pin_exceptions_, pin);
+    exceptionTo(exceptions, type, pin, rf,
 		clk_edge, min_max, match_min_max_exactly,
 		hi_priority_exception, hi_priority);
-  if (clk_edge && !first_to_clk_exceptions_.empty())
-    exceptionTo(first_to_clk_exceptions_.findKey(clk_edge->clock()),
-		type, pin, rf, clk_edge, min_max, match_min_max_exactly,
+  }
+  if (clk_edge && !first_to_clk_exceptions_.empty()) {
+    const ExceptionPathSet *exceptions =
+      findExceptions<Clock>(first_to_clk_exceptions_, clk_edge->clock());
+    exceptionTo(exceptions, type, pin, rf, clk_edge,
+		min_max, match_min_max_exactly,
 		hi_priority_exception, hi_priority);
+  }
 }
 
 void
@@ -5541,15 +5579,20 @@ Sdc::groupPathsTo(const Pin *pin,
 {
   if (!first_to_inst_exceptions_.empty()) {
     Instance *inst = network_->instance(pin);
-    groupPathsTo(first_to_inst_exceptions_.findKey(inst), pin, rf,
-		clk_edge, min_max, group_paths);
+    const ExceptionPathSet *exceptions =
+      findExceptions<Instance>(first_to_inst_exceptions_, inst);
+    groupPathsTo(exceptions, pin, rf, clk_edge, min_max, group_paths);
   }
-  if (!first_to_pin_exceptions_.empty())
-    groupPathsTo(first_to_pin_exceptions_.findKey(pin), pin, rf,
-		 clk_edge, min_max, group_paths);
-  if (clk_edge && !first_to_clk_exceptions_.empty())
-    groupPathsTo(first_to_clk_exceptions_.findKey(clk_edge->clock()),
-		 pin, rf, clk_edge, min_max, group_paths);
+  if (!first_to_pin_exceptions_.empty()) {
+    const ExceptionPathSet *exceptions =
+      findExceptions<Pin>(first_to_pin_exceptions_, pin);
+    groupPathsTo(exceptions, pin, rf, clk_edge, min_max, group_paths);
+  }
+  if (clk_edge && !first_to_clk_exceptions_.empty()) {
+    const ExceptionPathSet *exceptions =
+      findExceptions<Clock>(first_to_clk_exceptions_, clk_edge->clock());
+    groupPathsTo(exceptions, pin, rf, clk_edge, min_max, group_paths);
+  }
 }
 
 void
@@ -5653,7 +5696,7 @@ Sdc::disconnectPinBefore(const Pin *pin)
 {
   auto itr = pin_exceptions_.find(pin);
   if (itr != pin_exceptions_.end()) {
-    for (ExceptionPath *exception : *itr->second) {
+    for (ExceptionPath *exception : itr->second) {
       ExceptionFrom *from = exception->from();
       if (from)
 	from->disconnectPinBefore(pin, network_);
