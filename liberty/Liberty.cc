@@ -1072,7 +1072,16 @@ LibertyCell::isPhysicalOnly() const
   // Assumption: Diodes are not counted for the purposes of this property.
 
   LibertyCellPortIterator port_it(this); // only iterates on signal ports
-  return !port_it.hasNext();
+  while (port_it.hasNext()) {
+    LibertyPort *port = port_it.next();
+    if (port->direction()->isInput()) {
+      return false;
+    }
+    if (port->direction()->isOutput()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void
