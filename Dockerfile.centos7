@@ -40,7 +40,7 @@ RUN source /opt/rh/devtoolset-11/enable && \
     make install
 
 # Download TCL
-RUN wget http://prdownloads.sourceforge.net/tcl/tcl8.6.16-src.tar.gz && \
+RUN wget https://ftp.osuosl.org/pub/lfs/lfs-packages/12.3-rc2/tcl8.6.16-src.tar.gz && \
     tar -xvf tcl8.6.16-src.tar.gz && \
     rm tcl8.6.16-src.tar.gz
 
