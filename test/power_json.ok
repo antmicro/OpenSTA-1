@@ -1,85 +1,85 @@
 Warning: ../examples/gcd_sky130hd.v line 527, module sky130_fd_sc_hd__tapvpwrvgnd_1 not found. Creating black box for TAP_11.
 {
   "Sequential": {
-    "internal": 3.06603120e-04,
-    "switching": 4.75639281e-05,
-    "leakage": 2.96067004e-10,
-    "total": 3.54167336e-04
+    "internal": 3.066031e-04,
+    "switching": 4.756393e-05,
+    "leakage": 2.960670e-10,
+    "total": 3.541673e-04
   }
   ,
   "Combinational": {
-    "internal": 1.58708761e-04,
-    "switching": 2.05105418e-04,
-    "leakage": 6.85897505e-10,
-    "total": 3.63814877e-04
+    "internal": 1.587088e-04,
+    "switching": 2.051054e-04,
+    "leakage": 6.858975e-10,
+    "total": 3.638149e-04
   }
   ,
   "Clock": {
-    "internal": 4.68277321e-05,
-    "switching": 1.20488054e-04,
-    "leakage": 2.30037499e-11,
-    "total": 1.67315811e-04
+    "internal": 4.682773e-05,
+    "switching": 1.204881e-04,
+    "leakage": 2.300375e-11,
+    "total": 1.673158e-04
   }
   ,
   "Macro": {
-    "internal": 0.00000000e+00,
-    "switching": 0.00000000e+00,
-    "leakage": 0.00000000e+00,
-    "total": 0.00000000e+00
+    "internal": 0.000000e+00,
+    "switching": 0.000000e+00,
+    "leakage": 0.000000e+00,
+    "total": 0.000000e+00
   }
   ,
   "Pad": {
-    "internal": 0.00000000e+00,
-    "switching": 0.00000000e+00,
-    "leakage": 0.00000000e+00,
-    "total": 0.00000000e+00
+    "internal": 0.000000e+00,
+    "switching": 0.000000e+00,
+    "leakage": 0.000000e+00,
+    "total": 0.000000e+00
   }
   ,
   "Total": {
-    "internal": 5.12139522e-04,
-    "switching": 3.73157440e-04,
-    "leakage": 1.00496833e-09,
-    "total": 8.85297952e-04
+    "internal": 5.121395e-04,
+    "switching": 3.731574e-04,
+    "leakage": 1.004968e-09,
+    "total": 8.852980e-04
   }
 }
 [
 {
   "name": "clkbuf_2_3__f_clk",
-  "internal": 9.38803714e-06,
-  "switching": 2.57210395e-05,
-  "leakage": 4.60074990e-12,
-  "total": 3.51090821e-05
+  "internal": 9.388037e-06,
+  "switching": 2.572104e-05,
+  "leakage": 4.600750e-12,
+  "total": 3.510908e-05
 }
 ,
 {
   "name": "clkbuf_2_0__f_clk",
-  "internal": 9.38141238e-06,
-  "switching": 2.51630681e-05,
-  "leakage": 4.60074990e-12,
-  "total": 3.45444823e-05
+  "internal": 9.381412e-06,
+  "switching": 2.516307e-05,
+  "leakage": 4.600750e-12,
+  "total": 3.454448e-05
 }
 ,
 {
   "name": "clkbuf_2_1__f_clk",
-  "internal": 9.36719698e-06,
-  "switching": 2.39652054e-05,
-  "leakage": 4.60074990e-12,
-  "total": 3.33324060e-05
+  "internal": 9.367197e-06,
+  "switching": 2.396521e-05,
+  "leakage": 4.600750e-12,
+  "total": 3.333241e-05
 }
 ,
 {
   "name": "clkbuf_2_2__f_clk",
-  "internal": 9.35922617e-06,
-  "switching": 2.32926850e-05,
-  "leakage": 4.60074990e-12,
-  "total": 3.26519148e-05
+  "internal": 9.359226e-06,
+  "switching": 2.329269e-05,
+  "leakage": 4.600750e-12,
+  "total": 3.265191e-05
 }
 ,
 {
   "name": "clkbuf_0_clk",
-  "internal": 9.33185856e-06,
-  "switching": 2.23460574e-05,
-  "leakage": 4.60074990e-12,
-  "total": 3.16779187e-05
+  "internal": 9.331859e-06,
+  "switching": 2.234606e-05,
+  "leakage": 4.600750e-12,
+  "total": 3.167792e-05
 }
 ]
