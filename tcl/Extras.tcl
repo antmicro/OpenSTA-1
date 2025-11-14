@@ -60,6 +60,9 @@ proc unset_dont_use {lib_cell_name_pattern} {
   }
 }
 
+# Get flat cells (same as get_cells -hier)
+interp alias {} get_flat_cells {} get_cells -hierarchical
+
 # Set dont_touch attribute (ignore/to be implemented)
 interp alias {} set_dont_touch {} return -level 0
 
