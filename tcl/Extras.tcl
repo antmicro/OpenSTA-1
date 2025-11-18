@@ -28,10 +28,19 @@ proc_redirect report_echo {
 # Dump target PPA to JSON file
 proc target_ppa_json { filepath } {
   set ppa_json [open "$filepath" "w"]
+
+  # Retrieve max_logic_levels from global scope (set by user constraints)
+  global max_logic_levels
+  if { ![info exists max_logic_levels] } { # default to 0 if undefined
+    set max_logic_levels 0
+  }
+  
+  # Dump target PPA to JSON file
   puts $ppa_json "{"
   puts $ppa_json "  \"max_area\": [get_max_area],"
   puts $ppa_json "  \"max_dynamic_power\": [get_max_dynamic_power],"
-  puts $ppa_json "  \"max_leakage_power\": [get_max_leakage_power]"
+  puts $ppa_json "  \"max_leakage_power\": [get_max_leakage_power],"
+  puts $ppa_json "  \"max_logic_levels\": $max_logic_levels"
   puts $ppa_json "}"
   close $ppa_json
 }
