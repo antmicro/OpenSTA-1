@@ -29,6 +29,7 @@ proc_redirect report_echo {
 proc target_ppa_json { filepath } {
   set ppa_json [open "$filepath" "w"]
 
+  # Retrieve max_logic_levels from global scope (set by user constraints)
   global max_logic_levels
   if { ![info exists max_logic_levels] } { # default to 0 if undefined
     set max_logic_levels 0
