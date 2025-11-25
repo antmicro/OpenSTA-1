@@ -201,4 +201,10 @@ report_activity_annotation_cmd(bool report_unannotated,
                                   report_annotated);
 }
 
+void 
+clear_power_cmd() {
+  Power *power = Sta::sta()->power();
+  power->clear();
+}
+
 %} // inline
