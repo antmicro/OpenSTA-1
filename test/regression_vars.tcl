@@ -151,6 +151,7 @@ record_sta_tests {
   get_noargs
   get_objrefs
   get_property_flags
+  get_cell_hierarchy
   inst_props
   liberty_arcs_one2one_1
   liberty_arcs_one2one_2
