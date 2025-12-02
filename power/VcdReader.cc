@@ -423,23 +423,12 @@ ReadVcdActivities::setActivities()
       double transition_count = vcd_count.transitionCount();
       VcdTime high_time = vcd_count.highTime(time_max);
 
-      // Handle edge case where time_delta is zero or very small to prevent infinity
+      // Handle edge case where time_delta is zero to prevent infinity or NaN values
       float duty;
-      if (time_delta > 0) {
-        duty = static_cast<double>(high_time) / time_delta;
-        // Clamp duty to 1.0 and 0.0, display warnings for out of range values
-        if (duty > 1.0) 
-          report_->warn(1453, "duty cycle for %s is greater than 1.0", sdc_network_->pathName(vcd_count.pins()[0]));
-          duty = 1.0;
-        if (duty < 0.0) {
-          report_->warn(1454, "duty cycle for %s is less than 0.0", sdc_network_->pathName(vcd_count.pins()[0]));
-          duty = 0.0;
-        }
-      } else {
-        // If time_delta is zero, get duty from the high time
+      if (time_delta <= 0) {
         duty = (high_time > 0) ? 1.0 : 0.0;
       }
-      float density = (time_delta > 0 && time_scale > 0) 
+      float density = (time_delta > 0 && time_scale > 0)
         ? transition_count / (time_delta * time_scale)
         : 0.0;
 
