@@ -422,8 +422,23 @@ ReadVcdActivities::setActivities()
     for (const VcdCount &vcd_count : vcd_counts) {
       double transition_count = vcd_count.transitionCount();
       VcdTime high_time = vcd_count.highTime(time_max);
-      float duty = static_cast<double>(high_time) / time_delta;
-      float density = transition_count / (time_delta * time_scale);
+
+      // Handle edge case where time_delta is zero or very small to prevent infinity
+      float duty;
+      if (time_delta > 0) {
+        duty = static_cast<double>(high_time) / time_delta;
+        // Clamp duty to valid range [0, 1] to handle any floating point errors
+        if (duty > 1.0) duty = 1.0;
+        if (duty < 0.0) duty = 0.0;
+      } else {
+        // If time_delta is zero, check if signal was high at the end
+        // If it was, assume duty = 1.0, otherwise 0.0
+        duty = (high_time > 0) ? 1.0 : 0.0;
+      }
+      float density = (time_delta > 0 && time_scale > 0) 
+        ? transition_count / (time_delta * time_scale)
+        : 0.0;
+
       if (debug_->check("read_vcd", 1)) {
         for (const Pin *pin : vcd_count.pins()) {
           debugPrint(debug_, "read_vcd", 1,
