@@ -202,7 +202,7 @@ report_activity_annotation_cmd(bool report_unannotated,
 }
 
 void 
-clear_power_cmd() {
+clear_power() {
   Power *power = Sta::sta()->power();
   power->clear();
 }

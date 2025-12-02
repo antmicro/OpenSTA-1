@@ -495,13 +495,5 @@ proc power_find_nan { } {
   }
 }
 
-################################################################
-
-define_cmd_args "clear_power" { }
-
-proc clear_power { } {
-  clear_power_cmd
-}
-
 # sta namespace end.
 }
