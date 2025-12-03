@@ -69,8 +69,17 @@ proc unset_dont_use {lib_cell_name_pattern} {
   }
 }
 
-# Get flat cells (same as get_cells -hier)
-interp alias {} get_flat_cells {} get_cells -hierarchical
+sta::define_cmd_args "get_flat_pins" {arg}
+
+proc get_flat_pins {arg} {
+  return [get_pins -hier -filter "is_hierarchical==false && full_name=~$arg"]
+}
+
+sta::define_cmd_args "get_flat_cells" {arg}
+
+proc get_flat_cells {arg} {
+  return [get_cells -hier -filter "is_hierarchical==false && full_name=~$arg"]
+}
 
 # Set dont_touch attribute (ignore/to be implemented)
 interp alias {} set_dont_touch {} return -level 0
