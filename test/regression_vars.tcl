@@ -144,6 +144,7 @@ record_sta_tests {
   extras
   filter_expr_defined
   filter_expr_to_postfix
+  get_cell_hierarchy
   get_filter
   get_is_buffer
   get_is_memory
@@ -151,7 +152,6 @@ record_sta_tests {
   get_noargs
   get_objrefs
   get_property_flags
-  get_cell_hierarchy
   inst_props
   liberty_arcs_one2one_1
   liberty_arcs_one2one_2
