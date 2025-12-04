@@ -170,6 +170,7 @@ record_sta_tests {
   report_json1
   report_json2
   sdc_strip_escaped_bus
+  set_units_float
   suppress_msg
   verilog_attribute
   verilog_specify
