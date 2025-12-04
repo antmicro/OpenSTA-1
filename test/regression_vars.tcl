@@ -144,6 +144,7 @@ record_sta_tests {
   extras
   filter_expr_defined
   filter_expr_to_postfix
+  get_cell_hierarchy
   get_filter
   get_is_buffer
   get_is_memory
