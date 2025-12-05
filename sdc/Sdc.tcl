@@ -148,7 +148,7 @@ proc check_unit { unit key suffix key_var } {
         if { $mult == "" } {
           set mult 1
         }
-        set scale [unit_prefix_scale $unit $prefix ]
+        set scale [unit_prefix_scale $unit $prefix]
         check_unit_scale $unit [expr $scale * $mult]
       } else {
         sta_error 343 "unknown unit $unit prefix '${arg_prefix}'."
