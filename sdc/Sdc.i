@@ -1259,7 +1259,7 @@ process_predicate(const char *property,
   bool not_match = stringEq(op, "!=");
   bool not_pattern_match = stringEq(op, "!~");
   for (T *object : all) {
-    PropertyValue value = Sta::sta()->properties().getProperty(object, property);
+    PropertyValue value = Sta::sta()->properties().getProperty(object, property, false);
     std::string prop_str = value.to_string(Sta::sta()->network());
     const char *prop = prop_str.c_str();
     if (prop &&
@@ -1335,7 +1335,7 @@ filter_objects(const char *filter_expression,
         bool should_be_defined = (pToken->kind == sta::FilterExpr::Token::Kind::defined);
         auto result = std::set<T*>();
         for (auto object : all) {
-          PropertyValue value = Sta::sta()->properties().getProperty(object, pToken->text);
+          PropertyValue value = Sta::sta()->properties().getProperty(object, pToken->text, false);
           bool is_defined = false;
           switch (value.type()) {
             case PropertyValue::Type::type_float:

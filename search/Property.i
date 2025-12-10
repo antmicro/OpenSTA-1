@@ -38,7 +38,7 @@ using namespace sta;
 PropertyValue
 library_property(const Library *lib,
 		             const char *property,
-                 bool quiet)
+                 bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(lib, property, quiet);
@@ -47,7 +47,7 @@ library_property(const Library *lib,
 PropertyValue
 liberty_library_property(const LibertyLibrary *lib,
 			                   const char *property,
-                         bool quiet)
+                         bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(lib, property, quiet);
@@ -56,7 +56,7 @@ liberty_library_property(const LibertyLibrary *lib,
 PropertyValue
 cell_property(const Cell *cell,
 	            const char *property,
-              bool quiet)
+              bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(cell, property, quiet);
@@ -65,7 +65,7 @@ cell_property(const Cell *cell,
 PropertyValue
 liberty_cell_property(const LibertyCell *cell,
 		                  const char *property,
-                      bool quiet)
+                      bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(cell, property, quiet);
@@ -74,7 +74,7 @@ liberty_cell_property(const LibertyCell *cell,
 PropertyValue
 port_property(const Port *port,
 	            const char *property,
-              bool quiet)
+              bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(port, property, quiet);
@@ -83,7 +83,7 @@ port_property(const Port *port,
 PropertyValue
 liberty_port_property(const LibertyPort *port,
 		                  const char *property,
-                      bool quiet)
+                      bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(port, property, quiet);
@@ -92,7 +92,7 @@ liberty_port_property(const LibertyPort *port,
 PropertyValue
 instance_property(const Instance *inst,
 		              const char *property,
-                  bool quiet)
+                  bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(inst, property, quiet);
@@ -101,7 +101,7 @@ instance_property(const Instance *inst,
 PropertyValue
 pin_property(const Pin *pin,
 	           const char *property,
-             bool quiet)
+             bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(pin, property, quiet);
@@ -110,7 +110,7 @@ pin_property(const Pin *pin,
 PropertyValue
 net_property(const Net *net,
 	           const char *property,
-             bool quiet)
+             bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(net, property, quiet);
@@ -119,7 +119,7 @@ net_property(const Net *net,
 PropertyValue
 edge_property(Edge *edge,
 	            const char *property,
-              bool quiet)
+              bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(edge, property, quiet);
@@ -128,7 +128,7 @@ edge_property(Edge *edge,
 PropertyValue
 clock_property(Clock *clk,
 	           const char *property,
-             bool quiet)
+             bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(clk, property, quiet);
@@ -137,7 +137,7 @@ clock_property(Clock *clk,
 PropertyValue
 path_end_property(PathEnd *end,
 		              const char *property,
-                  bool quiet)
+                  bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(end, property, quiet);
@@ -146,7 +146,7 @@ path_end_property(PathEnd *end,
 PropertyValue
 path_property(Path *path,
               const char *property,
-              bool quiet)
+              bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(path, property, quiet);
@@ -155,7 +155,7 @@ path_property(Path *path,
 PropertyValue
 timing_arc_property(TimingArcSet *arc_set,
                     const char *property,
-                    bool quiet)
+                    bool quiet = false)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(arc_set, property, quiet);

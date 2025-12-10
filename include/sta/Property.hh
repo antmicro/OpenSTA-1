@@ -52,7 +52,8 @@ public:
   PropertyValue getProperty(TYPE object,
                             const std::string &property,
                             const char *type_name,
-                            Sta *sta);
+                            Sta *sta,
+                            bool quiet);
 
 private:
   std::map<std::string, PropertyHandler> registry_;
@@ -65,33 +66,47 @@ public:
   virtual ~Properties() {}
 
   PropertyValue getProperty(const Library *lib,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const LibertyLibrary *lib,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const Cell *cell,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const LibertyCell *cell,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const Port *port,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const LibertyPort *port,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const Instance *inst,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const Pin *pin,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const Net *net,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(Edge *edge,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(const Clock *clk,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(PathEnd *end,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(Path *path,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
   PropertyValue getProperty(TimingArcSet *arc_set,
-                            const std::string property);
+                            const std::string property,
+                            bool quiet);
 
   // Define handler for external property.
   // properties->defineProperty("foo",

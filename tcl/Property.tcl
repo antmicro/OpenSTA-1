@@ -56,7 +56,7 @@ proc get_property_cmd { cmd type_key cmd_args } {
   return [get_object_property $object $prop $quiet]
 }
 
-proc get_object_property { object prop quiet } {
+proc get_object_property { object prop {quiet 0} } {
   if { [is_object $object] } {
     set object_type [object_type $object]
     if { $object_type == "Instance" } {
