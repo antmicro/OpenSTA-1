@@ -103,14 +103,21 @@ proc get_db { attr } {
 }
 
 # Get attribute
-sta::define_cmd_args "get_attribute" {arg1 arg2}
+sta::define_cmd_args "get_attribute" {args}
 
-proc get_attribute {arg1 arg2} {
+proc get_attribute {args} {
+  sta::parse_key_args "get_attribute" args keys {} flags {-quiet}
+  set quiet [info exists flags(-quiet)]
+  set arg1 [lindex $args 0]
+  set arg2 [lindex $args 1]
   if { [sta::is_object $arg1] } {
+    if { $quiet } { return [get_property -quiet $arg1 $arg2] }
     return [get_property $arg1 $arg2]
   } elseif { [sta::is_object $arg2] } {
+    if { $quiet } { return [get_property -quiet $arg2 $arg1] }
     return [get_property $arg2 $arg1]
   } else {
+    if { $quiet } { return "" }
     error "get_attribute: invalid object $arg1 or $arg2"
   }
 }

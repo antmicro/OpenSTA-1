@@ -37,114 +37,128 @@ using namespace sta;
 
 PropertyValue
 library_property(const Library *lib,
-		 const char *property)
+		             const char *property,
+                 bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(lib, property);
+  return properties.getProperty(lib, property, quiet);
 }
 
 PropertyValue
 liberty_library_property(const LibertyLibrary *lib,
-			 const char *property)
+			                   const char *property,
+                         bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(lib, property);
+  return properties.getProperty(lib, property, quiet);
 }
 
 PropertyValue
 cell_property(const Cell *cell,
-	      const char *property)
+	            const char *property,
+              bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(cell, property);
+  return properties.getProperty(cell, property, quiet);
 }
 
 PropertyValue
 liberty_cell_property(const LibertyCell *cell,
-		      const char *property)
+		                  const char *property,
+                      bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(cell, property);
+  return properties.getProperty(cell, property, quiet);
 }
 
 PropertyValue
 port_property(const Port *port,
-	      const char *property)
+	            const char *property,
+              bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(port, property);
+  return properties.getProperty(port, property, quiet);
 }
 
 PropertyValue
 liberty_port_property(const LibertyPort *port,
-		      const char *property)
+		                  const char *property,
+                      bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(port, property);
+  return properties.getProperty(port, property, quiet);
 }
 
 PropertyValue
 instance_property(const Instance *inst,
-		  const char *property)
+		              const char *property,
+                  bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(inst, property);
+  return properties.getProperty(inst, property, quiet);
 }
 
 PropertyValue
 pin_property(const Pin *pin,
-	     const char *property)
+	           const char *property,
+             bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(pin, property);
+  return properties.getProperty(pin, property, quiet);
 }
 
 PropertyValue
 net_property(const Net *net,
-	     const char *property)
+	           const char *property,
+             bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(net, property);
+  return properties.getProperty(net, property, quiet);
 }
 
 PropertyValue
 edge_property(Edge *edge,
-	      const char *property)
+	            const char *property,
+              bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(edge, property);
+  return properties.getProperty(edge, property, quiet);
 }
 
 PropertyValue
 clock_property(Clock *clk,
-	       const char *property)
+	           const char *property,
+             bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(clk, property);
+  return properties.getProperty(clk, property, quiet);
 }
 
 PropertyValue
 path_end_property(PathEnd *end,
-		  const char *property)
+		              const char *property,
+                  bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(end, property);
+  return properties.getProperty(end, property, quiet);
 }
 
 PropertyValue
 path_property(Path *path,
-              const char *property)
+              const char *property,
+              bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(path, property);
+  return properties.getProperty(path, property, quiet);
 }
 
 PropertyValue
 timing_arc_property(TimingArcSet *arc_set,
-                    const char *property)
+                    const char *property,
+                    bool quiet)
 {
   Properties &properties = Sta::sta()->properties();
-  return properties.getProperty(arc_set, property);
+  return properties.getProperty(arc_set, property, quiet);
 }
 
 %} // inline
