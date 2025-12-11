@@ -93,7 +93,7 @@ interp alias {} get_object_name {} get_full_name
 # Query objects (ignore/to be implemented)
 interp alias {} query_objects {} return -level 0
 
-# remove/reset ailiases for "unset" commands in sdc.tcl
+# remove/reset aliases for "unset" commands in sdc.tcl
 interp alias {} remove_output_delay {} unset_output_delay
 interp alias {} reset_output_delay {} unset_output_delay
 
