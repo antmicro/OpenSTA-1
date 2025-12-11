@@ -35,25 +35,20 @@ puts [get_object_name [get_clocks *_x4*]]
 
 # reset/remove aliases for "unset" commands
 set test_port [get_ports req_val]
-puts [get_object_name $test_port]
 
 # Sets delay and verifies the path has input external delay
 set_input_delay -clock clk 100 $test_port
-puts "Verifying input delay on $test_port:"
 report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
 
 # Removes the delay and verifies the path has no input external delay
 remove_input_delay -clock clk $test_port
-puts "Verifying input delay removed on $test_port:"
 report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
 
 # Same thing but for reset
 set_input_delay -clock clk 100 $test_port
-puts "Verifying input delay on $test_port:"
 report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
 
 reset_input_delay -clock clk $test_port
-puts "Verifying input delay removed on $test_port:"
 report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
 
 # support for -q quiet flag, should be the same for last 2 (empty)

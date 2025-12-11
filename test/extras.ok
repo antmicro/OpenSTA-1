@@ -12,8 +12,6 @@ Warning: clock objects do not have a dummy property.
 Warning: extras.tcl line 29, clock '*_x4*' not found.
 Warning: extras.tcl line 29, get_property  is not an object.
 clk_x4 clk_x41
-req_val
-Verifying input delay on _4068cc1108000000_p_Port:
 Startpoint: req_val (input port clocked by clk)
 Endpoint: _413_ (rising edge-triggered flip-flop clocked by clk)
 Path Group: clk
@@ -43,7 +41,6 @@ Path Type: max
         -320.14   slack (VIOLATED)
 
 
-Verifying input delay removed on _4068cc1108000000_p_Port:
 Startpoint: req_val (input port)
 Endpoint: _413_ (rising edge-triggered flip-flop)
 Path Group: unconstrained
@@ -61,7 +58,6 @@ Path Type: max
 (Path is unconstrained)
 
 
-Verifying input delay on _4068cc1108000000_p_Port:
 Startpoint: req_val (input port clocked by clk)
 Endpoint: _413_ (rising edge-triggered flip-flop clocked by clk)
 Path Group: clk
@@ -91,7 +87,6 @@ Path Type: max
         -320.14   slack (VIOLATED)
 
 
-Verifying input delay removed on _4068cc1108000000_p_Port:
 Startpoint: req_val (input port)
 Endpoint: _413_ (rising edge-triggered flip-flop)
 Path Group: unconstrained
@@ -109,7 +104,7 @@ Path Type: max
 (Path is unconstrained)
 
 
-Warning: extras.tcl line 60, pin 'clk_x41' not found.
+Warning: extras.tcl line 55, pin 'clk_x41' not found.
 
 
 
