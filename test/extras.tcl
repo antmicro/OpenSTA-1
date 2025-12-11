@@ -12,11 +12,11 @@ check_units -time ps -resistance kOhm -capacitance fF -voltage V -current mA
 set_units -time ps -resistance kOhm -capacitance fF -voltage V -current mA
 check_units -time ps -resistance kOhm -capacitance fF -voltage V -current mA
 
-create_clock -name clk -period 10
+create_clock -name clk -period 10 [get_ports clk]
 puts "Clock period: [get_attribute period [get_clocks clk]]"
 puts "Clock period: [get_attribute [get_clocks clk] period]"
 
-# get_attribute -quiet support and warning message
+# get_attribute -quiet support and warning message instead of error
 set dummy [get_attribute -quiet dummy [get_clocks clk]]
 if { $dummy == "" } {
   puts "dummy is empty"
@@ -33,8 +33,39 @@ create_clock -name clk_x4 -period 10000
 create_clock -name clk_x41 -period 10101
 puts [get_object_name [get_clocks *_x4*]]
 
-# unset_output_delay, unset_input_delay reset
+# reset/remove aliases for "unset" commands
+set test_port [get_ports req_val]
+puts [get_object_name $test_port]
 
-# get_pins -q support
+# Sets delay and verifies the path has input external delay
+set_input_delay -clock clk 100 $test_port
+puts "Verifying input delay on $test_port:"
+report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
 
-# set_false_path, set_max_delay -th support
+# Removes the delay and verifies the path has no input external delay
+remove_input_delay -clock clk $test_port
+puts "Verifying input delay removed on $test_port:"
+report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
+
+# Same thing but for reset
+set_input_delay -clock clk 100 $test_port
+puts "Verifying input delay on $test_port:"
+report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
+
+reset_input_delay -clock clk $test_port
+puts "Verifying input delay removed on $test_port:"
+report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained
+
+# support for -q quiet flag, should be the same for last 2 (empty)
+puts [get_pins clk_x41]
+puts [get_pins -quiet clk_x41]
+puts [get_pins -q clk_x41]
+
+# support for -th or -thr flag for through lists in general
+
+# Test set_false_path with -through (full form) using net
+set_false_path -from $test_port -thr [get_pins _282_/Y]
+set_false_path -from $test_port -th [get_pins _289_/Y]
+
+# Nothing should show up since we set these false paths
+report_checks -from $test_port -path_delay max -format full -endpoint_path_count 1 -unconstrained

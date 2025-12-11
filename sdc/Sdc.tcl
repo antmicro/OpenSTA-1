@@ -1181,8 +1181,8 @@ define_cmd_args "group_path" \
   {-name group_name [-weight weight] [-critical_range range]\
      [-default] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
-     [-fall_through|-fall_thr through_list] [-to to_list] [-rise_to to_list]\
+     [-through|-thr|-th through_list] [-rise_through|-rise_thr|-rise_th through_list]\
+     [-fall_through|-fall_thr|-fall_th through_list] [-to to_list] [-rise_to to_list]\
      [-fall_to to_list]}
 
 # The -weight and -critical_range arguments are ignored.
@@ -2179,8 +2179,8 @@ proc unset_disable_timing_instance { inst from to } {
 define_cmd_args "set_false_path" \
   {[-setup] [-hold] [-rise] [-fall] [-reset_path] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
-     [-fall_through|-fall_thr through_list] [-to to_list] [-rise_to to_list]\
+     [-through|-thr|-th through_list] [-rise_through|-rise_thr|-rise_th through_list]\
+     [-fall_through|-fall_thr|-fall_th through_list] [-to to_list] [-rise_to to_list]\
      [-fall_to to_list]}
 
 proc set_false_path { args } {
@@ -2340,8 +2340,8 @@ define_cmd_args "set_max_delay" \
   {[-rise] [-fall] [-ignore_clock_latency] [-reset_path]\
      [-probe] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
-     [-fall_through|-fall_thr through_list]\
+     [-through|-thr|-th through_list] [-rise_through|-rise_thr|-rise_th through_list]\
+     [-fall_through|-fall_thr|-fall_th through_list]\
      [-to to_list] [-rise_to to_list] [-fall_to to_list] delay}
 
 proc set_max_delay { args } {
@@ -2412,8 +2412,8 @@ define_cmd_args "set_min_delay" \
   {[-rise] [-fall] [-ignore_clock_latency] [-reset_path]\
      [-probe] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
-     [-fall_through|-fall_thr through_list]\
+     [-through|-thr|-th through_list] [-rise_through|-rise_thr|-rise_th through_list]\
+     [-fall_through|-fall_thr|-fall_th through_list]\
      [-to to_list] [-rise_to to_list] [-fall_to to_list] delay}
 
 proc set_min_delay { args } {
@@ -2463,8 +2463,8 @@ define_cmd_args "set_multicycle_path" \
   {[-setup] [-hold] [-rise] [-fall] [-start] [-end]\
      [-reset_path] [-comment comment]\
      [-from from_list] [-rise_from from_list]\
-     [-fall_from from_list] [-through|-thr through_list]\
-     [-rise_through|-rise_thr through_list] [-fall_through|-fall_thr through_list]\
+     [-fall_from from_list] [-through|-thr|-th through_list]\
+     [-rise_through|-rise_thr|-rise_th through_list] [-fall_through|-fall_thr|-fall_th through_list]\
      [-to to_list] [-rise_to to_list] [-fall_to to_list] path_multiplier}
 
 proc set_multicycle_path { args } {
@@ -2532,8 +2532,8 @@ proc set_multicycle_path { args } {
 define_cmd_args "unset_path_exceptions" \
   {[-setup] [-hold] [-rise] [-fall] [-from from_list]\
      [-rise_from from_list] [-fall_from from_list]\
-     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
-     [-fall_through|-fall_thr through_list] [-to to_list] [-rise_to to_list]\
+     [-through|-thr|-th through_list] [-rise_through|-rise_thr|-rise_th through_list]\
+     [-fall_through|-fall_thr|-fall_th through_list] [-to to_list] [-rise_to to_list]\
      [-fall_to to_list]}
 
 proc unset_path_exceptions { args } {
@@ -3270,13 +3270,13 @@ proc parse_thrus_arg { args_var arg_error_var } {
   while { $args != {} } {
     set arg [lindex $args 0]
     set rf ""
-    if { $arg == "-through" || $arg == "-thr" } {
+    if { $arg == "-through" || $arg == "-thr" || $arg == "-th" } {
       set rf "rise_fall"
       set key $arg
-    } elseif { $arg == "-rise_through" || $arg == "-rise_thr" } {
+    } elseif { $arg == "-rise_through" || $arg == "-rise_thr" || $arg == "-rise_th" } {
       set rf "rise"
       set key $arg
-    } elseif { $arg == "-fall_through" || $arg == "-fall_thr" } {
+    } elseif { $arg == "-fall_through" || $arg == "-fall_thr" || $arg == "-fall_th" } {
       set rf "fall"
       set key $arg
     }
