@@ -35,6 +35,7 @@
 #include "FuncExpr.hh"
 #include "EquivCells.hh"
 #include "Liberty.hh"
+#include "GeneratedClock.hh"
 #include "liberty/LibertyReader.hh"
 #include "LibertyWriter.hh"
 #include "SdcNetwork.hh"
@@ -767,6 +768,23 @@ Sta::linkDesign(const char *top_cell_name,
   bool status = network_->linkNetwork(top_cell_name,
 				      make_black_boxes,
 				      report_);
+
+  if (status) {
+    LeafInstanceIterator *iter = network_->leafInstanceIterator();
+    while (iter->hasNext()) {
+      Instance *inst = iter->next();
+      LibertyCell *lib_cell = network_->libertyCell(inst);
+      
+      if (lib_cell) {
+        const GeneratedClockSeq &gen_clks = lib_cell->generatedClocks();
+        for (GeneratedClock *gen_clk : gen_clks) {
+          printf("[LINK] Generated Clock name: %s\n", gen_clk->name());
+        }
+      }
+    }
+    delete iter;
+  }
+
   stats.report("Link");
   return status;
 }
