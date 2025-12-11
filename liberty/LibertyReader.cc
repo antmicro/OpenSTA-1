@@ -2215,26 +2215,16 @@ LibertyReader::makeGeneratedClocks()
 void
 LibertyReader::makeGeneratedClock(GeneratedClockGroup *generated_clock)
 {
-  printf("[PARSER] Generated Clock name: %s\n", generated_clock->name());
-  printf("[PARSER] Generated Clock clock pin: %s\n", generated_clock->clockPin());
-  printf("[PARSER] Generated Clock master pin: %s\n", generated_clock->masterPin());
-  printf("[PARSER] Generated Clock divided by: %d\n", generated_clock->dividedBy());
-  printf("[PARSER] Generated Clock multiplied by: %d\n", generated_clock->multipliedBy());
-  printf("[PARSER] Generated Clock duty cycle: %f\n", generated_clock->dutyCycle());
-  printf("[PARSER] Generated Clock invert: %d\n", generated_clock->invert());
-  if (generated_clock->edges()) {
-    printf("[PARSER] Generated Clock edges: ");
-    for (int edge : *generated_clock->edges()) {
-      printf("%d ", edge);
-      }
-    printf("\n");
-  }
-  if (generated_clock->edgeShifts()) {
-    printf("[PARSER] Generated Clock shifts: ");
-    for (float shift : *generated_clock->edgeShifts()) {
-      printf("%f ", shift);
-    }
-    printf("\n");
+  if (cell_) {
+    cell_->makeGeneratedClock(generated_clock->name(),
+                              generated_clock->clockPin(),
+                              generated_clock->masterPin(),
+                              generated_clock->dividedBy(),
+                              generated_clock->multipliedBy(),
+                              generated_clock->dutyCycle(),
+                              generated_clock->invert(),
+                              generated_clock->edges(),
+                              generated_clock->edgeShifts());
   }
 }
 
