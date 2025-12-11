@@ -316,7 +316,7 @@ proc filter_objs { filter objects filter_function object_type } {
 
 define_cmd_args "get_cells" \
   {[-hierarchical] [-hsc separator] [-filter expr]\
-     [-regexp] [-nocase] [-quiet] [-of_objects objects] [patterns]}
+     [-regexp] [-nocase] [-quiet|-q] [-of_objects objects] [patterns]}
 
 define_cmd_alias "get_cell" "get_cells"
 
@@ -399,7 +399,7 @@ proc get_cells { args } {
 
 ################################################################
 
-define_cmd_args "get_clocks" {[-regexp] [-nocase] [-quiet] [-filter expr] [patterns]}
+define_cmd_args "get_clocks" {[-regexp] [-nocase] [-quiet|-q] [-filter expr] [patterns]}
 
 define_cmd_alias "get_clock" "get_clocks"
 
@@ -443,7 +443,7 @@ proc get_clocks { args } {
 ################################################################
 
 define_cmd_args "get_lib_cells" \
-  {[-hsc separator] [-regexp] [-nocase] [-quiet] [-filter expr]\
+  {[-hsc separator] [-regexp] [-nocase] [-quiet|-q] [-filter expr]\
      [-of_objects objects] [patterns]}
 
 define_cmd_alias "get_lib_cell" "get_lib_cells"
@@ -524,7 +524,7 @@ proc get_lib_cells { args } {
 ################################################################
 
 define_cmd_args "get_lib_pins" \
-  {[-hsc separator] [-regexp] [-nocase] [-quiet] [-filter expr]\
+  {[-hsc separator] [-regexp] [-nocase] [-quiet|-q] [-filter expr]\
      [-of_objects objects] [patterns]}
 
 define_cmd_alias "get_lib_pin" "get_lib_pins"
@@ -634,7 +634,7 @@ proc check_nocase_flag { flags_var } {
 
 ################################################################
 
-define_cmd_args "get_libs" {[-regexp] [-nocase] [-quiet] [-filter expr] [patterns]}
+define_cmd_args "get_libs" {[-regexp] [-nocase] [-quiet|-q] [-filter expr] [patterns]}
 
 define_cmd_alias "get_lib" "get_libs"
 
@@ -705,7 +705,7 @@ proc find_liberty_libraries_matching { pattern regexp nocase } {
 ################################################################
 
 define_cmd_args "get_nets" \
-  {[-hierarchical] [-hsc separator] [-regexp] [-nocase] [-quiet] [-filter expr]\
+  {[-hierarchical] [-hsc separator] [-regexp] [-nocase] [-quiet|-q] [-filter expr]\
      [-of_objects objects] [patterns]}
 
 define_cmd_alias "get_net" "get_nets"
@@ -779,7 +779,7 @@ proc get_nets { args } {
 ################################################################
 
 define_cmd_args "get_pins" \
-  {[-hierarchical] [-hsc separator] [-quiet] [-filter expr]\
+  {[-hierarchical] [-hsc separator] [-quiet|-q] [-filter expr]\
      [-regexp] [-nocase] [-of_objects objects] [patterns]}
 
 define_cmd_alias "get_pin" "get_pins"
@@ -870,7 +870,7 @@ proc get_pins { args } {
 ################################################################
 
 define_cmd_args "get_ports" \
-  {[-quiet] [-filter expr] [-regexp] [-nocase] [-of_objects objects] [patterns]}
+  {[-quiet|-q] [-filter expr] [-regexp] [-nocase] [-of_objects objects] [patterns]}
 
 define_cmd_alias "get_port" "get_ports"
 
@@ -1181,8 +1181,8 @@ define_cmd_args "group_path" \
   {-name group_name [-weight weight] [-critical_range range]\
      [-default] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through through_list] [-rise_through through_list]\
-     [-fall_through through_list] [-to to_list] [-rise_to to_list]\
+     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
+     [-fall_through|-fall_thr through_list] [-to to_list] [-rise_to to_list]\
      [-fall_to to_list]}
 
 # The -weight and -critical_range arguments are ignored.
@@ -2179,8 +2179,8 @@ proc unset_disable_timing_instance { inst from to } {
 define_cmd_args "set_false_path" \
   {[-setup] [-hold] [-rise] [-fall] [-reset_path] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through through_list] [-rise_through through_list]\
-     [-fall_through through_list] [-to to_list] [-rise_to to_list]\
+     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
+     [-fall_through|-fall_thr through_list] [-to to_list] [-rise_to to_list]\
      [-fall_to to_list]}
 
 proc set_false_path { args } {
@@ -2340,8 +2340,8 @@ define_cmd_args "set_max_delay" \
   {[-rise] [-fall] [-ignore_clock_latency] [-reset_path]\
      [-probe] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through through_list] [-rise_through through_list]\
-     [-fall_through through_list]\
+     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
+     [-fall_through|-fall_thr through_list]\
      [-to to_list] [-rise_to to_list] [-fall_to to_list] delay}
 
 proc set_max_delay { args } {
@@ -2412,8 +2412,8 @@ define_cmd_args "set_min_delay" \
   {[-rise] [-fall] [-ignore_clock_latency] [-reset_path]\
      [-probe] [-comment comment]\
      [-from from_list] [-rise_from from_list] [-fall_from from_list]\
-     [-through through_list] [-rise_through through_list]\
-     [-fall_through through_list]\
+     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
+     [-fall_through|-fall_thr through_list]\
      [-to to_list] [-rise_to to_list] [-fall_to to_list] delay}
 
 proc set_min_delay { args } {
@@ -2463,8 +2463,8 @@ define_cmd_args "set_multicycle_path" \
   {[-setup] [-hold] [-rise] [-fall] [-start] [-end]\
      [-reset_path] [-comment comment]\
      [-from from_list] [-rise_from from_list]\
-     [-fall_from from_list] [-through through_list]\
-     [-rise_through through_list] [-fall_through through_list]\
+     [-fall_from from_list] [-through|-thr through_list]\
+     [-rise_through|-rise_thr through_list] [-fall_through|-fall_thr through_list]\
      [-to to_list] [-rise_to to_list] [-fall_to to_list] path_multiplier}
 
 proc set_multicycle_path { args } {
@@ -2532,8 +2532,8 @@ proc set_multicycle_path { args } {
 define_cmd_args "unset_path_exceptions" \
   {[-setup] [-hold] [-rise] [-fall] [-from from_list]\
      [-rise_from from_list] [-fall_from from_list]\
-     [-through through_list] [-rise_through through_list]\
-     [-fall_through through_list] [-to to_list] [-rise_to to_list]\
+     [-through|-thr through_list] [-rise_through|-rise_thr through_list]\
+     [-fall_through|-fall_thr through_list] [-to to_list] [-rise_to to_list]\
      [-fall_to to_list]}
 
 proc unset_path_exceptions { args } {
@@ -3270,15 +3270,15 @@ proc parse_thrus_arg { args_var arg_error_var } {
   while { $args != {} } {
     set arg [lindex $args 0]
     set rf ""
-    if { $arg == "-through" } {
+    if { $arg == "-through" || $arg == "-thr" } {
       set rf "rise_fall"
-      set key "-through"
-    } elseif { $arg == "-rise_through" } {
+      set key $arg
+    } elseif { $arg == "-rise_through" || $arg == "-rise_thr" } {
       set rf "rise"
-      set key "-rise_through"
-    } elseif { $arg == "-fall_through" } {
+      set key $arg
+    } elseif { $arg == "-fall_through" || $arg == "-fall_thr" } {
       set rf "fall"
-      set key "-fall_through"
+      set key $arg
     }
     if { $rf != "" } {
       if { [llength $args] > 1 } {
