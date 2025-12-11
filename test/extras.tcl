@@ -17,7 +17,12 @@ puts "Clock period: [get_attribute period [get_clocks clk]]"
 puts "Clock period: [get_attribute [get_clocks clk] period]"
 
 # get_attribute -quiet support and warning message
-puts [get_attribute -quiet dummy [get_clocks clk]]
+set dummy [get_attribute -quiet dummy [get_clocks clk]]
+if { $dummy == "" } {
+  puts "dummy is empty"
+} else {
+  puts "dummy is not empty"
+}
 puts [get_attribute dummy [get_clocks clk]]
 
 # get_object_name on invalid returns warning

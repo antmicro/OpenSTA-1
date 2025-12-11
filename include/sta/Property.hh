@@ -51,9 +51,7 @@ public:
                       PropertyHandler handler);
   PropertyValue getProperty(TYPE object,
                             const std::string &property,
-                            const char *type_name,
-                            Sta *sta,
-                            bool quiet);
+                            Sta *sta);
 
 private:
   std::map<std::string, PropertyHandler> registry_;
