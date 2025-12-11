@@ -56,7 +56,7 @@ proc get_property_cmd { cmd type_key cmd_args } {
   return [get_object_property $object $prop $quiet]
 }
 
-proc get_object_property { object prop {quiet 0} } {
+proc get_object_property { object prop {quiet 0} {warn 0} } {
   if { [is_object $object] } {
     set object_type [object_type $object]
     if { $object_type == "Instance" } {
@@ -91,7 +91,11 @@ proc get_object_property { object prop {quiet 0} } {
       sta_error 2203 "get_property unsupported object type $object_type."
     }
   } else {
-    sta_error 2204 "get_property $object is not an object."
+    if { $warn } {
+      sta_warn 2204 "get_property $object is not an object."
+    } else {
+      sta_error 2204 "get_property $object is not an object."
+    }
   }
 }
 

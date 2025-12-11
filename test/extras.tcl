@@ -26,8 +26,12 @@ if { $dummy == "" } {
 puts [get_attribute dummy [get_clocks clk]]
 
 # get_object_name on invalid returns warning
+get_object_name [get_clocks *_x4*]
 
 # get_object_name on lists
+create_clock -name clk_x4 -period 10000
+create_clock -name clk_x41 -period 10101
+puts [get_object_name [get_clocks *_x4*]]
 
 # unset_output_delay, unset_input_delay reset
 
