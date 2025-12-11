@@ -160,7 +160,6 @@ proc get_attribute {args} {
     if { $quiet } { return [get_property -quiet $arg2 $arg1] }
     return [get_property $arg2 $arg1]
   } else {
-    if { $quiet } { return "" }
     error "get_attribute: invalid object $arg1 or $arg2"
   }
 }
