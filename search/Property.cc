@@ -621,8 +621,7 @@ Properties::getProperty(const Library *lib,
       || property == "full_name")
     return PropertyValue(network->name(lib));
   else {
-    PropertyValue value = registry_library_.getProperty(lib, property,
-                                                        "library", sta_);
+    PropertyValue value = registry_library_.getProperty(lib, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -642,9 +641,7 @@ Properties::getProperty(const LibertyLibrary *lib,
   else if (property == "filename")
     return PropertyValue(lib->filename());
   else {
-    PropertyValue value = registry_liberty_library_.getProperty(lib, property,
-                                                                 "liberty library",
-                                                                 sta_);
+    PropertyValue value = registry_liberty_library_.getProperty(lib, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -674,8 +671,7 @@ Properties::getProperty(const Cell *cell,
   else if (property == "filename")
     return PropertyValue(network->filename(cell));
   else {
-    PropertyValue value = registry_cell_.getProperty(cell, property,
-                                                      "cell", sta_);
+    PropertyValue value = registry_cell_.getProperty(cell, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -725,9 +721,7 @@ Properties::getProperty(const LibertyCell *cell,
   else if (property == "area")
     return PropertyValue(cell->area(), sta_->units()->scalarUnit());
   else {
-    PropertyValue value = registry_liberty_cell_.getProperty(cell, property,
-                                                              "liberty cell",
-                                                              sta_);
+    PropertyValue value = registry_liberty_cell_.getProperty(cell, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -813,8 +807,7 @@ Properties::getProperty(const Port *port,
     return portSlew(port, RiseFall::fall(), MinMax::min());
 
   else {
-    PropertyValue value = registry_port_.getProperty(port, property,
-                                                      "port", sta_);
+    PropertyValue value = registry_port_.getProperty(port, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -943,9 +936,7 @@ Properties::getProperty(const LibertyPort *port,
     return delayPropertyValue(delay);
   }
   else {
-    PropertyValue value = registry_liberty_port_.getProperty(port, property,
-                                                              "liberty port",
-                                                              sta_);
+    PropertyValue value = registry_liberty_port_.getProperty(port, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -986,8 +977,7 @@ Properties::getProperty(const Instance *inst,
   else if (property == "design_type")
     return PropertyValue(liberty_cell ? liberty_cell->getDesignType() : "module");
   else {
-    PropertyValue value = registry_instance_.getProperty(inst, property,
-                                                          "instance", sta_);
+    PropertyValue value = registry_instance_.getProperty(inst, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -1078,8 +1068,7 @@ Properties::getProperty(const Pin *pin,
     return pinSlew(pin, RiseFall::fall(), MinMax::min());
 
   else {
-    PropertyValue value = registry_pin_.getProperty(pin, property,
-                                                     "pin", sta_);
+    PropertyValue value = registry_pin_.getProperty(pin, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -1168,8 +1157,7 @@ Properties::getProperty(const Net *net,
   else if (property == "full_name")
     return PropertyValue(network->pathName(net));
   else {
-    PropertyValue value = registry_net_.getProperty(net, property,
-                                                     "net", sta_);
+    PropertyValue value = registry_net_.getProperty(net, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
@@ -1273,8 +1261,7 @@ Properties::getProperty(const Clock *clk,
   else if (property == "is_propagated")
     return PropertyValue(clk->isPropagated());
   else {
-    PropertyValue value = registry_clock_.getProperty(clk, property,
-                                                       "clock", sta_);
+    PropertyValue value = registry_clock_.getProperty(clk, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
