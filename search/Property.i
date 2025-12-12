@@ -37,7 +37,7 @@ using namespace sta;
 
 PropertyValue
 library_property(const Library *lib,
-  const char *property)
+      const char *property)
 {
   Properties &properties = Sta::sta()->properties();
   return properties.getProperty(lib, property);
