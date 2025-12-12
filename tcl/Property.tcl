@@ -53,45 +53,46 @@ proc get_property_cmd { cmd type_key cmd_args } {
     }
     set object [get_property_object_type $object_type $object $quiet]
   }
-  return [get_object_property $object $prop $quiet]
+  return [get_object_property $object $prop]
 }
 
-proc get_object_property { object prop {quiet 0} {warn 0} } {
+proc get_object_property { object prop } {
   if { [is_object $object] } {
     set object_type [object_type $object]
     if { $object_type == "Instance" } {
-      return [instance_property $object $prop $quiet]
+      return [instance_property $object $prop]
     } elseif { $object_type == "Pin" } {
-      return [pin_property $object $prop $quiet]
+      return [pin_property $object $prop]
     } elseif { $object_type == "Net" } {
-      return [net_property $object $prop $quiet]
+      return [net_property $object $prop]
     } elseif { $object_type == "Clock" } {
-      return [clock_property $object $prop $quiet]
+      return [clock_property $object $prop]
     } elseif { $object_type == "Port" } {
-      return [port_property $object $prop $quiet]
+      return [port_property $object $prop]
     } elseif { $object_type == "LibertyPort" } {
-      return [liberty_port_property $object $prop $quiet]
+      return [liberty_port_property $object $prop]
     } elseif { $object_type == "LibertyCell" } {
-      return [liberty_cell_property $object $prop $quiet]
+      return [liberty_cell_property $object $prop]
     } elseif { $object_type == "Cell" } {
-      return [cell_property $object $prop $quiet]
+      return [cell_property $object $prop]
     } elseif { $object_type == "Library" } {
-      return [library_property $object $prop $quiet]
+      return [library_property $object $prop]
     } elseif { $object_type == "LibertyLibrary" } {
-      return [liberty_library_property $object $prop $quiet]
+      return [liberty_library_property $object $prop]
     } elseif { $object_type == "Edge" } {
-      return [edge_property $object $prop $quiet]
+      return [edge_property $object $prop]
     } elseif { $object_type == "PathEnd" } {
-      return [path_end_property $object $prop $quiet]
+      return [path_end_property $object $prop]
     } elseif { $object_type == "Path" } {
-      return [path_property $object $prop $quiet]
+      return [path_property $object $prop]
     } elseif { $object_type == "TimingArcSet" } {
-      return [timing_arc_property $object $prop $quiet]
+      return [timing_arc_property $object $prop]
     } else {
       sta_error 2203 "get_property unsupported object type $object_type."
     }
   } else {
-    if { $warn } {
+    # No object on get_object_name, suppress error
+    if {$prop == "full_name"} {
       sta_warn 2204 "get_property $object is not an object."
     } else {
       sta_error 2204 "get_property $object is not an object."
