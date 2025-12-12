@@ -43,6 +43,7 @@
 #include "Clock.hh"
 #include "ClockLatency.hh"
 #include "ClockInsertion.hh"
+#include "GeneratedClock.hh"
 #include "CycleAccting.hh"
 #include "PortDelay.hh"
 #include "ExceptionPath.hh"
@@ -1045,6 +1046,67 @@ Sdc::makeClock(const char *name,
   clearCycleAcctings();
   invalidateGeneratedClks();
   clkHpinDisablesInvalid();
+
+
+
+
+
+  // Leaves of the clock network
+  const PinSet &leaf_pins = clk->leafPins();
+  PinSet::ConstIterator leaf_iter(leaf_pins);
+  while (leaf_iter.hasNext()) {
+
+    // Loop through each pin of the clock network
+    const Pin *pin = leaf_iter.next();
+    const Port *port = network_->port(pin);
+    const Instance *inst = network_->instance(pin);
+
+    // Leaves of the instance the clock network is connected to
+    LeafInstanceIterator *leaf_iter = network_->leafInstanceIterator(inst);
+
+    while (leaf_iter->hasNext()) {
+
+      // Find the leaf instance and pin of this clock network leaf
+      Instance *leaf_inst = leaf_iter->next();
+      const char *inst_path = network_->pathName(leaf_inst);
+      LibertyCell *cell = network_->libertyCell(leaf_inst);
+      Pin *leaf_pin = network_->findPin(leaf_inst, port);
+
+      // Loop through potential generated clock definitions
+      if (cell && !cell->generatedClocks().empty()) {
+        for (const GeneratedClock *generated_clock : cell->generatedClocks()) {
+          const char *compare_path = stringPrintTmp("%s/%s", inst_path, generated_clock->masterPin());
+
+          // if the leaf pin of the clock network matches the hierarichal path of the master pin of the liberty cell, create the generated clock
+          if (strcmp(compare_path, network_->pathName(leaf_pin)) == 0) {
+
+            // Create
+            Clock *generated_clk = makeGeneratedClock(
+              generated_clock->name(),
+              nullptr, 
+              false,
+              leaf_pin,
+              clk,
+              generated_clock->dividedBy(),
+              generated_clock->multipliedBy(),
+              generated_clock->dutyCycle(),
+              generated_clock->invert(),
+              false,
+              generated_clock->edges(),
+              generated_clock->edgeShifts(),
+              nullptr);
+
+            if (clk && clk->waveformValid()) {
+              generated_clk->generate(clk);
+            }
+
+          }
+        }
+      }
+    }
+    delete leaf_iter;
+  }
+
   return clk;
 }
 
