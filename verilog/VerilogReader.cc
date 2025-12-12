@@ -31,6 +31,8 @@
 #include "Report.hh"
 #include "Error.hh"
 #include "Stats.hh"
+#include "Sdc.hh"
+#include "GeneratedClock.hh"
 #include "Liberty.hh"
 #include "PortDirection.hh"
 #include "Network.hh"
@@ -2036,6 +2038,34 @@ VerilogReader::makeLibertyInst(VerilogLibertyInst *lib_inst,
     else
       // Make unconnected pin.
       network_->makePin(inst, reinterpret_cast<Port*>(port), nullptr);
+  }
+  // Generated clocks are created if they exist for the cell
+  if (lib_cell->generatedClocks().size() > 0) {
+    // Full instance path needed for clock name
+    const char *inst_path = network_->pathName(inst);
+    for (GeneratedClock *generated_clock : lib_cell->generatedClocks()) {
+
+      // Name is hierarchy path + clock pin name
+      const char *name = stringPrintTmp("%s/%s", inst_path, generated_clock->clockPin());
+
+      // 2. Get clock pin
+      LibertyPort *clk_port = lib_cell->findLibertyPort(generated_clock->clockPin());
+      Pin *clk_pin = network_->findPin(inst, reinterpret_cast<Port*>(clk_port));
+      PinSet *pins = new PinSet;
+      pins->insert(clk_pin);
+
+      // 3. Get source pin
+      LibertyPort *master_port = lib_cell->findLibertyPort(generated_clock->masterPin());
+      Pin *src_pin = network_->findPin(inst, reinterpret_cast<Port*>(master_port));
+
+      // 4. Find master clock (REQUIRES SDC ACCESS)
+      ClockSet *master_clks = network_->sdc()->findClocks(src_pin);
+      Clock *master_clk = nullptr;
+      if (master_clks && !master_clks->empty()) {
+        master_clk = *master_clks->begin();
+      }
+
+    }
   }
 }
 
