@@ -53,12 +53,10 @@ using std::max;
 static PropertyValue
 propertyUnknown(const char *type,
                 const string &property,
-                Sta *sta,
-                bool quiet)
+                Sta *sta)
 {
-  if (!quiet)
-    sta->report()->warn(9000, "%s objects do not have a %s property.",
-                        type, property.c_str());
+  sta->report()->warn(9000, "%s objects do not have a %s property.",
+                      type, property.c_str());
   return PropertyValue();
 }
 
@@ -616,8 +614,7 @@ Properties::Properties(Sta *sta) :
 
 PropertyValue
 Properties::getProperty(const Library *lib,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   Network *network = sta_->cmdNetwork();
   if (property == "name"
@@ -628,7 +625,7 @@ Properties::getProperty(const Library *lib,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("library", property, sta_, quiet);
+      return propertyUnknown("library", property, sta_);
   }
 }
 
@@ -636,8 +633,7 @@ Properties::getProperty(const Library *lib,
 
 PropertyValue
 Properties::getProperty(const LibertyLibrary *lib,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "name"
       || property == "full_name")
@@ -649,7 +645,7 @@ Properties::getProperty(const LibertyLibrary *lib,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("liberty library", property, sta_, quiet);
+      return propertyUnknown("liberty library", property, sta_);
   }
 }
 
@@ -657,8 +653,7 @@ Properties::getProperty(const LibertyLibrary *lib,
 
 PropertyValue
 Properties::getProperty(const Cell *cell,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   Network *network = sta_->cmdNetwork();
   if (property == "name"
@@ -680,7 +675,7 @@ Properties::getProperty(const Cell *cell,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("cell", property, sta_, quiet);
+      return propertyUnknown("cell", property, sta_);
   }
 }
 
@@ -688,8 +683,7 @@ Properties::getProperty(const Cell *cell,
 
 PropertyValue
 Properties::getProperty(const LibertyCell *cell,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "name"
       || property == "base_name")
@@ -731,7 +725,7 @@ Properties::getProperty(const LibertyCell *cell,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("liberty cell", property, sta_, quiet);
+      return propertyUnknown("liberty cell", property, sta_);
   }
 }
 
@@ -739,8 +733,7 @@ Properties::getProperty(const LibertyCell *cell,
 
 PropertyValue
 Properties::getProperty(const Port *port,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   Network *network = sta_->cmdNetwork();
   if (property == "name"
@@ -818,7 +811,7 @@ Properties::getProperty(const Port *port,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("port", property, sta_, quiet);
+      return propertyUnknown("port", property, sta_);
   }
 }
 
@@ -868,8 +861,7 @@ Properties::portSlack(const Port *port,
 
 PropertyValue
 Properties::getProperty(const LibertyPort *port,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "name")
     return PropertyValue(port->name());
@@ -948,7 +940,7 @@ Properties::getProperty(const LibertyPort *port,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("liberty port", property, sta_, quiet);
+      return propertyUnknown("liberty port", property, sta_);
    }
 }
 
@@ -956,8 +948,7 @@ Properties::getProperty(const LibertyPort *port,
 
 PropertyValue
 Properties::getProperty(const Instance *inst,
-                        const string property,
-                        bool quiet)
+                        const string property)
 {
   Network *network = sta_->ensureLinked();
   LibertyCell *liberty_cell = network->libertyCell(inst);
@@ -990,7 +981,7 @@ Properties::getProperty(const Instance *inst,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("instance", property, sta_, quiet);
+      return propertyUnknown("instance", property, sta_);
   }
 }
 
@@ -998,8 +989,7 @@ Properties::getProperty(const Instance *inst,
 
 PropertyValue
 Properties::getProperty(const Pin *pin,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   Network *network = sta_->ensureLinked();
   if (property == "name"
@@ -1082,7 +1072,7 @@ Properties::getProperty(const Pin *pin,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("pin", property, sta_, quiet);
+      return propertyUnknown("pin", property, sta_);
   }
 }
 
@@ -1159,8 +1149,7 @@ Properties::pinSlew(const Pin *pin,
 
 PropertyValue
 Properties::getProperty(const Net *net,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   Network *network = sta_->ensureLinked();
   if (property == "name")
@@ -1172,7 +1161,7 @@ Properties::getProperty(const Net *net,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("net", property, sta_, quiet);
+      return propertyUnknown("net", property, sta_);
   }
 }
 
@@ -1180,8 +1169,7 @@ Properties::getProperty(const Net *net,
 
 PropertyValue
 Properties::getProperty(Edge *edge,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "full_name") {
     string full_name = edge->to_string(sta_);
@@ -1202,7 +1190,7 @@ Properties::getProperty(Edge *edge,
   else if (property == "to_pin")
     return PropertyValue(edge->to(sta_->graph())->pin());
   else
-      return propertyUnknown("edge", property, sta_, quiet);
+      return propertyUnknown("edge", property, sta_);
 }
 
 PropertyValue
@@ -1234,8 +1222,7 @@ Properties::edgeDelay(Edge *edge,
 
 PropertyValue
 Properties::getProperty(TimingArcSet *arc_set,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "name"
       || property == "full_name") {
@@ -1251,15 +1238,14 @@ Properties::getProperty(TimingArcSet *arc_set,
     }
   }
   else
-    return propertyUnknown("timing arc", property, sta_, quiet);
+    return propertyUnknown("timing arc", property, sta_);
 }
 
 ////////////////////////////////////////////////////////////////
 
 PropertyValue
 Properties::getProperty(const Clock *clk,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "name"
       || property == "full_name")
@@ -1279,7 +1265,7 @@ Properties::getProperty(const Clock *clk,
     if (value.type() != PropertyValue::Type::type_none)
       return value;
     else
-      return propertyUnknown("clock", property, sta_, quiet);
+      return propertyUnknown("clock", property, sta_);
   }
 }
 
@@ -1287,8 +1273,7 @@ Properties::getProperty(const Clock *clk,
 
 PropertyValue
 Properties::getProperty(PathEnd *end,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "startpoint") {
     PathExpanded expanded(end->path(), sta_);
@@ -1326,13 +1311,12 @@ Properties::getProperty(PathEnd *end,
     return PropertyValue(&paths);
   }
   else
-    return propertyUnknown("path end", property, sta_, quiet);
+    return propertyUnknown("path end", property, sta_);
 }
 
 PropertyValue
 Properties::getProperty(Path *path,
-                        const std::string property,
-                        bool quiet)
+                        const std::string property)
 {
   if (property == "pin")
     return PropertyValue(path->pin(sta_));
@@ -1343,7 +1327,7 @@ Properties::getProperty(Path *path,
   else if (property == "slack")
     return PropertyValue(delayPropertyValue(path->slack(sta_)));
   else
-    return propertyUnknown("path", property, sta_, quiet);
+    return propertyUnknown("path", property, sta_);
 }
 
 PropertyValue

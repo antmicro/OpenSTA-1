@@ -32,8 +32,7 @@ proc get_property { args } {
 }
 
 proc get_property_cmd { cmd type_key cmd_args } {
-  parse_key_args $cmd cmd_args keys $type_key flags {-quiet}
-  set quiet [info exists flags(-quiet)]
+  parse_key_args $cmd cmd_args keys $type_key flags {}
   check_argc_eq2 $cmd $cmd_args
   set object [lindex $cmd_args 0]
   set prop [lindex $cmd_args 1]
@@ -51,55 +50,51 @@ proc get_property_cmd { cmd type_key cmd_args } {
     } else {
       sta_error 2201 "get_property -object_type must be specified with object name argument."
     }
-    set object [get_property_object_type $object_type $object $quiet]
+    set object [get_property_object_type $object_type $object]
   }
-  return [get_object_property $object $prop $quiet]
+  return [get_object_property $object $prop]
 }
 
-proc get_object_property { object prop {quiet 0} {warn 0} } {
+proc get_object_property { object prop } {
   if { [is_object $object] } {
     set object_type [object_type $object]
     if { $object_type == "Instance" } {
-      return [instance_property $object $prop $quiet]
+      return [instance_property $object $prop]
     } elseif { $object_type == "Pin" } {
-      return [pin_property $object $prop $quiet]
+      return [pin_property $object $prop]
     } elseif { $object_type == "Net" } {
-      return [net_property $object $prop $quiet]
+      return [net_property $object $prop]
     } elseif { $object_type == "Clock" } {
-      return [clock_property $object $prop $quiet]
+      return [clock_property $object $prop]
     } elseif { $object_type == "Port" } {
-      return [port_property $object $prop $quiet]
+      return [port_property $object $prop]
     } elseif { $object_type == "LibertyPort" } {
-      return [liberty_port_property $object $prop $quiet]
+      return [liberty_port_property $object $prop]
     } elseif { $object_type == "LibertyCell" } {
-      return [liberty_cell_property $object $prop $quiet]
+      return [liberty_cell_property $object $prop]
     } elseif { $object_type == "Cell" } {
-      return [cell_property $object $prop $quiet]
+      return [cell_property $object $prop]
     } elseif { $object_type == "Library" } {
-      return [library_property $object $prop $quiet]
+      return [library_property $object $prop]
     } elseif { $object_type == "LibertyLibrary" } {
-      return [liberty_library_property $object $prop $quiet]
+      return [liberty_library_property $object $prop]
     } elseif { $object_type == "Edge" } {
-      return [edge_property $object $prop $quiet]
+      return [edge_property $object $prop]
     } elseif { $object_type == "PathEnd" } {
-      return [path_end_property $object $prop $quiet]
+      return [path_end_property $object $prop]
     } elseif { $object_type == "Path" } {
-      return [path_property $object $prop $quiet]
+      return [path_property $object $prop]
     } elseif { $object_type == "TimingArcSet" } {
-      return [timing_arc_property $object $prop $quiet]
+      return [timing_arc_property $object $prop]
     } else {
       sta_error 2203 "get_property unsupported object type $object_type."
     }
   } else {
-    if { $warn } {
-      sta_warn 2204 "get_property $object is not an object."
-    } else {
-      sta_error 2204 "get_property $object is not an object."
-    }
+    sta_error 2204 "get_property $object is not an object."
   }
 }
 
-proc get_property_object_type { object_type object_name quiet } {
+proc get_property_object_type { object_type object_name } {
   set object "NULL"
   if { $object_type == "instance" \
        || $object_type == "cell"} {
@@ -124,7 +119,7 @@ proc get_property_object_type { object_type object_name quiet } {
   } else {
     sta_error 2205 "$object_type not supported."
   }
-  if { $object == "NULL" && !$quiet } {
+  if { $object == "NULL" } {
     sta_error 2206 "$object_type '$object_name' not found."
   }
   return [lindex $object 0]

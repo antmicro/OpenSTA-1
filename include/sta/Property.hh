@@ -64,47 +64,33 @@ public:
   virtual ~Properties() {}
 
   PropertyValue getProperty(const Library *lib,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const LibertyLibrary *lib,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const Cell *cell,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const LibertyCell *cell,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const Port *port,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const LibertyPort *port,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const Instance *inst,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const Pin *pin,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const Net *net,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(Edge *edge,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(const Clock *clk,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(PathEnd *end,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(Path *path,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
   PropertyValue getProperty(TimingArcSet *arc_set,
-                            const std::string property,
-                            bool quiet);
+                            const std::string property);
 
   // Define handler for external property.
   // properties->defineProperty("foo",
