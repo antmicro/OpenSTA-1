@@ -810,7 +810,7 @@ Sta::linkDesign(const char *top_cell_name,
   bool status = network_->linkNetwork(top_cell_name,
 				      make_black_boxes,
 				      report_);
-  createLibertyGeneratedClocks();
+  createLibertyGeneratedClocks(); // TODO remove and create clocks while linking
 
   stats.report("Link");
   return status;
