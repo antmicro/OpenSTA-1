@@ -759,6 +759,48 @@ Sta::readNetlistBefore()
     network_reader->readNetlistBefore();
 }
 
+void
+Sta::createLibertyGeneratedClocks() {
+  LeafInstanceIterator *iter = network_->leafInstanceIterator();
+  while (iter->hasNext()) {
+    Instance *inst = iter->next();
+    LibertyCell *lib_cell = network_->libertyCell(inst);
+    
+    if (lib_cell) {
+      const GeneratedClockSeq &gen_clks = lib_cell->generatedClocks();
+      for (GeneratedClock *gen_clk : gen_clks) {
+        // clock_pin is the OUTPUT pin where generated clock appears
+        Pin *clock_pin = network_->findPin(inst, gen_clk->clockPin());
+        // master_pin is the INPUT pin where master clock enters
+        Pin *master_pin = network_->findPin(inst, gen_clk->masterPin());
+
+        // Add the output pin to the pin set
+        PinSet *pins = new PinSet();
+        pins->insert(clock_pin);
+        
+        // Find the master clock on the input pin
+        Clock *master_clk = sdc_->findClock(gen_clk->masterPin());
+        sdc_->makeGeneratedClock(
+          gen_clk->name(),
+          pins,
+          true,
+          master_pin,
+          master_clk,
+          gen_clk->dividedBy(),
+          gen_clk->multipliedBy(),
+          gen_clk->dutyCycle(),
+          gen_clk->invert(),
+          false,
+          gen_clk->edges(),
+          gen_clk->edgeShifts(),
+          nullptr
+        );
+      }
+    }
+  }
+  delete iter;
+}
+
 bool
 Sta::linkDesign(const char *top_cell_name,
                 bool make_black_boxes)
@@ -768,22 +810,7 @@ Sta::linkDesign(const char *top_cell_name,
   bool status = network_->linkNetwork(top_cell_name,
 				      make_black_boxes,
 				      report_);
-
-  if (status) {
-    LeafInstanceIterator *iter = network_->leafInstanceIterator();
-    while (iter->hasNext()) {
-      Instance *inst = iter->next();
-      LibertyCell *lib_cell = network_->libertyCell(inst);
-      
-      if (lib_cell) {
-        const GeneratedClockSeq &gen_clks = lib_cell->generatedClocks();
-        for (GeneratedClock *gen_clk : gen_clks) {
-          printf("[LINK] Generated Clock name: %s\n", gen_clk->name());
-        }
-      }
-    }
-    delete iter;
-  }
+  createLibertyGeneratedClocks();
 
   stats.report("Link");
   return status;

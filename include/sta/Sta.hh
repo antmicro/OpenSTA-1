@@ -284,6 +284,7 @@ public:
 		 FloatSeq *waveform,
 		 char *comment);
   // edges size must be 3.
+  void createLibertyGeneratedClocks();
   void makeGeneratedClock(const char *name,
 			  PinSet *pins,
 			  bool add_to_pins,
