@@ -32,7 +32,8 @@ proc get_property { args } {
 }
 
 proc get_property_cmd { cmd type_key cmd_args } {
-  parse_key_args $cmd cmd_args keys $type_key flags {}
+  parse_key_args $cmd cmd_args keys $type_key flags {-quiet}
+  set quiet [info exists flags(-quiet)]
   check_argc_eq2 $cmd $cmd_args
   set object [lindex $cmd_args 0]
   set prop [lindex $cmd_args 1]
@@ -50,7 +51,7 @@ proc get_property_cmd { cmd type_key cmd_args } {
     } else {
       sta_error 2201 "get_property -object_type must be specified with object name argument."
     }
-    set object [get_property_object_type $object_type $object]
+    set object [get_property_object_type $object_type $object $quiet]
   }
   return [get_object_property $object $prop]
 }
@@ -90,7 +91,7 @@ proc get_object_property { object prop } {
       sta_error 2203 "get_property unsupported object type $object_type."
     }
   } else {
-    # No object on get_object_name, supress error
+    # No object on get_object_name, suppress error
     if {$prop == "full_name"} {
       sta_warn 2204 "get_property $object is not an object."
     } else {
@@ -99,7 +100,7 @@ proc get_object_property { object prop } {
   }
 }
 
-proc get_property_object_type { object_type object_name } {
+proc get_property_object_type { object_type object_name quiet } {
   set object "NULL"
   if { $object_type == "instance" \
        || $object_type == "cell"} {
@@ -124,7 +125,7 @@ proc get_property_object_type { object_type object_name } {
   } else {
     sta_error 2205 "$object_type not supported."
   }
-  if { $object == "NULL" } {
+  if { $object == "NULL" && !$quiet } {
     sta_error 2206 "$object_type '$object_name' not found."
   }
   return [lindex $object 0]
