@@ -282,7 +282,7 @@ proc get_full_name { object } {
     }
     return $full_names
   }
-  return [get_object_property $object "full_name" 0 1]
+  return [get_object_property $object "full_name"]
 }
 
 proc sort_by_name { objects } {
