@@ -24,6 +24,11 @@ library (generated_clock) {
       master_pin : CLK_IN;
       divided_by : 2;
     }
+    generated_clock (gen_clk_unseen) {
+      clock_pin : CLK_OUT_DIV;
+      master_pin : CLK_IN;
+      multiplied_by : 2
+    }
     timing () {
       related_pin : CLK_IN;
       timing_type : rising_edge;
