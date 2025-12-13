@@ -11,4 +11,3 @@ puts [get_object_name [get_clocks]]
 foreach_in_collection clk [get_clocks] {
   puts "[get_object_name $clk] period: [get_attribute $clk period]"
 }
-

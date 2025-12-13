@@ -10,7 +10,7 @@ library (generated_clock) {
   slew_lower_threshold_pct_fall : 30;
   slew_upper_threshold_pct_rise : 70;
   slew_upper_threshold_pct_fall : 70;
-  cell (CLK_DIV_BY_2) {
+  cell (CLK_GEN) {
     area : 10.0;
     pin (CLK_IN) {
       direction : input;
@@ -19,15 +19,18 @@ library (generated_clock) {
     pin (CLK_OUT_DIV2) {
       direction : output;
     }
-    generated_clock (gen_clk_out) {
+    pin (CLK_OUT_MUL2) {
+      direction : output;
+    }
+    generated_clock (gen_clk_div2) {
       clock_pin : CLK_OUT_DIV2;
       master_pin : CLK_IN;
       divided_by : 2;
     }
-    generated_clock (gen_clk_unseen) {
-      clock_pin : CLK_OUT_DIV;
+    generated_clock (gen_clk_mul2) {
+      clock_pin : CLK_OUT_MUL2;
       master_pin : CLK_IN;
-      multiplied_by : 2
+      multiplied_by : 2;
     }
     timing () {
       related_pin : CLK_IN;
