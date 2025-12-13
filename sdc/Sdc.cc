@@ -1020,38 +1020,7 @@ Sdc::maxLeakagePower() const
 
 ////////////////////////////////////////////////////////////////
 
-Clock *
-Sdc::makeClock(const char *name,
-	       PinSet *pins,
-	       bool add_to_pins,
-	       float period,
-	       FloatSeq *waveform,
-	       const char *comment)
-{
-  Clock *clk = clock_name_map_.findKey(name);
-  if (!add_to_pins)
-    deletePinClocks(clk, pins);
-  if (clk)
-    // Named clock redefinition.
-    deleteClkPinMappings(clk);
-  else {
-    // Fresh clock definition.
-    clk = new Clock(name, clk_index_++, network_);
-    clk->setIsPropagated(variables_->propagateAllClocks());
-    clocks_.push_back(clk);
-    // Use the copied name in the map.
-    clock_name_map_[clk->name()] = clk;
-  }
-  clk->initClk(pins, add_to_pins, period, waveform, comment, network_);
-  makeClkPinMappings(clk);
-  clearCycleAcctings();
-  invalidateGeneratedClks();
-  clkHpinDisablesInvalid();
-
-
-
-
-
+void Sdc::createLibertyGeneratedClocks(Clock *clk) {
   // Leaves of the clock network
   const PinSet &leaf_pins = clk->leafPins();
   PinSet::ConstIterator leaf_iter(leaf_pins);
@@ -1109,6 +1078,36 @@ Sdc::makeClock(const char *name,
     }
     delete leaf_iter;
   }
+}
+
+Clock *
+Sdc::makeClock(const char *name,
+	       PinSet *pins,
+	       bool add_to_pins,
+	       float period,
+	       FloatSeq *waveform,
+	       const char *comment)
+{
+  Clock *clk = clock_name_map_.findKey(name);
+  if (!add_to_pins)
+    deletePinClocks(clk, pins);
+  if (clk)
+    // Named clock redefinition.
+    deleteClkPinMappings(clk);
+  else {
+    // Fresh clock definition.
+    clk = new Clock(name, clk_index_++, network_);
+    clk->setIsPropagated(variables_->propagateAllClocks());
+    clocks_.push_back(clk);
+    // Use the copied name in the map.
+    clock_name_map_[clk->name()] = clk;
+  }
+  clk->initClk(pins, add_to_pins, period, waveform, comment, network_);
+  makeClkPinMappings(clk);
+  clearCycleAcctings();
+  invalidateGeneratedClks();
+  clkHpinDisablesInvalid();
+  createLibertyGeneratedClocks(clk);
   return clk;
 }
 
@@ -1147,6 +1146,7 @@ Sdc::makeGeneratedClock(const char *name,
   clearCycleAcctings();
   invalidateGeneratedClks();
   clkHpinDisablesInvalid();
+  createLibertyGeneratedClocks(clk);
   return clk;
 }
 
