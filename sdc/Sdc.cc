@@ -48,6 +48,7 @@
 #include "PortDelay.hh"
 #include "ExceptionPath.hh"
 #include "PortExtCap.hh"
+#include "Sta.hh"
 #include "DisabledPorts.hh"
 #include "InputDrive.hh"
 #include "DataCheck.hh"
@@ -1080,9 +1081,11 @@ Sdc::makeClock(const char *name,
           // if the leaf pin of the clock network matches the hierarichal path of the master pin of the liberty cell, create the generated clock
           if (strcmp(compare_path, network_->pathName(leaf_pin)) == 0) {
 
+            const char *generated_clock_name = stringPrintTmp("%s/%s", inst_path, generated_clock->name());
+
             // Create
-            Clock *generated_clk = makeGeneratedClock(
-              generated_clock->name(),
+            makeGeneratedClock(
+              generated_clock_name,
               nullptr, 
               false,
               leaf_pin,
@@ -1096,9 +1099,9 @@ Sdc::makeClock(const char *name,
               generated_clock->edgeShifts(),
               nullptr);
 
-            if (clk && clk->waveformValid()) {
-              generated_clk->generate(clk);
-            }
+            // Trigger update of generated clocks immediately
+            Sta::sta()->setUpdateGenclks();
+            Sta::sta()->updateGeneratedClks();
 
           }
         }
@@ -1106,7 +1109,6 @@ Sdc::makeClock(const char *name,
     }
     delete leaf_iter;
   }
-
   return clk;
 }
 
