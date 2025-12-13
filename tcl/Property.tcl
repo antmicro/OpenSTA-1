@@ -91,7 +91,12 @@ proc get_object_property { object prop } {
       sta_error 2203 "get_property unsupported object type $object_type."
     }
   } else {
-    sta_error 2204 "get_property $object is not an object."
+    # No object on get_object_name, suppress error
+    if {$prop == "full_name"} {
+      sta_warn 2204 "get_property $object is not an object."
+    } else {
+      sta_error 2204 "get_property $object is not an object."
+    }
   }
 }
 

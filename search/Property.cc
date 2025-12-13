@@ -49,43 +49,6 @@ namespace sta {
 using std::string;
 using std::max;
 
-class PropertyUnknown : public Exception
-{
-public:
-  PropertyUnknown(const char *type,
-		  const char *property);
-  PropertyUnknown(const char *type,
-		  const string property);
-  virtual ~PropertyUnknown() {}
-  virtual const char *what() const noexcept;
-
-private:
-  const char *type_;
-  const string property_;
-};
-
-PropertyUnknown::PropertyUnknown(const char *type,
-				 const char *property) :
-  Exception(),
-  type_(type),
-  property_(property)
-{
-}
-
-PropertyUnknown::PropertyUnknown(const char *type,
-				 const string property) :
-  Exception(),
-  type_(type),
-  property_(property)
-{
-}
-
-const char *
-PropertyUnknown::what() const noexcept
-{
-  return stringPrint("%s objects do not have a %s property.",
-		     type_, property_.c_str());
-}
 
 ////////////////////////////////////////////////////////////////
 
@@ -648,12 +611,14 @@ Properties::getProperty(const Library *lib,
       || property == "full_name")
     return PropertyValue(network->name(lib));
   else {
-    PropertyValue value = registry_library_.getProperty(lib, property,
-                                                        "library", sta_);
+    PropertyValue value = registry_library_.getProperty(lib, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("library", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "library", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -669,13 +634,14 @@ Properties::getProperty(const LibertyLibrary *lib,
   else if (property == "filename")
     return PropertyValue(lib->filename());
   else {
-    PropertyValue value = registry_liberty_library_.getProperty(lib, property,
-                                                                "liberty_library",
-                                                                sta_);
+    PropertyValue value = registry_liberty_library_.getProperty(lib, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("liberty library", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "liberty library", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -701,12 +667,14 @@ Properties::getProperty(const Cell *cell,
   else if (property == "filename")
     return PropertyValue(network->filename(cell));
   else {
-    PropertyValue value = registry_cell_.getProperty(cell, property,
-                                                     "cell", sta_);
+    PropertyValue value = registry_cell_.getProperty(cell, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("cell", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "cell", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -752,12 +720,14 @@ Properties::getProperty(const LibertyCell *cell,
   else if (property == "area")
     return PropertyValue(cell->area(), sta_->units()->scalarUnit());
   else {
-    PropertyValue value = registry_liberty_cell_.getProperty(cell, property,
-                                                             "liberty_cell", sta_);
+    PropertyValue value = registry_liberty_cell_.getProperty(cell, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("liberty cell", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "liberty cell", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -839,12 +809,14 @@ Properties::getProperty(const Port *port,
     return portSlew(port, RiseFall::fall(), MinMax::min());
 
   else {
-    PropertyValue value = registry_port_.getProperty(port, property,
-                                                     "port", sta_);
+    PropertyValue value = registry_port_.getProperty(port, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("port", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "port", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -968,14 +940,16 @@ Properties::getProperty(const LibertyPort *port,
                                           MinMax::max(), sta_);
     return delayPropertyValue(delay);
   }
-   else {
-    PropertyValue value = registry_liberty_port_.getProperty(port, property,
-                                                             "liberty_port", sta_);
+  else {
+    PropertyValue value = registry_liberty_port_.getProperty(port, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("liberty port", property);
-   }
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "liberty port", property.c_str());
+      return PropertyValue();
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1011,12 +985,14 @@ Properties::getProperty(const Instance *inst,
   else if (property == "design_type")
     return PropertyValue(liberty_cell ? liberty_cell->getDesignType() : "module");
   else {
-    PropertyValue value = registry_instance_.getProperty(inst, property,
-                                                         "instance", sta_);
+    PropertyValue value = registry_instance_.getProperty(inst, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("instance", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "instance", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -1103,11 +1079,14 @@ Properties::getProperty(const Pin *pin,
     return pinSlew(pin, RiseFall::fall(), MinMax::min());
 
   else {
-    PropertyValue value = registry_pin_.getProperty(pin, property, "pin", sta_);
+    PropertyValue value = registry_pin_.getProperty(pin, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("pin", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "pin", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -1192,11 +1171,14 @@ Properties::getProperty(const Net *net,
   else if (property == "full_name")
     return PropertyValue(network->pathName(net));
   else {
-    PropertyValue value = registry_net_.getProperty(net, property, "net", sta_);
+    PropertyValue value = registry_net_.getProperty(net, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("net", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "net", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -1224,8 +1206,11 @@ Properties::getProperty(Edge *edge,
     return PropertyValue(edge->from(sta_->graph())->pin());
   else if (property == "to_pin")
     return PropertyValue(edge->to(sta_->graph())->pin());
-  else
-      throw PropertyUnknown("edge", property);
+  else {
+    sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                        "edge", property.c_str());
+    return PropertyValue();
+  }
 }
 
 PropertyValue
@@ -1272,8 +1257,11 @@ Properties::getProperty(TimingArcSet *arc_set,
       return PropertyValue(name);
     }
   }
-  else
-    throw PropertyUnknown("timing arc", property);
+  else {
+    sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                        "timing arc", property.c_str());
+    return PropertyValue();
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1296,12 +1284,14 @@ Properties::getProperty(const Clock *clk,
   else if (property == "is_propagated")
     return PropertyValue(clk->isPropagated());
   else {
-    PropertyValue value = registry_clock_.getProperty(clk, property,
-                                                      "clock", sta_);
+    PropertyValue value = registry_clock_.getProperty(clk, property, sta_);
     if (value.type() != PropertyValue::Type::type_none)
       return value;
-    else
-      throw PropertyUnknown("clock", property);
+    else {
+      sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                          "clock", property.c_str());
+      return PropertyValue();
+    }
   }
 }
 
@@ -1346,8 +1336,11 @@ Properties::getProperty(PathEnd *end,
     }
     return PropertyValue(&paths);
   }
-  else
-    throw PropertyUnknown("path end", property);
+  else {
+    sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                        "path end", property.c_str());
+    return PropertyValue();
+  }
 }
 
 PropertyValue
@@ -1362,8 +1355,11 @@ Properties::getProperty(Path *path,
     return PropertyValue(delayPropertyValue(path->required()));
   else if (property == "slack")
     return PropertyValue(delayPropertyValue(path->slack(sta_)));
-  else
-    throw PropertyUnknown("path", property);
+  else {
+    sta_->report()->warn(9000, "%s objects do not have a %s property.",
+                        "path", property.c_str());
+    return PropertyValue();
+  }
 }
 
 PropertyValue
@@ -1462,7 +1458,6 @@ template<class TYPE>
 PropertyValue
 PropertyRegistry<TYPE>::getProperty(TYPE object,
                                     const std::string &property,
-                                    const char *type_name,
                                     Sta *sta)
 
 {
@@ -1470,7 +1465,7 @@ PropertyRegistry<TYPE>::getProperty(TYPE object,
   if (itr != registry_.end())
     return itr->second(object, sta);
   else
-    throw PropertyUnknown(type_name, property);
+    return PropertyValue();
 }
 
 template<class TYPE>

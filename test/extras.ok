@@ -6,3 +6,106 @@ Warning: extras.tcl line 11, time scale 1e-12 does not match library scale 1e-09
 Warning: extras.tcl line 11, capacitance scale 1e-15 does not match library scale 1e-12.
 Clock period: 10.000000
 Clock period: 10.000000
+dummy is empty
+Warning: clock objects do not have a dummy property.
+
+Warning: extras.tcl line 30, clock '*_x4*' not found.
+Warning: extras.tcl line 30, get_property  is not an object.
+clk_x4 clk_x41
+Startpoint: req_val (input port clocked by clk)
+Endpoint: _413_ (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+  Delay    Time   Description
+---------------------------------------------------------
+   0.00    0.00   clock clk (rise edge)
+   0.00    0.00   clock network delay (ideal)
+ 100.00  100.00 v input external delay
+   0.00  100.00 v req_val (in)
+  40.32  140.32 ^ _282_/Y (sky130_fd_sc_hd__nand2_1)
+  62.06  202.38 v _283_/Y (sky130_fd_sc_hd__o22ai_1)
+   0.00  202.38 v _413_/D (sky130_fd_sc_hd__dfxtp_4)
+         202.38   data arrival time
+
+  10.00   10.00   clock clk (rise edge)
+   0.00   10.00   clock network delay (ideal)
+   0.00   10.00   clock reconvergence pessimism
+          10.00 ^ _413_/CLK (sky130_fd_sc_hd__dfxtp_4)
+-127.76 -117.76   library setup time
+        -117.76   data required time
+---------------------------------------------------------
+        -117.76   data required time
+        -202.38   data arrival time
+---------------------------------------------------------
+        -320.14   slack (VIOLATED)
+
+
+Startpoint: req_val (input port)
+Endpoint: _413_ (rising edge-triggered flip-flop)
+Path Group: unconstrained
+Path Type: max
+
+  Delay    Time   Description
+---------------------------------------------------------
+   0.00    0.00 ^ input external delay
+   0.00    0.00 ^ req_val (in)
+  31.62   31.62 v _282_/Y (sky130_fd_sc_hd__nand2_1)
+ 110.64  142.27 ^ _283_/Y (sky130_fd_sc_hd__o22ai_1)
+   0.00  142.27 ^ _413_/D (sky130_fd_sc_hd__dfxtp_4)
+         142.27   data arrival time
+---------------------------------------------------------
+(Path is unconstrained)
+
+
+Startpoint: req_val (input port clocked by clk)
+Endpoint: _413_ (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+  Delay    Time   Description
+---------------------------------------------------------
+   0.00    0.00   clock clk (rise edge)
+   0.00    0.00   clock network delay (ideal)
+ 100.00  100.00 v input external delay
+   0.00  100.00 v req_val (in)
+  40.32  140.32 ^ _282_/Y (sky130_fd_sc_hd__nand2_1)
+  62.06  202.38 v _283_/Y (sky130_fd_sc_hd__o22ai_1)
+   0.00  202.38 v _413_/D (sky130_fd_sc_hd__dfxtp_4)
+         202.38   data arrival time
+
+  10.00   10.00   clock clk (rise edge)
+   0.00   10.00   clock network delay (ideal)
+   0.00   10.00   clock reconvergence pessimism
+          10.00 ^ _413_/CLK (sky130_fd_sc_hd__dfxtp_4)
+-127.76 -117.76   library setup time
+        -117.76   data required time
+---------------------------------------------------------
+        -117.76   data required time
+        -202.38   data arrival time
+---------------------------------------------------------
+        -320.14   slack (VIOLATED)
+
+
+Startpoint: req_val (input port)
+Endpoint: _413_ (rising edge-triggered flip-flop)
+Path Group: unconstrained
+Path Type: max
+
+  Delay    Time   Description
+---------------------------------------------------------
+   0.00    0.00 ^ input external delay
+   0.00    0.00 ^ req_val (in)
+  31.62   31.62 v _282_/Y (sky130_fd_sc_hd__nand2_1)
+ 110.64  142.27 ^ _283_/Y (sky130_fd_sc_hd__o22ai_1)
+   0.00  142.27 ^ _413_/D (sky130_fd_sc_hd__dfxtp_4)
+         142.27   data arrival time
+---------------------------------------------------------
+(Path is unconstrained)
+
+
+Warning: extras.tcl line 56, pin 'clk_x41' not found.
+
+
+
+No paths found.

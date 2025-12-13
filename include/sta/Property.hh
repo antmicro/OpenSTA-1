@@ -51,7 +51,6 @@ public:
                       PropertyHandler handler);
   PropertyValue getProperty(TYPE object,
                             const std::string &property,
-                            const char *type_name,
                             Sta *sta);
 
 private:

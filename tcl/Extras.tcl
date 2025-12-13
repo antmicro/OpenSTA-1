@@ -93,6 +93,49 @@ interp alias {} get_object_name {} get_full_name
 # Query objects (ignore/to be implemented)
 interp alias {} query_objects {} return -level 0
 
+# remove/reset aliases for "unset" commands in sdc.tcl
+interp alias {} remove_output_delay {} unset_output_delay
+interp alias {} reset_output_delay {} unset_output_delay
+
+interp alias {} remove_input_delay {} unset_input_delay
+interp alias {} reset_input_delay {} unset_input_delay
+
+interp alias {} remove_propagated_clock {} unset_propagated_clock
+interp alias {} reset_propagated_clock {} unset_propagated_clock
+
+interp alias {} remove_clock_groups {} unset_clock_groups
+interp alias {} reset_clock_groups {} unset_clock_groups
+
+interp alias {} remove_case_analysis {} unset_case_analysis
+interp alias {} reset_case_analysis {} unset_case_analysis
+
+interp alias {} remove_timing_derate {} unset_timing_derate
+interp alias {} reset_timing_derate {} unset_timing_derate
+
+interp alias {} remove_path_exceptions {} unset_path_exceptions
+interp alias {} reset_path_exceptions {} unset_path_exceptions
+
+interp alias {} remove_data_check {} unset_data_check
+interp alias {} reset_data_check {} unset_data_check
+
+interp alias {} remove_clock_transition {} unset_clock_transition
+interp alias {} reset_clock_transition {} unset_clock_transition
+
+interp alias {} remove_clock_uncertainty {} unset_clock_uncertainty
+interp alias {} reset_clock_uncertainty {} unset_clock_uncertainty
+
+interp alias {} remove_clock_latency {} unset_clock_latency
+interp alias {} reset_clock_latency {} unset_clock_latency
+
+interp alias {} remove_disable_timing {} unset_disable_timing
+interp alias {} reset_disable_timing {} unset_disable_timing
+
+interp alias {} remove_disable_timing_cell {} unset_disable_timing_cell
+interp alias {} reset_disable_timing_cell {} unset_disable_timing_cell
+
+interp alias {} remove_disable_timing_instance {} unset_disable_timing_instance
+interp alias {} reset_disable_timing_instance {} unset_disable_timing_instance
+
 # Get DB (only program_short_name supported for now)
 proc get_db { attr } {
   if { $attr == "program_short_name" } {
@@ -103,16 +146,33 @@ proc get_db { attr } {
 }
 
 # Get attribute
-sta::define_cmd_args "get_attribute" {arg1 arg2}
+sta::define_cmd_args "get_attribute" {args}
 
-proc get_attribute {arg1 arg2} {
+proc get_attribute {args} {
+  sta::parse_key_args "get_attribute" args keys {} flags {-quiet}
+  set quiet [info exists flags(-quiet)]
+  set arg1 [lindex $args 0]
+  set arg2 [lindex $args 1]
+
+  # Suppress unknown property warning
+  if { $quiet } {
+    suppress_msg 9000
+  }
   if { [sta::is_object $arg1] } {
-    return [get_property $arg1 $arg2]
+    set result [get_property $arg1 $arg2]
   } elseif { [sta::is_object $arg2] } {
-    return [get_property $arg2 $arg1]
+    set result [get_property $arg2 $arg1]
   } else {
+    if { $quiet } {
+      unsuppress_msg 9000
+    }
     error "get_attribute: invalid object $arg1 or $arg2"
   }
+  # Re-enable warning after the call
+  if { $quiet } {
+    unsuppress_msg 9000
+  }
+  return $result
 }
 
 ################################################################
