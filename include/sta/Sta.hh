@@ -859,6 +859,8 @@ public:
   void setReportPathNoSplit(bool no_split);
   void setReportPathSigmas(bool report_sigmas);
   void setReportDedupByWord(bool dedup_by_word);
+  void setReportDedupSameDelay(bool dedup_same_delay);
+  void setSilimateDedupEndpointRegex(std::string_view silimate_dedup_endpoints_rx); // SILIMATE: Custom regex-based deduplication by removal of matching parts from endpoints
   // Header above reportPathEnd results.
   void reportPathEndHeader();
   // Footer below reportPathEnd results.
