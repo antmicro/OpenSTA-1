@@ -23,7 +23,7 @@
 // This notice may not be removed or altered from any source distribution.
 
 #include <algorithm>            // reverse
-
+#include <regex>                // SILIMATE: Regex-based endpoint deduplication
 #include "ReportPath.hh"
 
 #include "Report.hh"
@@ -142,6 +142,8 @@ ReportPath::ReportPath(StaState *sta) :
   StaState(sta),
   format_(ReportPathFormat::full),
   dedup_by_word_(false),
+  dedup_same_delay_(false),
+  silimate_dedup_endpoints_rx_(std::nullopt),
   no_split_(false),
   report_sigmas_(false),
   start_end_pt_width_(80),
@@ -298,6 +300,18 @@ ReportPath::setReportDedupByWord(bool dedup_by_word)
   dedup_by_word_ = dedup_by_word;
 }
 
+void
+ReportPath::setReportDedupSameDelay(bool dedup_same_delay)
+{
+  dedup_same_delay_ = dedup_same_delay;
+}
+
+void
+ReportPath::setSilimateDedupEndpointRegex(std::string_view silimate_dedup_endpoints_rx)
+{
+  silimate_dedup_endpoints_rx_ = silimate_dedup_endpoints_rx;
+}
+
 ////////////////////////////////////////////////////////////////
 
 void
@@ -339,13 +353,20 @@ ReportPath::reportPathEnd(const PathEnd *end,
   }
 }
 
+inline const char *getEndpointName(const StaState *state,
+                                   const sta::Network *sdc_network,
+                                   PathEnd *end) {
+  PathExpanded expanded(end->path(), state);
+  const Pin *end_pin = expanded.endPath()->vertex(state)->pin();
+  const char *endpoint_name = sdc_network->pathName(end_pin);
+  return endpoint_name;
+}
+
 inline std::string getBusName(const StaState *state, 
                               const sta::Network *sdc_network,
                               PathEnd *end) {
   char escape = sdc_network->pathEscape();
-  PathExpanded expanded(end->path(), state);
-  const Pin *end_pin = expanded.endPath()->vertex(state)->pin();
-  const char *endpoint_name = sdc_network->pathName(end_pin);
+  const char *endpoint_name = getEndpointName(state, sdc_network, end);
   bool is_bus;
   std::string bus_name;
   int index;
@@ -370,9 +391,24 @@ ReportPath::reportPathEnds(const PathEndSeq *ends) const
     PathEnd *prev_end = nullptr;
     PathEndSeq::ConstIterator end_iter(ends);
     
-    Set<PathEnd *> qualified_ends;
+    Set<PathEnd *> qualified_endpoints;
 
-    if (dedup_by_word_) {
+    if (silimate_dedup_endpoints_rx_.has_value()) {
+      std::regex primary_rx(*silimate_dedup_endpoints_rx_);
+      std::regex slice_rx(R"(\\?\[([0-9]+)(?::([0-9]+))?\\?\])");
+      Set<std::string> endpoints;
+      while (end_iter.hasNext()) {
+        PathEnd *end = end_iter.next();
+        auto endpoint_name = getEndpointName(this, sdc_network_, end);
+        auto endpoint_clean = std::regex_replace(endpoint_name, primary_rx, "");
+        endpoint_clean = std::regex_replace(endpoint_clean, slice_rx, "");
+        if (!endpoints.count(endpoint_clean)) {
+          qualified_endpoints.insert(end);
+          endpoints.insert(endpoint_clean);
+        }
+      }
+    }
+    else if (dedup_by_word_) {
       Map<std::string, PathEnd *> worst_slack_by_bus;
       while (end_iter.hasNext()) {
         PathEnd *end = end_iter.next();
@@ -383,18 +419,27 @@ ReportPath::reportPathEnds(const PathEndSeq *ends) const
             worst_slack_by_bus[bus_name] = end;
         }
         else
-          qualified_ends.insert(end);
+          qualified_endpoints.insert(end);
       }
       
-      for (auto &[_, end]: worst_slack_by_bus)
-        qualified_ends.insert(end);
+      for (const auto &[_, end]: worst_slack_by_bus)
+        qualified_endpoints.insert(end);
     }
+
     end_iter = ends;
+
+    // Reiterate to maintain order; also filter delays
+    Set<Delay> found_delays;
     while (end_iter.hasNext()) {
-      PathEnd *end = end_iter.next();
-      if (!dedup_by_word_ || qualified_ends.count(end)) {
-        reportPathEnd(end, prev_end);
-        prev_end = end;
+      auto end = end_iter.next();
+      auto end_delay = end->dataArrivalTime(this);
+      if (
+        (!qualified_endpoints.size() || qualified_endpoints.count(end)) &&
+        (!dedup_same_delay_ || !found_delays.count(end_delay))
+      ) {
+          reportPathEnd(end, prev_end);
+          found_delays.insert(end_delay);
+          prev_end = end;
       }
     } 
   }

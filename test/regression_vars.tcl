@@ -169,6 +169,8 @@ record_public_tests {
   lib_cell_props
   package_require
   path_group_names
+  path_dedup_same_delay
+  path_dedup_silimate
   path_dedup_worst
   pin_props
   power_json
