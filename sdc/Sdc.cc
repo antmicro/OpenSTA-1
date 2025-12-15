@@ -1021,6 +1021,10 @@ Sdc::maxLeakagePower() const
 ////////////////////////////////////////////////////////////////
 
 void Sdc::createLibertyGeneratedClocks(Clock *clk) {
+
+
+  printf("createLibertyGeneratedClocks: %s\n", clk->name());
+
   // Leaves of the clock network
   const PinSet &leaf_pins = clk->leafPins();
   PinSet::ConstIterator leaf_iter(leaf_pins);
@@ -1043,7 +1047,7 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
       Pin *leaf_pin = network_->findPin(leaf_inst, port);
 
       // Loop through potential generated clock definitions
-      if (cell && !cell->generatedClocks().empty()) {
+      if (leaf_pin &&cell && !cell->generatedClocks().empty()) {
         for (const GeneratedClock *generated_clock : cell->generatedClocks()) {
           const char *compare_path = stringPrintTmp("%s/%s", inst_path, generated_clock->masterPin());
 
@@ -1051,6 +1055,8 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
           if (strcmp(compare_path, network_->pathName(leaf_pin)) == 0) {
 
             const char *generated_clock_name = stringPrintTmp("%s/%s", inst_path, generated_clock->clockPin());
+            printf("generated_clock_name: %s\n", generated_clock_name);
+            printf("current clock name: %s\n", clk->name());
 
             // Create
             makeGeneratedClock(
@@ -1146,7 +1152,6 @@ Sdc::makeGeneratedClock(const char *name,
   clearCycleAcctings();
   invalidateGeneratedClks();
   clkHpinDisablesInvalid();
-  createLibertyGeneratedClocks(clk);
   return clk;
 }
 
