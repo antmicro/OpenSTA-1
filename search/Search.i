@@ -503,6 +503,18 @@ set_report_path_dedup_by_word(bool dedup_by_word)
 }
 
 void
+set_report_path_dedup_same_delay(bool dedup_same_delay)
+{
+  Sta::sta()->setReportDedupSameDelay(dedup_same_delay);
+}
+
+void
+set_report_path_silimate_dedup_endpoints_rx(const char *silimate_dedup_endpoints_rx)
+{
+  Sta::sta()->setSilimateDedupEndpointRegex(silimate_dedup_endpoints_rx);
+}
+
+void
 set_report_path_sigmas(bool report_sigmas)
 {
   Sta::sta()->setReportPathSigmas(report_sigmas);

@@ -25,6 +25,7 @@
 #pragma once
 
 #include <string>
+#include <optional> // SILIMATE: Custom regex-based deduplication by removal of matching parts from endpoints
 
 #include "StringSeq.hh"
 #include "SearchClass.hh"
@@ -60,6 +61,8 @@ public:
   bool reportSigmas() const { return report_sigmas_; }
   void setReportSigmas(bool report);
   void setReportDedupByWord(bool dedup_by_word);
+  void setReportDedupSameDelay(bool dedup_same_delay);
+  void setSilimateDedupEndpointRegex(std::string_view silimate_dedup_endpoints_rx); // SILIMATE: Custom regex-based deduplication by removal of matching parts from endpoints
   ReportField *findField(const char *name) const;
 
   // Header above reportPathEnd results.
@@ -474,6 +477,8 @@ protected:
   bool report_hier_pins_;
   bool report_net_;
   bool dedup_by_word_;
+  bool dedup_same_delay_;
+  std::optional<std::string> silimate_dedup_endpoints_rx_;
   bool no_split_;
   int digits_;
   bool report_sigmas_;

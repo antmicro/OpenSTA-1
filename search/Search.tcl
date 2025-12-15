@@ -430,6 +430,8 @@ define_cmd_args "report_checks" \
      [-digits digits]\
      [-no_line_splits]\
      [-dedup_by_word]\
+     [-dedup_same_delay]\
+     [-silimate_dedup_endpoints_rx regular_expression]\
      [> filename] [>> filename]}
 
 proc_redirect report_checks {
@@ -887,8 +889,8 @@ proc parse_report_path_options { cmd args_var default_format
   if [info exists path_options] {
     unset path_options
   }
-  parse_key_args $cmd args path_options {-format -digits -fields} \
-    path_options {-no_line_splits -report_sigmas -dedup_by_word} $unknown_key_is_error
+  parse_key_args $cmd args path_options {-format -digits -fields -silimate_dedup_endpoints_rx} \
+    path_options {-no_line_splits -report_sigmas -dedup_by_word -dedup_same_delay} $unknown_key_is_error
 
   set format $default_format
   if [info exists path_options(-format)] {
@@ -963,6 +965,14 @@ proc parse_report_path_options { cmd args_var default_format
 
   if { [info exists path_options(-dedup_by_word)] } {
     set_report_path_dedup_by_word 1
+  }
+
+  if { [info exists path_options(-dedup_same_delay)] } {
+    set_report_path_dedup_same_delay 1
+  }
+
+  if { [info exists path_options(-silimate_dedup_endpoints_rx)] } {
+    set_report_path_silimate_dedup_endpoints_rx $path_options(-silimate_dedup_endpoints_rx)
   }
 }
 

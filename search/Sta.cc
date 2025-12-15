@@ -2642,6 +2642,18 @@ Sta::setReportDedupByWord(bool dedup_by_word)
 }
 
 void
+Sta::setReportDedupSameDelay(bool dedup_same_delay)
+{
+  report_path_->setReportDedupSameDelay(dedup_same_delay);
+}
+
+void
+Sta::setSilimateDedupEndpointRegex(std::string_view silimate_dedup_endpoints_rx)
+{
+  report_path_->setSilimateDedupEndpointRegex(silimate_dedup_endpoints_rx);
+}
+
+void
 Sta::reportPathEndHeader()
 {
   report_path_->reportPathEndHeader();
