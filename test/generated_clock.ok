@@ -1,4 +1,6 @@
-clk u_second_hierarchy/my_divider/CLK_OUT_DIV2 u_second_hierarchy/my_divider/CLK_OUT_MUL2
+Number of clocks: 5
 clk period: 10.000000
-u_second_hierarchy/my_divider/CLK_OUT_DIV2 period: 20.000000
-u_second_hierarchy/my_divider/CLK_OUT_MUL2 period: 5.000000
+u_second_hierarchy/clk_gen/CLK_OUT_DIV2 period: 20.000000
+u_second_hierarchy/clk_gen/CLK_OUT_MUL2 period: 5.000000
+u_second_hierarchy/clk_gen2/CLK_OUT_DIV2 period: 20.000000
+u_second_hierarchy/clk_gen2/CLK_OUT_MUL2 period: 5.000000
