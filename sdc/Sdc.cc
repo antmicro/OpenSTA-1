@@ -1068,8 +1068,8 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
             nullptr);
 
           // Trigger update of generated clocks immediately to propagate the new clock
-          sta->setUpdateGenclks();
-          sta->updateGeneratedClks();
+          // sta->setUpdateGenclks();
+          // sta->updateGeneratedClks();
         }
       }
     }
@@ -1142,8 +1142,6 @@ Sdc::makeGeneratedClock(const char *name,
   clearCycleAcctings();
   invalidateGeneratedClks();
   clkHpinDisablesInvalid();
-
-  Sta::sta()->updateGeneratedClks();
   return clk;
 }
 
