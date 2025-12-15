@@ -1142,6 +1142,8 @@ Sdc::makeGeneratedClock(const char *name,
   clearCycleAcctings();
   invalidateGeneratedClks();
   clkHpinDisablesInvalid();
+
+  Sta::sta()->updateGeneratedClks();
   return clk;
 }
 
