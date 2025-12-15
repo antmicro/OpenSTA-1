@@ -7,15 +7,13 @@ create_clock -name clk2 -period 100 [get_ports CLK_IN_2]
 # Should see 7 clocks
 puts "Number of clocks: [ llength [get_clocks]]"
 
-# foreach_in_collection clk [get_clocks] {
-#   puts "[get_object_name $clk] period: [get_attribute $clk period]"
-# }
-
+# Divide a generated clock (virtual) by 2 and should divide the original master by 4
 create_generated_clock \
   -name clk_div4 \
   -source [get_ports CLK_IN_1] \
-  -master_clock clk \
-  -divide_by 4 \
+  -master_clock u_second_hierarchy/clk_gen2/CLK_OUT_DIV2 \
+  -divide_by 2 \
+  -invert \
   [get_pins u_second_hierarchy/clk_gen2/CLK_OUT_DIV2]
 
 # Update generated clocks to compute their waveforms/periods, 8 clock
