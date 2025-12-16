@@ -1050,7 +1050,7 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
 
           // Hierarchical path of the generated clock pin
           const char *generated_clock_name = stringPrintTmp("%s/%s", inst_path, generated_clock->clockPin());
-          
+
           // Create generated clock
           makeGeneratedClock(
             generated_clock_name,
@@ -1066,10 +1066,6 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
             generated_clock->edges(),
             generated_clock->edgeShifts(),
             nullptr);
-
-          // Trigger update of generated clocks immediately to propagate the new clock
-          // sta->setUpdateGenclks();
-          // sta->updateGeneratedClks();
         }
       }
     }
@@ -1142,6 +1138,11 @@ Sdc::makeGeneratedClock(const char *name,
   clearCycleAcctings();
   invalidateGeneratedClks();
   clkHpinDisablesInvalid();
+
+  // Trigger update of generated clocks
+  Sta::sta()->setUpdateGenclks();
+  Sta::sta()->updateGeneratedClks();
+  
   return clk;
 }
 
