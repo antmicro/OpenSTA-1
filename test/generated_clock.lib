@@ -16,19 +16,19 @@ library (generated_clock) {
       direction : input;
       clock : true;
     }
-    pin (CLK_OUT_DIV2) {
+    pin (CLK_OUT_DIV) {
       direction : output;
     }
-    pin (CLK_OUT_MUL2) {
+    pin (CLK_OUT_MUL) {
       direction : output;
     }
     generated_clock (gen_clk_div2) {
-      clock_pin : CLK_OUT_DIV2;
+      clock_pin : CLK_OUT_DIV;
       master_pin : CLK_IN;
       divided_by : 2;
     }
     generated_clock (gen_clk_mul2_inv_dut_80) {
-      clock_pin : CLK_OUT_MUL2;
+      clock_pin : CLK_OUT_MUL;
       master_pin : CLK_IN;
       multiplied_by : 2;
       invert : true; /* inverted duty cycle of 80, so 20 */
