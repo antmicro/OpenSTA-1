@@ -3332,18 +3332,19 @@ LibertyReader::visitShifts(LibertyAttr *attr)
       shifts->push_back(float_value);
     }
 
-    // Error checking
-    if (shifts->size() < 3) {
-      delete shifts;
-      libError(1234, attr, "shifts attribute must have at least 3 values.");
-    } else if (shifts->size() % 2 != 1) {
-      delete shifts;
-      libError(1234, attr, "shifts attribute must have an odd number of values.");
-    } else if (generated_clock_->edges() && generated_clock_->edges()->size() != shifts->size()) {
-      delete shifts;
-      libError(1234, attr, "shifts and edges attribute must have the same number of values.");
-    }
     delete shifts; // SHIFTS IS NOT SUPPORTED YET
+
+    // Error checking
+    // if (shifts->size() < 3) {
+    //   delete shifts;
+    //   libError(1234, attr, "shifts attribute must have at least 3 values.");
+    // } else if (shifts->size() % 2 != 1) {
+    //   delete shifts;
+    //   libError(1234, attr, "shifts attribute must have an odd number of values.");
+    // } else if (generated_clock_->edges() && generated_clock_->edges()->size() != shifts->size()) {
+    //   delete shifts;
+    //   libError(1234, attr, "shifts and edges attribute must have the same number of values.");
+    // }
     //generated_clock_->setEdgeShifts(shifts);
   }
 }
@@ -3369,19 +3370,10 @@ LibertyReader::visitEdges(LibertyAttr *attr)
       edges->push_back(int_value);
     }
 
-    // Error checking
-    if (edges->size() < 3) {
+    // Error checking, only size 3 is supported at the moment
+    if (edges->size() != 3) {
       delete edges;
-      libError(1234, attr, "edges attribute must have at least 3 values.");
-    } else if (edges->size() % 2 != 1) {
-      delete edges;
-      libError(1234, attr, "edges attribute must have an odd number of values.");
-    } else if ((*edges)[0] < 1) {
-      delete edges;
-      libError(1234, attr, "first edge must be greater than or equal to 1.");
-    } else if (generated_clock_->edgeShifts() && generated_clock_->edgeShifts()->size() != edges->size()) {
-      delete edges;
-      libError(1234, attr, "edges and shifts attribute must have the same number of values.");
+      libError(1234, attr, "edges attribute must have 3 values.");
     }
     generated_clock_->setEdges(edges);
   }
