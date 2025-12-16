@@ -1029,54 +1029,54 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
   sta->clkPinsInvalid();
   sta->ensureClkNetwork();
 
-  // All pins along the clock network
-  const PinSet *clk_network_pins = sta->pins(clk);
-  PinSet clk_network_pins_copy = *clk_network_pins;
 
-  // Iterate through all pins in the clock network
-  for (const Pin *pin : clk_network_pins_copy) {
-    const Instance *inst = network_->instance(pin);
-    const char *inst_path = network_->pathName(inst);
-    LibertyCell *cell = network_->libertyCell(inst);
+  if (sta->pins(clk)) {
+    // All pins along the clock network
+    const PinSet clk_network_pins = *sta->pins(clk);
 
-    // Check if this pin is on a liberty cell with generated clock definitions
-    if (cell && !cell->generatedClocks().empty()) {
-      
-      // Loop through potential generated clock definitions in the liberty cell
-      for (const GeneratedClock *generated_clock : cell->generatedClocks()) {
-        const char *compare_path = stringPrintTmp("%s/%s", inst_path, generated_clock->masterPin());
+    // Iterate through all pins in the clock network
+    for (const Pin *pin : clk_network_pins) {
+      const Instance *inst = network_->instance(pin);
+      const char *inst_path = network_->pathName(inst);
+      LibertyCell *cell = network_->libertyCell(inst);
 
-        // If this pin matches the hierarchical path of the master pin of the liberty cell, create the generated clock
-        if (strcmp(compare_path, network_->pathName(pin)) == 0) {
+      // Check if this pin is on a liberty cell with generated clock definitions
+      if (cell && !cell->generatedClocks().empty()) {
+        
+        // Loop through potential generated clock definitions in the liberty cell
+        for (const GeneratedClock *generated_clock : cell->generatedClocks()) {
+          const char *compare_path = stringPrintTmp("%s/%s", inst_path, generated_clock->masterPin());
 
-          // Hierarchical path of the generated clock pin
-          const char *generated_clock_name = stringPrintTmp("%s/%s", inst_path, generated_clock->clockPin());
-          
-          // Find the output pin (clock_pin)
-          Pin *clk_out_pin = network_->findPin(inst, generated_clock->clockPin());
-          
-          // Create a PinSet with the output pin
-          PinSet *clk_pins = nullptr;
-          if (clk_out_pin) {
-            clk_pins = new PinSet();
-            clk_pins->insert(clk_out_pin);
+          // If this pin matches the hierarchical path of the master pin of the liberty cell, create the generated clock
+          if (strcmp(compare_path, network_->pathName(pin)) == 0) {
+
+            // Hierarchical path of the generated clock pin
+            const char *generated_clock_name = stringPrintTmp("%s/%s", inst_path, generated_clock->clockPin());
+            
+            // Find the output pin, for nested generated clocks
+            Pin *clk_out_pin = network_->findPin(inst, generated_clock->clockPin());
+            PinSet *clk_pins = nullptr;
+            if (clk_out_pin) {
+              clk_pins = new PinSet();
+              clk_pins->insert(clk_out_pin);
+            }
+
+            // Create generated clock
+            makeGeneratedClock(
+              generated_clock_name,
+              clk_pins, 
+              true,
+              const_cast<Pin*>(pin),
+              clk,
+              generated_clock->dividedBy(),
+              generated_clock->multipliedBy(),
+              generated_clock->dutyCycle(),
+              generated_clock->invert(),
+              false,
+              generated_clock->edges(),
+              generated_clock->edgeShifts(),
+              nullptr);
           }
-
-          // Create generated clock
-          makeGeneratedClock(
-            generated_clock_name,
-            clk_pins, 
-            true,
-            const_cast<Pin*>(pin),
-            clk,
-            generated_clock->dividedBy(),
-            generated_clock->multipliedBy(),
-            generated_clock->dutyCycle(),
-            generated_clock->invert(),
-            false,
-            generated_clock->edges(),
-            generated_clock->edgeShifts(),
-            nullptr);
         }
       }
     }
