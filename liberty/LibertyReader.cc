@@ -3343,7 +3343,7 @@ LibertyReader::visitShifts(LibertyAttr *attr)
       delete shifts;
       libError(1234, attr, "shifts and edges attribute must have the same number of values.");
     }
-    generated_clock_->setEdgeShifts(shifts);
+    //generated_clock_->setEdgeShifts(shifts); NOT SUPPORTED AT THE MOMENT
   }
 }
 

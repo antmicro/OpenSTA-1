@@ -31,8 +31,6 @@
 #include "Report.hh"
 #include "Error.hh"
 #include "Stats.hh"
-#include "Sdc.hh"
-#include "GeneratedClock.hh"
 #include "Liberty.hh"
 #include "PortDirection.hh"
 #include "Network.hh"
