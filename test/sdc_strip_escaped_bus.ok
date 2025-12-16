@@ -1,2 +1,3 @@
+Error: No liberty libraries found.
 Error: sdc_strip_escaped_bus.tcl line 11, pin 'a' not found.
 Error: sdc_strip_escaped_bus.tcl line 12, pin 'y' not found.
