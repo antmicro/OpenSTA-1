@@ -1022,12 +1022,12 @@ Sdc::maxLeakagePower() const
 
 void Sdc::createLibertyGeneratedClocks(Clock *clk) {
 
-  // sta object
-  Sta *sta = Sta::sta();
-  
-  // Only process liberty-defined generated clocks if liberty libraries are loaded
+  // Validation to proceed with creating liberty-defined generated clocks
   if (network_->defaultLibertyLibrary() == nullptr)
     return;
+
+  // sta object
+  Sta *sta = Sta::sta();
   
   // Invalidate and rebuild the clock network to include the newly created clock
   sta->clkPinsInvalid();
