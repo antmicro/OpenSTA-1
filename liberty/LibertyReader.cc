@@ -50,6 +50,7 @@
 #include "PortDirection.hh"
 #include "ParseBus.hh"
 #include "Network.hh"
+#include "Clock.hh"
 
 extern int LibertyParse_debug;
 
@@ -3208,12 +3209,6 @@ LibertyReader::visitCellUserFunctionClass(LibertyAttr *attr)
 
 ////////////////////////////////////////////////////////////////
 
-static bool
-isPowerOfTwo(int i)
-{
-  return (i & (i - 1)) == 0;
-}
-
 void
 LibertyReader::beginGeneratedClock(LibertyGroup *group)
 {
@@ -3332,20 +3327,13 @@ LibertyReader::visitShifts(LibertyAttr *attr)
       shifts->push_back(float_value);
     }
 
-    delete shifts; // SHIFTS IS NOT SUPPORTED YET
-
-    // Error checking
-    // if (shifts->size() < 3) {
-    //   delete shifts;
-    //   libError(1234, attr, "shifts attribute must have at least 3 values.");
-    // } else if (shifts->size() % 2 != 1) {
-    //   delete shifts;
-    //   libError(1234, attr, "shifts attribute must have an odd number of values.");
-    // } else if (generated_clock_->edges() && generated_clock_->edges()->size() != shifts->size()) {
-    //   delete shifts;
-    //   libError(1234, attr, "shifts and edges attribute must have the same number of values.");
-    // }
-    //generated_clock_->setEdgeShifts(shifts);
+    // Error checking, only size 3 is supported at the moment
+    if (shifts->size() != 3) {
+      delete shifts;
+      libError(1234, attr, "shifts attribute must have 3 values.");
+    }
+    libWarn(1234, attr, "shifts are not supported yet, may cause incorrect generated clock waveforms.");
+    generated_clock_->setEdgeShifts(shifts);
   }
 }
 
