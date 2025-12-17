@@ -1318,12 +1318,6 @@ LibertyCell::addLeakagePower(LeakagePower *power)
 }
 
 void
-LibertyCell::addGeneratedClock(GeneratedClock *generated_clock)
-{
-  generated_clocks_.push_back(generated_clock);
-}
-
-void
 LibertyCell::setLeakagePower(float leakage)
 {
   leakage_power_ = leakage;
