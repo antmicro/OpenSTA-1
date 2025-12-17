@@ -1042,14 +1042,8 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
     const Map<const char*, LibertyCell*> &generated_clock_pins_to_cells = network_->generatedClockPinsToCellMap();
 
     // The keys of generated_clock_pins_to_cells_ will be searched in the current clock network
-
     for (const auto &entry : generated_clock_pins_to_cells) {
       const char *pinName = entry.first;
-
-      // Skip top-level prefix (everything before first '/')
-      if (const char *slash = strchr(pinName, network_->pathDivider()))
-        pinName = slash + 1;
-
       LibertyCell *cell = entry.second;
 
       // Search the current clock network for the pin
