@@ -448,7 +448,6 @@ public:
 
   // Generated clocks related functions
   void addGeneratedClockPinToCell(const char *pinName, LibertyCell *cell);
-  void clearGeneratedClockPinToCell();
   const Map<const char*, LibertyCell*> &generatedClockPinsToCellMap() const { return generated_clock_pins_to_cells_; }
 
 protected:
