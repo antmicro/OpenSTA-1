@@ -1025,6 +1025,10 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
   // sta object
   Sta *sta = Sta::sta();
   
+  // Only process liberty-defined generated clocks if liberty libraries are loaded
+  if (network_->defaultLibertyLibrary() == nullptr)
+    return;
+  
   // Invalidate and rebuild the clock network to include the newly created clock
   sta->clkPinsInvalid();
   sta->ensureClkNetwork();

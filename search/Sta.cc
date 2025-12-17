@@ -35,7 +35,6 @@
 #include "FuncExpr.hh"
 #include "EquivCells.hh"
 #include "Liberty.hh"
-#include "GeneratedClock.hh"
 #include "liberty/LibertyReader.hh"
 #include "LibertyWriter.hh"
 #include "SdcNetwork.hh"
