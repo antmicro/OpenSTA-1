@@ -525,10 +525,6 @@ public:
 			  IntSeq *edges,
 			  FloatSeq *edge_shifts);
   void addGeneratedClock(GeneratedClock *generated_clock);
-
-
-
-
   void makeSequential(int size,
 		      bool is_register,
 		      FuncExpr *clk,
