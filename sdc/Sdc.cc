@@ -1033,31 +1033,40 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
   sta->clkPinsInvalid();
   sta->ensureClkNetwork();
 
-
   if (sta->pins(clk)) {
+
     // All pins along the clock network
     const PinSet clk_network_pins = *sta->pins(clk);
 
-    // Iterate through all pins in the clock network
-    for (const Pin *pin : clk_network_pins) {
-      const Instance *inst = network_->instance(pin);
-      const char *inst_path = network_->pathName(inst);
-      LibertyCell *cell = network_->libertyCell(inst);
+    // Get all generated clock pins from the network
+    const Map<const char*, LibertyCell*> &generated_clock_pins_to_cells = network_->generatedClockPinsToCellMap();
 
-      // Check if this pin is on a liberty cell with generated clock definitions
-      if (cell && !cell->generatedClocks().empty()) {
-        
-        // Loop through potential generated clock definitions in the liberty cell
+    // The keys of generated_clock_pins_to_cells_ will be searched in the current clock network
+
+    for (const auto &entry : generated_clock_pins_to_cells) {
+      const char *pinName = entry.first;
+
+      // Skip top-level prefix (everything before first '/')
+      if (const char *slash = strchr(pinName, network_->pathDivider()))
+        pinName = slash + 1;
+
+      LibertyCell *cell = entry.second;
+
+      // Search the current clock network for the pin
+      Pin *pin = network_->findPin(pinName);
+      if (pin && clk_network_pins.hasKey(pin)) {
+
+        // Search liberty cell for the corresponding generated clock
         for (const GeneratedClock *generated_clock : cell->generatedClocks()) {
+          const char *inst_path = network_->pathName(network_->instance(pin));
           const char *compare_path = stringPrintTmp("%s/%s", inst_path, generated_clock->masterPin());
-
-          // If this pin matches the hierarchical path of the master pin of the liberty cell, create the generated clock
           if (strcmp(compare_path, network_->pathName(pin)) == 0) {
 
             // Hierarchical path of the generated clock pin
             const char *generated_clock_name = stringPrintTmp("%s/%s", inst_path, generated_clock->clockPin());
-            
+
             // Find the output pin, for nested generated clocks
+            const Instance *inst = network_->instance(pin);
             Pin *clk_out_pin = network_->findPin(inst, generated_clock->clockPin());
             PinSet *clk_pins = nullptr;
             if (clk_out_pin) {

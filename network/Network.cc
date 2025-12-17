@@ -1274,6 +1274,16 @@ Network::setPathEscape(char escape)
   escape_ = escape;
 }
 
+void Network::addGeneratedClockPinToCell(const char *pinName, LibertyCell *cell)
+{
+  generated_clock_pins_to_cells_[pinName] = cell;
+}
+
+void Network::clearGeneratedClockPinToCell()
+{
+  generated_clock_pins_to_cells_.clear();
+}
+
 ////////////////////////////////////////////////////////////////
 
 typedef Vector<InstanceChildIterator *> InstanceChildIteratorSeq; 
