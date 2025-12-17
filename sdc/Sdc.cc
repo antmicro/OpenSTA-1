@@ -1036,52 +1036,57 @@ void Sdc::createLibertyGeneratedClocks(Clock *clk) {
   if (sta->pins(clk)) {
 
     // All pins along the clock network
-    const PinSet clk_network_pins = *sta->pins(clk);
+    const PinSet clkNetworkPins = *sta->pins(clk);
 
     // Get all generated clock pins from the network
     const Map<const char*, LibertyCell*> &generated_clock_pins_to_cells = network_->generatedClockPinsToCellMap();
 
-    // The keys of generated_clock_pins_to_cells_ will be searched in the current clock network
+    // The keys of generated_clock_pins_to_cells_ (master clock pins)will be searched in the current clock network
     for (const auto &entry : generated_clock_pins_to_cells) {
       const char *pinName = entry.first;
       LibertyCell *cell = entry.second;
 
-      // Search the current clock network for the pin
+      // Search the current clock network for the pin and validate that it is in the clock network
       Pin *pin = network_->findPin(pinName);
-      if (pin && clk_network_pins.hasKey(pin)) {
+      if (pin && clkNetworkPins.hasKey(pin)) {
 
         // Search liberty cell for the corresponding generated clock
-        for (const GeneratedClock *generated_clock : cell->generatedClocks()) {
-          const char *inst_path = network_->pathName(network_->instance(pin));
-          const char *compare_path = stringPrintTmp("%s/%s", inst_path, generated_clock->masterPin());
-          if (strcmp(compare_path, network_->pathName(pin)) == 0) {
+        for (const GeneratedClock *generatedClock : cell->generatedClocks()) {
 
-            // Hierarchical path of the generated clock pin
-            const char *generated_clock_name = stringPrintTmp("%s/%s", inst_path, generated_clock->clockPin());
+          // Use the pin to find the instance and the path to the instance
+          const Instance *inst = network_->instance(pin);
+          const char *instPath = network_->pathName(inst);
+
+          // Compare the full {instance path/master pin} and the full path to pin to validate the correct liberty information
+          // is supplied (used when there are multiple generated clocks in the same liberty cell)
+          const char *comparePath = stringPrintTmp("%s/%s", instPath, generatedClock->masterPin());
+          if (strcmp(comparePath, network_->pathName(pin)) == 0) {
+
+            // Hierarchical path of the generated clock pin (name is with respect to source clock)
+            const char *generatedClockName = stringPrintTmp("%s/%s", instPath, generatedClock->clockPin());
 
             // Find the output pin, for nested generated clocks
-            const Instance *inst = network_->instance(pin);
-            Pin *clk_out_pin = network_->findPin(inst, generated_clock->clockPin());
-            PinSet *clk_pins = nullptr;
-            if (clk_out_pin) {
-              clk_pins = new PinSet();
-              clk_pins->insert(clk_out_pin);
+            Pin *clkOutPin = network_->findPin(inst, generatedClock->clockPin());
+            PinSet *clkPins = nullptr;
+            if (clkOutPin) {
+              clkPins = new PinSet();
+              clkPins->insert(clkOutPin);
             }
 
-            // Create generated clock
+            // Create generated clock using the existing makeGeneratedClock function
             makeGeneratedClock(
-              generated_clock_name,
-              clk_pins, 
+              generatedClockName,
+              clkPins, 
               true,
               const_cast<Pin*>(pin),
               clk,
-              generated_clock->dividedBy(),
-              generated_clock->multipliedBy(),
-              generated_clock->dutyCycle(),
-              generated_clock->invert(),
+              generatedClock->dividedBy(),
+              generatedClock->multipliedBy(),
+              generatedClock->dutyCycle(),
+              generatedClock->invert(),
               false,
-              generated_clock->edges(),
-              generated_clock->edgeShifts(),
+              generatedClock->edges(),
+              generatedClock->edgeShifts(),
               nullptr);
           }
         }
