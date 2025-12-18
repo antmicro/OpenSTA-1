@@ -38,6 +38,7 @@
 #include "StringUtil.hh"
 #include "verilog/VerilogReaderPvt.hh"
 #include "verilog/VerilogScanner.hh"
+#include "GeneratedClock.hh"
 
 namespace sta {
 
@@ -2036,6 +2037,27 @@ VerilogReader::makeLibertyInst(VerilogLibertyInst *lib_inst,
     else
       // Make unconnected pin.
       network_->makePin(inst, reinterpret_cast<Port*>(port), nullptr);
+  }
+
+  // Add generated clocks to network
+  if (lib_cell->generatedClocks().size() > 0) {
+
+    // Get inst and pin path?
+    const char *inst_path = network_->pathName(inst);
+    for (GeneratedClock *generated_clock : lib_cell->generatedClocks()) {
+
+      // HACK: Strip top-level prefix to get instance path for later search
+      if (const char *slash = strchr(inst_path, network_->pathDivider())) {
+        inst_path = slash + 1;
+      }
+
+      const char *masterPin = generated_clock->masterPin();
+      const char *pinPath = stringPrintTmp("%s/%s", inst_path, masterPin);
+
+      // Map the full pinpath of source clock to the liberty cell
+      // containing the generated clock definition
+      network_->addGeneratedClockPinToCell(pinPath, lib_cell);
+    }
   }
 }
 
