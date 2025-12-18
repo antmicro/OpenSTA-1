@@ -2054,7 +2054,8 @@ VerilogReader::makeLibertyInst(VerilogLibertyInst *lib_inst,
       const char *masterPin = generated_clock->masterPin();
       const char *pinPath = stringPrintTmp("%s/%s", inst_path, masterPin);
 
-      // Map the full pinpath of source clock to the liberty cell containing the generated clock definition
+      // Map the full pinpath of source clock to the liberty cell
+      // containing the generated clock definition
       network_->addGeneratedClockPinToCell(pinPath, lib_cell);
     }
   }

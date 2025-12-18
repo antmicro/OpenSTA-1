@@ -26,7 +26,6 @@
 
 #include <cctype>
 #include <cstdlib>
-#include <cstdio>
 #include <string>
 
 #include "EnumNameMap.hh"
@@ -3291,7 +3290,11 @@ LibertyReader::visitDutyCycle(LibertyAttr *attr)
   getAttrFloat(attr, dutyCycle, exists);
   if (exists) {
     if (dutyCycle < 0.0 || dutyCycle > 100.0) {
-      libError(1234, attr, "duty_cycle must be between 0.0 and 100.0, inclusive.");
+      libError(
+        1234,
+        attr,
+        "duty_cycle must be between 0.0 and 100.0, inclusive. Duty cycle: %f",
+        dutyCycle);
     }
     generated_clock_->setDutyCycle(dutyCycle);
   }
@@ -3332,7 +3335,10 @@ LibertyReader::visitShifts(LibertyAttr *attr)
       delete shifts;
       libError(1234, attr, "shifts attribute must have 3 values.");
     }
-    libWarn(1234, attr, "shifts are not supported yet, may cause incorrect generated clock waveforms.");
+    libWarn(
+      1234,
+      attr,
+      "shifts are not supported yet, may cause malformed waveforms.");
     generated_clock_->setEdgeShifts(shifts);
   }
 }
