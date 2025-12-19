@@ -199,6 +199,14 @@ isTmpString(const char *str);
 void
 trimRight(std::string &str);
 
+// Trim left spaces.
+void
+trimLeft(std::string &str);
+
+// Trim both left and right spaces.
+void
+trim(std::string &str);
+
 typedef Vector<std::string> StringVector;
 
 void

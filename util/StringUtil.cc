@@ -260,6 +260,19 @@ trimRight(string &str)
 }
 
 void
+trimLeft(string &str)
+{
+  str.erase(0, str.find_first_not_of(" "));
+}
+
+void
+trim(string &str)
+{
+  trimLeft(str);
+  trimRight(str);
+}
+
+void
 split(const string &text,
       const string &delims,
       // Return values.
