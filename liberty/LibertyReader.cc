@@ -3238,7 +3238,9 @@ LibertyReader::visitClockPin(LibertyAttr *attr)
   if (generated_clock_) {
     const char *clock_pin = getAttrString(attr);
     if (clock_pin) {
-      generated_clock_->setClockPin(clock_pin);
+      string str(clock_pin);
+      trim(str);
+      generated_clock_->setClockPin(stringCopy(str.c_str()));
     }
   }
 }
@@ -3249,7 +3251,9 @@ LibertyReader::visitMasterPin(LibertyAttr *attr)
   if (generated_clock_) {
     const char *master_pin = getAttrString(attr);
     if (master_pin) {
-      generated_clock_->setMasterPin(master_pin);
+      string str(master_pin);
+      trim(str);
+      generated_clock_->setMasterPin(stringCopy(str.c_str()));
     }
   }
 }
