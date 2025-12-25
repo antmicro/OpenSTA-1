@@ -57,23 +57,37 @@ proc_redirect report_power {
   }
   set corner [parse_corner keys]
 
-  if { ![info exists keys(-format)] } {
-    set keys(-format) "text"
-  }
-  if { $keys(-format) != "text" && $keys(-format) != "json"  } {
-    sta_error 311 "unknown power report -format $keys(-format)"
+  if { [info exists keys(-format)] } {
+    set format $keys(-format)
+    if { $format != "text" && $format != "json" } {
+      sta_error 311 "unknown power report -format $format"
+    }
+  } else {
+    set format "text"
   }
 
   if { [info exists keys(-instances)] } {
     set insts [get_instances_error "-instances" $keys(-instances)]
-    report_power_insts $insts $corner $digits $keys(-format)
+    if { $format == "json" } {
+      report_power_insts_json $insts $corner $digits
+    } else {
+      report_power_insts $insts $corner $digits
+    }
   } elseif { [info exists keys(-highest_power_instances)] } {
     set count $keys(-highest_power_instances)
     check_positive_integer "-highest_power_instances" $count
     set insts [highest_power_instances $count $corner]
-    report_power_insts $insts $corner $digits $keys(-format)
+    if { $format == "json" } {
+      report_power_insts_json $insts $corner $digits
+    } else {
+      report_power_insts $insts $corner $digits
+    }
   } else {
-    report_power_design $corner $digits $keys(-format)
+    if { $format == "json" } {
+      report_power_design_json $corner $digits
+    } else {
+      report_power_design $corner $digits
+    }
   }
 }
 
@@ -134,6 +148,35 @@ proc report_power_design { corner digits {report_format "text"} } {
   } elseif { $report_format == "json" } {
     report_line "\}"
   }
+}
+
+proc report_power_design_json { corner digits } {
+  set power_result [design_power $corner]
+  set totals        [lrange $power_result  0  3]
+  set sequential    [lrange $power_result  4  7]
+  set combinational [lrange $power_result  8 11]
+  set clock         [lrange $power_result 12 15]
+  set macro         [lrange $power_result 16 19]
+  set pad           [lrange $power_result 20 end]
+
+  report_line "\{"
+  report_power_row_json "Sequential" $sequential $digits ","
+  report_power_row_json "Combinational" $combinational $digits ","
+  report_power_row_json "Clock" $clock $digits ","
+  report_power_row_json "Macro" $macro $digits ","
+  report_power_row_json "Pad" $pad $digits ","
+  report_power_row_json "Total" $totals $digits ""
+  report_line "\}"
+}
+
+proc report_power_row_json { name row_result digits separator } {
+  lassign $row_result internal switching leakage total
+  report_line "  \"$name\": \{"
+  report_line "    \"internal\": [format %.${digits}e $internal],"
+  report_line "    \"switching\": [format %.${digits}e $switching],"
+  report_line "    \"leakage\": [format %.${digits}e $leakage],"
+  report_line "    \"total\": [format %.${digits}e $total]"
+  report_line "  \}$separator"
 }
 
 proc max { x y } {
@@ -259,6 +302,40 @@ proc report_power_insts { insts corner digits {report_format "text"} } {
   if { $report_format == "json" } {
     report_line {]}
   }
+}
+
+proc report_power_insts_json { insts corner digits } {
+  set inst_pwrs {}
+  foreach inst $insts {
+    set power_result [instance_power $inst $corner]
+    lappend inst_pwrs [list $inst $power_result]
+  }
+  set inst_pwrs [lsort -command inst_pwr_cmp $inst_pwrs]
+
+  report_line "\["
+  set first 1
+  foreach inst_pwr $inst_pwrs {
+    set inst [lindex $inst_pwr 0]
+    set power [lindex $inst_pwr 1]
+    if { !$first } {
+      report_line ","
+    }
+    set first 0
+    report_power_inst_json $inst $power $digits
+  }
+  report_line "\]"
+}
+
+proc report_power_inst_json { inst power digits } {
+  lassign $power internal switching leakage total
+  set inst_name [get_full_name $inst]
+  report_line "\{"
+  report_line "  \"name\": \"$inst_name\","
+  report_line "  \"internal\": [format %.${digits}e $internal],"
+  report_line "  \"switching\": [format %.${digits}e $switching],"
+  report_line "  \"leakage\": [format %.${digits}e $leakage],"
+  report_line "  \"total\": [format %.${digits}e $total]"
+  report_line "\}"
 }
 
 proc inst_pwr_cmp { inst_pwr1 inst_pwr2 } {

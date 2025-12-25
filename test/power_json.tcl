@@ -1,14 +1,8 @@
-# report_power gcd
-set sta_report_default_digits 4
-read_liberty ../examples/sky130hd_tt.lib.gz
-read_verilog ../examples/gcd_sky130hd.v
-link_design gcd
-
-read_sdc ../examples/gcd_sky130hd.sdc
-set_propagated_clock clk
-read_spef ../examples/gcd_sky130hd.spef
-set_power_activity -input -activity .1
-set_power_activity -input_port reset -activity 0
-
+# report_power reg1_asap7
+read_liberty asap7_small.lib.gz
+read_verilog reg1_asap7.v
+link_design top
+create_clock -name clk -period 500 {clk1 clk2 clk3}
+set_propagated_clock {clk1 clk2 clk3}
 report_power -format json
-report_power -format json -instances "[get_cells -filter "name=~clkbuf*"]"
+report_power -format json -instances {u1 u2}
