@@ -152,6 +152,7 @@ record_public_tests {
   filter_expr_to_postfix
   generated_clock
   get_cell_hierarchy
+  get_cells_crash
   get_filter
   get_is_buffer
   get_is_memory
