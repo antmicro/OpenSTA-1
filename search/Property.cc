@@ -544,7 +544,7 @@ PropertyValue::to_string(const Network *network) const
   case Type::type_liberty_library:
     return liberty_library_->name();
   case Type::type_liberty_cell:
-    return liberty_cell_->name();
+    return liberty_cell_ ? liberty_cell_->name() : "";
   case Type::type_liberty_port:
     return liberty_port_->name();
   case Type::type_library:
