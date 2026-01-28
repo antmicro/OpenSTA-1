@@ -1793,6 +1793,31 @@ VerilogReader::makeModuleInstBody(VerilogModule *module,
   }
 }
 
+// Maps a clock pin path to the liberty cell containing the generated clock definition
+void
+VerilogReader::makeGeneratedClocks(LibertyCell *lib_cell, Instance *inst)
+{
+  if (lib_cell->generatedClocks().size() > 0) {
+    for (GeneratedClock *generated_clock : lib_cell->generatedClocks()) {
+
+      // Path to the instance containing the clock pin
+      const char *inst_path = network_->pathName(inst);
+
+      // HACK: Strip top-level prefix to get instance path for later search
+      if (const char *slash = strchr(inst_path, network_->pathDivider())) {
+        inst_path = slash + 1;
+      }
+
+      const char *masterPin = generated_clock->masterPin();
+      const char *pinPath = stringPrintTmp("%s/%s", inst_path, masterPin);
+
+      // Map the full pinpath of source clock to the liberty cell
+      // containing the generated clock definition
+      network_->addGeneratedClockPinToCell(pinPath, lib_cell);
+    }
+  }
+}
+
 void
 VerilogReader::makeModuleInstNetwork(VerilogModuleInst *mod_inst,
 				     Instance *parent,
@@ -1837,6 +1862,7 @@ VerilogReader::makeModuleInstNetwork(VerilogModuleInst *mod_inst,
 	LibertyPort *port = port_iter.next();
 	network_->makePin(inst, reinterpret_cast<Port*>(port), nullptr);
       }
+      makeGeneratedClocks(lib_cell, inst);
     }
     bool is_leaf = network_->isLeaf(cell);
     VerilogBindingTbl bindings(zero_net_name_, one_net_name_);
@@ -2038,27 +2064,7 @@ VerilogReader::makeLibertyInst(VerilogLibertyInst *lib_inst,
       // Make unconnected pin.
       network_->makePin(inst, reinterpret_cast<Port*>(port), nullptr);
   }
-
-  // Add generated clocks to network
-  if (lib_cell->generatedClocks().size() > 0) {
-
-    // Get inst and pin path?
-    const char *inst_path = network_->pathName(inst);
-    for (GeneratedClock *generated_clock : lib_cell->generatedClocks()) {
-
-      // HACK: Strip top-level prefix to get instance path for later search
-      if (const char *slash = strchr(inst_path, network_->pathDivider())) {
-        inst_path = slash + 1;
-      }
-
-      const char *masterPin = generated_clock->masterPin();
-      const char *pinPath = stringPrintTmp("%s/%s", inst_path, masterPin);
-
-      // Map the full pinpath of source clock to the liberty cell
-      // containing the generated clock definition
-      network_->addGeneratedClockPinToCell(pinPath, lib_cell);
-    }
-  }
+  makeGeneratedClocks(lib_cell, inst);
 }
 
 ////////////////////////////////////////////////////////////////
