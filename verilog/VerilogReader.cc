@@ -1793,13 +1793,15 @@ VerilogReader::makeModuleInstBody(VerilogModule *module,
   }
 }
 
+// Maps a clock pin path to the liberty cell containing the generated clock definition
 void
 VerilogReader::makeGeneratedClocks(LibertyCell *lib_cell, Instance *inst)
 {
   if (lib_cell->generatedClocks().size() > 0) {
     for (GeneratedClock *generated_clock : lib_cell->generatedClocks()) {
-      const char *original_inst_path = network_->pathName(inst);
-      const char *inst_path = original_inst_path;
+
+      // Path to the instance containing the clock pin
+      const char *inst_path = network_->pathName(inst);
 
       // HACK: Strip top-level prefix to get instance path for later search
       if (const char *slash = strchr(inst_path, network_->pathDivider())) {
