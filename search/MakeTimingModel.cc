@@ -264,6 +264,7 @@ MakeTimingModel::ensurePathGroups()
   static constexpr int GROUP_PATH_COUNT = std::numeric_limits<int>::max();
   static constexpr int ENDPOINT_PATH_COUNT = std::numeric_limits<int>::max();
   static constexpr bool UNIQUE_PINS = false;
+  static constexpr bool UNIQUE_EDGES = false;
   static constexpr float MIN_SLACK = std::numeric_limits<float>::lowest();
   static constexpr float MAX_SLACK = std::numeric_limits<float>::max();
   static constexpr PathGroupNameSet *PATH_GROUP_NAME_SET = nullptr;
@@ -277,6 +278,7 @@ MakeTimingModel::ensurePathGroups()
     GROUP_PATH_COUNT,
     ENDPOINT_PATH_COUNT,
     UNIQUE_PINS,
+    UNIQUE_EDGES,
     MIN_SLACK,
     MAX_SLACK,
     PATH_GROUP_NAME_SET,
@@ -465,7 +467,7 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   input_register_timing_path.target_clk_uncertainty = path_end->interClkUncertainty(sta_state);
 
   const Path *clk_path = path_end->targetClkPath();
-  ClkInfo *clk_info = clk_path->clkInfo(sta_state);
+  const ClkInfo *clk_info = clk_path->clkInfo(sta_state);
   const Pin *src_pin = clk_info->clkSrc();
   const ClockEdge *clk_edge = clk_info->clkEdge();
   const Clock *clk = clk_edge->clock();
@@ -495,7 +497,7 @@ extractInputRegisterTimingPath(PathEnd *path_end, const RiseFall *input_rf)
   input_register_timing_path.is_target_clock_propagated = target_clock_path->clkInfo(sta_state->search())->isPropagated();
 
   input_register_timing_path.library_setup_time = path_end->margin(sta_state);
-  input_register_timing_path.path_group_name = sta_state->search()->pathGroup(path_end)->name();
+  input_register_timing_path.path_group_name = sta_state->search()->pathGroups(path_end).front()->name();
   input_register_timing_path.path_type = path_end->minMax(sta_state)->to_string();
   input_register_timing_path.type = path_end->typeName();
   

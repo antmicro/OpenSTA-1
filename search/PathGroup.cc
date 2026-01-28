@@ -255,6 +255,15 @@ const char *PathGroups::gated_clk_group_name_ = "gated_clock";
 const char *PathGroups::async_group_name_ = "asynchronous";
 const char *PathGroups::unconstrained_group_name_ = "unconstrained";
 
+bool
+PathGroups::isGroupPathName(const char *group_name)
+{
+  return stringEq(group_name, path_delay_group_name_)
+    || stringEq(group_name, gated_clk_group_name_)
+    || stringEq(group_name, async_group_name_)
+    || stringEq(group_name, unconstrained_group_name_);
+}
+
 PathGroups::PathGroups(int group_path_count,
 		       int endpoint_path_count,
 		       bool unique_pins,

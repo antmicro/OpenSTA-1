@@ -852,8 +852,9 @@ Search::mergePaths(const PathEndSeq *path_ends,
 
   std::unordered_map<PathGroup*, PathEndSeq> grouped_path_ends;
   for (auto &path_end : *path_ends) {
-    PathGroup *path_group = search_->pathGroup(path_end);
-    grouped_path_ends[path_group].emplace_back(path_end);
+    for (auto& path_group : search_->pathGroups(path_end)) {
+      grouped_path_ends[path_group].emplace_back(path_end);
+    }
   }
 
   std::unordered_map<PathGroup*, InternalPathSeq> grouped_internal_paths;
